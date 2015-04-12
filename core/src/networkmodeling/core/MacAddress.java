@@ -20,6 +20,13 @@ public class MacAddress {
         this.octet6 = octet6;
     }
 
+    
+    public static MacAddress getBroadcastAddress() {
+        byte octet = (byte) 0xFF;
+        return new MacAddress(octet, octet, octet, octet, octet, octet);
+    }
+    
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof MacAddress) {
