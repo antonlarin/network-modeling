@@ -2,9 +2,11 @@ package networkmodeling.server;
 
 import java.net.Socket;
 import java.util.UUID;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientThread extends Thread{
     
@@ -26,18 +28,27 @@ public class ClientThread extends Thread{
     public void run()
     {
         try {
-            outputStream = new DataOutputStream(
+            outputStream = new ObjectOutputStream(
                     connectionSocket.getOutputStream());
-            inputStream = new DataInputStream(
+            inputStream = new ObjectInputStream(
                     connectionSocket.getInputStream());
             
+            outputStream.writeObject(clientID);
+            
             while (true) {
-                int comand = inputStream.read();
-                switch(comand){
-                    case 0:
-                        return;
-                    case 1: 
-                        return;
+                serverCommand command;
+                try {
+                    command = (serverCommand)inputStream.readObject();
+                    if(command.getCommandType() != ServerCommands.DropSenderConnection)
+                        executeClientCommand(command);
+                    else{
+                        parentServer.dropClient(clientID);
+                        break;
+                    }
+                        
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                    break;
                 }
             }        
         } catch (IOException ex) {
@@ -54,8 +65,13 @@ public class ClientThread extends Thread{
         }
     }
     
-    private DataOutputStream outputStream;
-    private DataInputStream inputStream;
+    private void executeClientCommand(serverCommand command)
+    {
+        
+    }
+    
+    private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
     private Socket connectionSocket;
     private Server parentServer;
     private UUID clientID;
