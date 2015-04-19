@@ -1,28 +1,21 @@
 package networkmodeling.server;
 
-import java.util.UUID;
-
-enum ServerCommands {
-    AddDevice,
-    DeleteDevice,
-    ConnectDevices,
-    DisconnectDevices,
+public class ServerCommand implements java.io.Serializable 
+{
     
-    GetFullNetworkModel,
     
-    DropSenderConnection
-}
-
-public class serverCommand {
-    
-    public serverCommand(ServerCommands _commandType,
-            Object[] _args)
+    public ServerCommand
+    {
+               
+    }
+    public ServerCommand(ServerCommandType _commandType,
+            Object[] _args = null)
     {
         commandType = _commandType;
         commandArgs = _args;
     }
 
-    public ServerCommands getCommandType() {
+    public ServerCommandType getCommandType() {
         return commandType;
     }
 
@@ -30,6 +23,6 @@ public class serverCommand {
         return commandArgs;
     }
     
-    private ServerCommands commandType;
+    private ServerCommandType commandType;
     private Object[] commandArgs; 
 }

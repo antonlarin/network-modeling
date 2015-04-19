@@ -1,12 +1,21 @@
 package networkmodeling.client;
 
+import static java.lang.Thread.sleep;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class ClientStarter {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        // TODO code application logic here
+        
+        Client c = new Client();
+        c.connectToServer();
+        try {
+            sleep(100);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ClientStarter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        c.disconnect();
     }
     
 }

@@ -2,9 +2,9 @@ package networkmodeling.server;
 
 import java.net.UnknownHostException;
 
-public class serverModel {
+public class ServerModel {
     
-    public serverModel() throws UnknownHostException
+    public ServerModel() throws UnknownHostException
     {
         serversLogs = new String();
         server = new Server();

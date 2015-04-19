@@ -9,7 +9,7 @@ public class serverUIMainWindow extends javax.swing.JFrame {
     /**
      * Creates new form serverUIMainWindow
      */
-    public serverUIMainWindow(serverModel _model) {
+    public serverUIMainWindow(ServerModel _model) {
         initComponents();
         
         model = _model;
@@ -114,7 +114,7 @@ public class serverUIMainWindow extends javax.swing.JFrame {
 
     private boolean isServerStarted;
     private String serverLog;
-    private serverModel model;
+    private ServerModel model;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

@@ -10,7 +10,7 @@ public class ServerStarter {
         
         try {
             
-            serverModel model = new serverModel();
+            ServerModel model = new ServerModel();
             serverUIMainWindow mainWindow = new serverUIMainWindow(model);
             mainWindow.show();
             

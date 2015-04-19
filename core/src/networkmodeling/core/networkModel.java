@@ -1,5 +1,5 @@
 package networkmodeling.core;
 
-public class networkModel {
+public class NetworkModel {
     
 }

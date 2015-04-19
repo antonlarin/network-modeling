@@ -36,14 +36,14 @@ public class ClientThread extends Thread{
             outputStream.writeObject(clientID);
             
             while (true) {
-                serverCommand command;
+                ServerCommand command;
                 try {
-                    command = (serverCommand)inputStream.readObject();
-                    if(command.getCommandType() != ServerCommands.DropSenderConnection)
+                    command = (ServerCommand)inputStream.readObject();
+                    if(command.getCommandType() != ServerCommandType.DropSenderConnection)
                         executeClientCommand(command);
                     else{
                         parentServer.dropClient(clientID);
-                        break;
+                        return;
                     }
                         
                 } catch (ClassNotFoundException ex) {
@@ -58,6 +58,7 @@ public class ClientThread extends Thread{
     public void close()
     {
         try {
+            //outputStream.defaultWriteObject(client);
             connectionSocket.close();
             this.stop();
         } catch (IOException except) {
@@ -65,7 +66,7 @@ public class ClientThread extends Thread{
         }
     }
     
-    private void executeClientCommand(serverCommand command)
+    private void executeClientCommand(ServerCommand command)
     {
         
     }
