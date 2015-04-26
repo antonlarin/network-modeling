@@ -36,6 +36,10 @@ public class Port {
         device.handleIncomingFrame(frame, this);
     }
 
+    public Port GetConnectedPort() {
+        return other;
+    }
+
     private final NetworkDevice device;
     private Port other;
 }

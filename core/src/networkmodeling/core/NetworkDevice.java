@@ -20,6 +20,19 @@ public abstract class NetworkDevice {
         }
     }
 
+    public boolean isConnectedTo(NetworkDevice otherDevice) {
+        for (Port port : ports) {
+            Port otherPort = port.GetConnectedPort();
+            for (Port otherDevicePort : otherDevice.getPorts()) {
+                if (otherPort == otherDevicePort) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public MacAddress getMacAddress() {
         return macAddress;
     }
