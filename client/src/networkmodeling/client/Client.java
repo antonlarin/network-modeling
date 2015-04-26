@@ -16,6 +16,7 @@ public class Client extends Thread {
     
     public Client()
     {
+        networkModel = new NetworkModel();
         isConnectedToServer = false;
         serverSocket = null;
     }
@@ -88,6 +89,7 @@ public class Client extends Thread {
         System.out.println("Disconnected\n");
     }
     
+    private NetworkModel networkModel;
     private boolean isConnectedToServer;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;

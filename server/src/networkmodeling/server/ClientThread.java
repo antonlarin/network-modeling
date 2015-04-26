@@ -49,6 +49,8 @@ public class ClientThread extends Thread{
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
                     break;
+                } catch (Exception ex) {
+                    Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }        
         } catch (IOException ex) {
@@ -66,7 +68,40 @@ public class ClientThread extends Thread{
         }
     }
     
-    private void executeClientCommand(ServerCommand command)
+    private synchronized void executeClientCommand(ServerCommand command) throws Exception
+    {
+        boolean isCommandExecuted = false;
+        switch (command.getCommandType())
+        {
+            case AddDevice:
+                parentServer.GetModel().AddDevice(command.getCommandArgs()[0]);
+                isCommandExecuted = true;
+                break;
+            case DeleteDevice:
+                isCommandExecuted = parentServer.GetModel().DeleteDevice(command.getCommandArgs()[0]);
+                break;
+            case ConnectDevices:
+                isCommandExecuted = parentServer.GetModel().ConnectDevices(
+                        command.getCommandArgs()[0], command.getCommandArgs()[1]);
+                break;
+            case DisconnectDevices:
+                isCommandExecuted = parentServer.GetModel().DisconnectDevices(
+                        command.getCommandArgs()[0], command.getCommandArgs()[1]);
+                break;
+            case GetFullNetworkModel:
+                UpdateClientModel();
+                isCommandExecuted = true;
+                break;
+        }
+        
+        if(command.getCommandType() != ServerCommandType.GetFullNetworkModel)
+            parentServer.BroadcastChanges(command);
+        
+        if(!isCommandExecuted)
+            UpdateClientModel();
+    }
+    
+    private void UpdateClientModel()
     {
         
     }

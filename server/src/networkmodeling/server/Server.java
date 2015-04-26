@@ -19,6 +19,7 @@ public class Server extends Thread{
         serverClients = new HashMap<>();
         eventsLog = new String();
         logViewPanel = _logViewPanel;
+        mainNetworkModel = new NetworkModel();
     }
     
     @Override
@@ -76,6 +77,15 @@ public class Server extends Thread{
             serverClients.remove(clientID);
         }
     }
+    public NetworkModel GetModel()
+    {
+        return mainNetworkModel;
+    }
+    
+    public void BroadcastChanges(ServerCommand command)
+    {
+        
+    }
     
     public String getServerLog()
     {
@@ -84,8 +94,10 @@ public class Server extends Thread{
     
     private final javax.swing.JTextPane logViewPanel;
     
+    private final NetworkModel mainNetworkModel;
+    
     private String eventsLog;
-    private HashMap<UUID, ClientThread> serverClients;
+    private final HashMap<UUID, ClientThread> serverClients;
     private ServerSocket serverSocket;
     private final int serverPort;
     private InetAddress serverIP;
