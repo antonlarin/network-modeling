@@ -1,6 +1,8 @@
 package networkmodeling.core;
 
-public class Port {
+import java.io.Serializable;
+
+public class Port implements Serializable {
     public Port(NetworkDevice device) {
         this.device = device;
         this.other = null;

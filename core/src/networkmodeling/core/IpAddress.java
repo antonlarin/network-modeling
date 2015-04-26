@@ -1,6 +1,8 @@
 package networkmodeling.core;
 
-public class IpAddress {
+import java.io.Serializable;
+
+public class IpAddress implements Serializable {
     public IpAddress(byte octet1, byte octet2, byte octet3, byte octet4) {
         this.octet1 = octet1;
         this.octet2 = octet2;

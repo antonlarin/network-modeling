@@ -1,6 +1,8 @@
 package networkmodeling.core;
 
-public class MacAddress {
+import java.io.Serializable;
+
+public class MacAddress implements Serializable {
     public MacAddress() {
         this.octet1 = 0x00;
         this.octet2 = 0x00;

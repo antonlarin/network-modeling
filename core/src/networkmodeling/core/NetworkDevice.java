@@ -1,8 +1,9 @@
 package networkmodeling.core;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class NetworkDevice {
+public abstract class NetworkDevice implements Serializable {
 
     public NetworkDevice(MacAddress macAddress, int portCount) {
         this.macAddress = macAddress;
