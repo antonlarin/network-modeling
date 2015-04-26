@@ -1,6 +1,7 @@
 package networkmodeling.core;
 
 public abstract class NetworkDevice {
+
     public NetworkDevice(MacAddress macAddress, int portCount) {
         this.macAddress = macAddress;
         this.ports = new Port[portCount];
