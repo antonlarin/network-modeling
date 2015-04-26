@@ -47,6 +47,17 @@ public class NetworkModel implements Serializable {
         return false;
     }
     
+    public boolean SendData(IpAddress sourceIP, Object data, IpAddress target)
+    {
+        NIC sourceDev = FindByIP(sourceIP);
+        if(sourceDev !=null)
+        {
+            sourceDev.sendData(data, target);
+            return true;
+        }
+        return false;
+    }
+    
     public boolean DeleteDevice(NetworkDevice dev)
     {
         Iterator<NetworkDevice> i = devices.iterator();
@@ -63,6 +74,7 @@ public class NetworkModel implements Serializable {
     
     public boolean IsConnected(NetworkDevice dev1, NetworkDevice dev2)
     {
+        
         return false;
     }
     
@@ -74,6 +86,22 @@ public class NetworkModel implements Serializable {
     public LinkedList<NetworkDevice> getDevicesList()
     {
         return devices;
+    }
+    
+    private NIC FindByIP(IpAddress adress)
+    {
+        Iterator<NetworkDevice> i = devices.iterator();
+        while(i.hasNext())
+        {
+            NetworkDevice currentDev = i.next();
+            
+            if(currentDev != null && currentDev instanceof NIC)
+            {
+                if(((NIC)currentDev).getIpAddress() == adress)
+                    return (NIC)currentDev;
+            }
+        }
+        return null;
     }
     
     private final LinkedList<NetworkDevice> devices;
