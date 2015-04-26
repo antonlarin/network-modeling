@@ -7,16 +7,16 @@ import java.util.logging.Logger;
 public class ServerStarter {
 
     public static void main(String[] args) {
-        
+
         try {
-            
+
             ServerModel model = new ServerModel();
             serverUIMainWindow mainWindow = new serverUIMainWindow(model);
-            mainWindow.show();
-            
+            mainWindow.setVisible(true);
+
         } catch (UnknownHostException ex) {
             Logger.getLogger(ServerStarter.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
     }
-    
+
 }
