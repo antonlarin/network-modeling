@@ -1,5 +1,7 @@
 package networkmodeling.core;
 
+import java.util.Objects;
+
 public abstract class NetworkDevice {
 
     public NetworkDevice(MacAddress macAddress, int portCount) {
@@ -8,6 +10,23 @@ public abstract class NetworkDevice {
     }
 
     public abstract void handleIncomingFrame(Frame frame, Port receivingPort);
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof NetworkDevice)) {
+            return false;
+        }
+        
+        NetworkDevice otherDevice = (NetworkDevice) o;
+        return otherDevice.getMacAddress().equals(macAddress);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.macAddress);
+        return hash;
+    }
 
     public void connectTo(NetworkDevice other) throws NoFreePortsException {
         Port localPort = this.getFreePort();
