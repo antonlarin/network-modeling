@@ -43,17 +43,9 @@ public class NetworkModel implements Serializable {
         {
             NetworkDevice localDev1 = FindByMac(dev1.getMacAddress());
             NetworkDevice localDev2 = FindByMac(dev2.getMacAddress());
-
-            for (Port port : localDev1.getPorts()) {
-                Port otherPort = port.GetConnectedPort();
-                for (Port otherDevicePort : localDev2.getPorts()) {
-                    if (otherPort == otherDevicePort) {
-                        otherPort.unbind();
-                        otherDevicePort.unbind();
-                        return true;
-                    }
-                }
-            }
+            localDev1.DisconnectFrom(localDev2);
+            
+            return true;
         }
         return false;
     }
@@ -79,8 +71,10 @@ public class NetworkModel implements Serializable {
         Iterator<NetworkDevice> i = devices.iterator();
         while(i.hasNext())
         {
-            if(i.next().equals(dev))
+            NetworkDevice devForDelete = i.next();
+            if(devForDelete.equals(dev))
             {
+                devForDelete.DisconnectFromAll();
                 i.remove();
                 return true;
             }

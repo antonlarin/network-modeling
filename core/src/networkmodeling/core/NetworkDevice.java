@@ -42,7 +42,7 @@ public abstract class NetworkDevice {
     public boolean isConnectedTo(NetworkDevice otherDevice) {
         for (Port port : ports) {
             Port otherPort = port.GetConnectedPort();
-            if (otherPort.getDevice().equals(otherDevice)) {
+            if (otherPort.isBound() && otherPort.getDevice().equals(otherDevice)) {
                 return true;
             }
         }
@@ -50,6 +50,29 @@ public abstract class NetworkDevice {
         return false;
     }
 
+    public void DisconnectFrom(NetworkDevice otherDevice)
+    {
+        for (Port port : ports) {
+            Port otherPort = port.GetConnectedPort();
+            if (otherPort.isBound() && otherPort.getDevice().equals(otherDevice)) {
+                otherPort.unbind();
+                port.unbind();
+                return;
+            }
+        }
+    }
+    
+    public void DisconnectFromAll()
+    {
+        for (Port port : ports) {
+            Port otherPort = port.GetConnectedPort();
+            if (otherPort.isBound()) {        
+                port.unbind();
+                otherPort.unbind();  
+            }
+        }
+    }
+    
     public MacAddress getMacAddress() {
         return macAddress;
     }
