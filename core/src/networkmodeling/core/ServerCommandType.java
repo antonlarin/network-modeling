@@ -1,4 +1,4 @@
-package networkmodeling.server;
+package networkmodeling.core;
 
 public enum ServerCommandType {
     AddDevice,

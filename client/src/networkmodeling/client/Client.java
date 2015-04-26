@@ -1,5 +1,9 @@
 package networkmodeling.client;
 
+import networkmodeling.core.ServerCommandType;
+import networkmodeling.core.ServerCommand;
+import networkmodeling.core.CliendCommandType;
+import networkmodeling.core.ClientCommand;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;

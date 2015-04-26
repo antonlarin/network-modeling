@@ -1,5 +1,6 @@
 package networkmodeling.server;
 
+import networkmodeling.core.ServerCommand;
 import networkmodeling.core.*;
 
 import java.io.IOException;

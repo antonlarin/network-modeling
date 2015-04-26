@@ -1,5 +1,7 @@
 package networkmodeling.server;
 
+import networkmodeling.core.ServerCommand;
+import networkmodeling.core.ServerCommandType;
 import java.net.Socket;
 import java.util.UUID;
 import java.io.ObjectInputStream;

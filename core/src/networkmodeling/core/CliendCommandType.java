@@ -1,4 +1,4 @@
-package networkmodeling.client;
+package networkmodeling.core;
 
 public enum CliendCommandType
 {

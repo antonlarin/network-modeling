@@ -1,4 +1,4 @@
-package networkmodeling.server;
+package networkmodeling.core;
 
 import networkmodeling.core.NetworkDevice;
 
