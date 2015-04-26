@@ -8,14 +8,14 @@ public abstract class NetworkDevice {
 
     public abstract void handleIncomingFrame(Frame frame, Port receivingPort);
 
-    public void connectTo(NetworkDevice other) throws Exception {
+    public void connectTo(NetworkDevice other) throws NoFreePortsException {
         Port localPort = this.getFreePort();
         Port remotePort = other.getFreePort();
 
         if (localPort != null && remotePort != null) {
             localPort.bind(remotePort);
         } else {
-            throw new Exception();
+            throw new NoFreePortsException();
         }
     }
 

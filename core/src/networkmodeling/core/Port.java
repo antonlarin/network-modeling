@@ -24,10 +24,9 @@ public class Port {
         return other != null;
     }
 
-    public void sendFrame(Frame frame) throws Exception {
+    public void sendFrame(Frame frame) throws UnboundPortException {
         if (!isBound()) {
-            // TODO: Change to meaningful exception type
-            throw new Exception("Can't send frame through unbound port");
+            throw new UnboundPortException();
         }
 
         other.receiveFrame(frame);

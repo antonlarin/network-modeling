@@ -21,6 +21,7 @@ public class Switch extends NetworkDevice {
             try {
                 outputPort.sendFrame(frame);
             } catch (Exception ex) {
+                System.err.println("Attempt send through unbound switch port");
             }
         }
     }
@@ -31,6 +32,8 @@ public class Switch extends NetworkDevice {
                 try {
                     port.sendFrame(frame);
                 } catch (Exception ex) {
+                    System.err.println(
+                        "Attempt send through unbound switch port");
                 }
             }
         }

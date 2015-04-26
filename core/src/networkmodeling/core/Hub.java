@@ -11,8 +11,8 @@ public class Hub extends NetworkDevice {
             if (port != receivingPort) {
                 try {
                     port.sendFrame(frame);
-                } catch (Exception ex) {
-                    // Swallow exception
+                } catch (UnboundPortException ex) {
+                    System.err.println("Hub's port unbound.");
                 }
             }
         }

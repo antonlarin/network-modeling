@@ -35,8 +35,9 @@ public class NIC extends NetworkDevice {
                         frame.getSenderMac(), arpResponse);
                     try {
                         getPort().sendFrame(arpResponseFrame);
-                    } catch (Exception ex) {
-                        // Swallow exception
+                    } catch (UnboundPortException ex) {
+                        System.err.println(
+                            "Send attempt through unbound NIC port");
                     }
                 }
             }
@@ -74,8 +75,8 @@ public class NIC extends NetworkDevice {
                 MacAddress.getBroadcastAddress(), arpRequest);
             try {
                 getPort().sendFrame(arpRequestFrame);
-            } catch (Exception ex) {
-
+            } catch (UnboundPortException ex) {
+                System.err.println("Attempt send through unbound NIC port");
             }
             targetMac = ipMacTable.get(targetIp);
 
@@ -90,6 +91,7 @@ public class NIC extends NetworkDevice {
         try {
             getPort().sendFrame(frame);
         } catch (Exception ex) {
+            System.err.println("Attempt send through unbound NIC port");
         }
 
         return true;
@@ -106,6 +108,7 @@ public class NIC extends NetworkDevice {
             try {
                 getPort().sendFrame(arpRequestFrame);
             } catch (Exception ex) {
+                System.err.println("Attempt send through unbound NIC port");
             }
 
             gatewayMac = ipMacTable.get(gatewayIp);
@@ -121,6 +124,7 @@ public class NIC extends NetworkDevice {
         try {
             getPort().sendFrame(frame);
         } catch (Exception ex) {
+            System.err.println("Attempt send through unbound NIC port");
         }
     }
 
