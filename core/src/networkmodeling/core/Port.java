@@ -6,6 +6,10 @@ public class Port {
         this.other = null;
     }
 
+    public NetworkDevice getDevice() {
+        return device;
+    }
+
     public boolean bind(Port other) {
         if (!isBound() && !other.isBound()) {
             this.other = other;

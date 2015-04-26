@@ -16,7 +16,7 @@ public abstract class NetworkDevice {
         if (!(o instanceof NetworkDevice)) {
             return false;
         }
-        
+
         NetworkDevice otherDevice = (NetworkDevice) o;
         return otherDevice.getMacAddress().equals(macAddress);
     }
@@ -42,10 +42,8 @@ public abstract class NetworkDevice {
     public boolean isConnectedTo(NetworkDevice otherDevice) {
         for (Port port : ports) {
             Port otherPort = port.GetConnectedPort();
-            for (Port otherDevicePort : otherDevice.getPorts()) {
-                if (otherPort == otherDevicePort) {
-                    return true;
-                }
+            if (otherPort.getDevice().equals(otherDevice)) {
+                return true;
             }
         }
 
