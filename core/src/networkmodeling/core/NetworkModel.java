@@ -23,11 +23,11 @@ public class NetworkModel implements Serializable {
         if (devices.contains(dev2) && devices.contains(dev1))
         {
             try {
-                dev1.connectTo(dev2);
-                devices.remove(dev1);
-                devices.remove(dev2);
-                devices.add(dev1);
-                devices.add(dev2);
+                
+                NetworkDevice localDev1 = FindByMac(dev1.getMacAddress());
+                NetworkDevice localDev2 = FindByMac(dev2.getMacAddress());
+                localDev1.connectTo(localDev2);
+                
                 return true;
             } catch (Exception ex) {
                 Logger.getLogger(NetworkModel.class.getName()).log(Level.SEVERE, null, ex);
@@ -39,6 +39,22 @@ public class NetworkModel implements Serializable {
 
     public boolean DisconnectDevices(NetworkDevice dev1, NetworkDevice dev2)
     {
+        if(devices.contains(dev2) && devices.contains(dev1))
+        {
+            NetworkDevice localDev1 = FindByMac(dev1.getMacAddress());
+            NetworkDevice localDev2 = FindByMac(dev2.getMacAddress());
+
+            for (Port port : localDev1.getPorts()) {
+                Port otherPort = port.GetConnectedPort();
+                for (Port otherDevicePort : localDev2.getPorts()) {
+                    if (otherPort == otherDevicePort) {
+                        otherPort.unbind();
+                        otherDevicePort.unbind();
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -49,8 +65,8 @@ public class NetworkModel implements Serializable {
 
     public boolean SendData(IpAddress sourceIP, Object data, IpAddress target)
     {
-        NIC sourceDev = FindByIP(sourceIP);
-        if(sourceDev !=null)
+        NIC sourceDev = FindNICByIP(sourceIP);
+        if(sourceDev != null)
         {
             sourceDev.sendData(data, target);
             return true;
@@ -68,6 +84,7 @@ public class NetworkModel implements Serializable {
                 i.remove();
                 return true;
             }
+            
         }
         return false;
     }
@@ -87,7 +104,7 @@ public class NetworkModel implements Serializable {
         return devices;
     }
 
-    private NIC FindByIP(IpAddress adress)
+    private NIC FindNICByIP(IpAddress adress)
     {
         Iterator<NetworkDevice> i = devices.iterator();
         while(i.hasNext())
@@ -96,9 +113,21 @@ public class NetworkModel implements Serializable {
 
             if(currentDev != null && currentDev instanceof NIC)
             {
-                if(((NIC)currentDev).getIpAddress() == adress)
+                if(((NIC)currentDev).getIpAddress().equals(adress))
                     return (NIC)currentDev;
             }
+        }
+        return null;
+    }
+    
+    public NetworkDevice FindByMac(MacAddress adress)
+    {
+        Iterator<NetworkDevice> i = devices.iterator();
+        while(i.hasNext())
+        {
+            NetworkDevice currentDev = i.next();
+            if(currentDev.getMacAddress().equals(adress))
+                return currentDev;
         }
         return null;
     }
