@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import networkmodeling.core.CliendCommandType;
+import networkmodeling.core.ClientCommand;
 
 public class ClientThread extends Thread{
     
@@ -62,7 +64,7 @@ public class ClientThread extends Thread{
     public void close()
     {
         try {
-            //outputStream.defaultWriteObject(client);
+            outputStream.writeObject(new ClientCommand(CliendCommandType.DropConnection, null));
             connectionSocket.close();
             this.stop();
         } catch (IOException except) {
@@ -97,15 +99,22 @@ public class ClientThread extends Thread{
         }
         
         if(command.getCommandType() != ServerCommandType.GetFullNetworkModel)
-            parentServer.BroadcastChanges(command);
+            parentServer.BroadcastChanges(command, clientID);
         
         if(!isCommandExecuted)
             UpdateClientModel();
     }
     
-    private void UpdateClientModel()
+    public void UpdateClientModel()
     {
-        
+        ClientCommand updateCommand = new ClientCommand(
+                CliendCommandType.UpdateFullModel, null);
+        try {
+            outputStream.writeObject(updateCommand);
+            outputStream.writeObject(parentServer.GetModel());
+        } catch (IOException ex) {
+            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private ObjectOutputStream outputStream;

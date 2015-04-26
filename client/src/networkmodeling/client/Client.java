@@ -53,7 +53,6 @@ public class Client extends Thread {
                     }
                 }
                 
-                
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -65,7 +64,40 @@ public class Client extends Thread {
     
     private void executeCommand(ClientCommand command)
     {
+        boolean isCommandExecuted = false;
+        switch(command.getCommandType())
+        {
+            case AddDevice:
+                networkModel.AddDevice(command.getArguments()[0]);
+                break;
+            case DeleteDevice:
+                networkModel.DeleteDevice(command.getArguments()[0]);
+                break;
+            case ConnectDevices:
+                networkModel.ConnectDevices(
+                        command.getArguments()[0],
+                        command.getArguments()[1]);
+                break;
+            case DisconnectDevices:
+                networkModel.DisconnectDevices(
+                        command.getArguments()[0],
+                        command.getArguments()[1]);
+                break;
+            case UpdateFullModel:
+        {
+            try {
+                networkModel = (NetworkModel)inputStream.readObject();
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+                break;
+        }
         
+        if(!isCommandExecuted)
+            SendUpdateModelRequest();
     }
     
     public boolean isConnectedToServer()
@@ -79,18 +111,33 @@ public class Client extends Thread {
     }
     public void disconnect()
     {
-        try {
-            outputStream.writeObject(new ServerCommand(ServerCommandType.DropSenderConnection, null));
+        if(isConnectedToServer)
+        {
+            try {
+                outputStream.writeObject(new ServerCommand(ServerCommandType.DropSenderConnection, null));
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            this.stop();
+            try {
+                serverSocket.close();
+                isConnectedToServer = false;
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            System.out.println("Disconnected\n");
+        }
+    }
+    
+    private void SendUpdateModelRequest()
+    {
+        if(isConnectedToServer)
+            try {
+                outputStream.writeObject(new ServerCommand(ServerCommandType.GetFullNetworkModel, null));
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.stop();
-        try {
-            serverSocket.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println("Disconnected\n");
     }
     
     private NetworkModel networkModel;

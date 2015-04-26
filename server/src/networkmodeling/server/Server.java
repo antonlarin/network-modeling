@@ -53,13 +53,13 @@ public class Server extends Thread{
     {
         eventsLog += "Сервер остановлен.\n";
         logViewPanel.setText(eventsLog);
-        try {
-            serverSocket.close();          
+        try {         
            
             Iterator<ClientThread> i = serverClients.values().iterator();
             while (i.hasNext())
                 i.next().close();
             
+            serverSocket.close(); 
             serverClients.clear();
             this.stop();
         } catch (IOException ex) {
@@ -72,8 +72,7 @@ public class Server extends Thread{
         eventsLog += "Клиент отключился.\n";
             logViewPanel.setText(eventsLog);
         if(clientForDrop != null)
-        {
-            
+        { 
             clientForDrop.close();
             serverClients.remove(clientID);
         }
@@ -83,9 +82,13 @@ public class Server extends Thread{
         return mainNetworkModel;
     }
     
-    public void BroadcastChanges(ServerCommand command)
+    public void BroadcastChanges(ServerCommand command, UUID sourceID)
     {
-        
+        for(ClientThread value : serverClients.values())
+        {
+            if(!sourceID.equals(value.getUUID()))
+                value.UpdateClientModel();
+        }
     }
     
     public String getServerLog()
