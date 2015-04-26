@@ -8,15 +8,8 @@ public class ServerStarter {
 
     public static void main(String[] args) {
 
-        try {
-
-            ServerModel model = new ServerModel();
-            serverUIMainWindow mainWindow = new serverUIMainWindow(model);
+            serverUIMainWindow mainWindow = new serverUIMainWindow();
             mainWindow.setVisible(true);
-
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(ServerStarter.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
 }

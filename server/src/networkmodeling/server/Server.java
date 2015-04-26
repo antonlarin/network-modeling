@@ -11,13 +11,14 @@ import java.util.Iterator;
 import java.util.UUID;
 
 public class Server extends Thread{
-    public Server()
+    public Server(javax.swing.JTextPane _logViewPanel)
     {
         serverSocket = null;
         serverIP = null;
-        serverPort = 7772;
+        serverPort = GlobalConstants.serverPort;
         serverClients = new HashMap<>();
         eventsLog = new String();
+        logViewPanel = _logViewPanel;
     }
     
     @Override
@@ -30,6 +31,8 @@ public class Server extends Thread{
                 clientSocket = serverSocket.accept();
                 ClientThread client = new ClientThread(this, clientSocket);
                 serverClients.put(client.getUUID(), client);
+                eventsLog += "Клиент подключился.\n";
+                logViewPanel.setText(eventsLog);
                 client.start();
             }
         }
@@ -41,12 +44,13 @@ public class Server extends Thread{
     public void startServer()
     {
         eventsLog += "Сервер запущен.\n";
+        logViewPanel.setText(eventsLog);
         this.start();
     }
     public void stopServer()
     {
         eventsLog += "Сервер остановлен.\n";
-        
+        logViewPanel.setText(eventsLog);
         try {
             serverSocket.close();          
            
@@ -63,8 +67,11 @@ public class Server extends Thread{
     public void dropClient(UUID clientID)
     {
         ClientThread clientForDrop = serverClients.get(clientID);
+        eventsLog += "Клиент отключился.\n";
+            logViewPanel.setText(eventsLog);
         if(clientForDrop != null)
         {
+            
             clientForDrop.close();
             serverClients.remove(clientID);
         }
@@ -74,6 +81,8 @@ public class Server extends Thread{
     {
         return eventsLog;
     }
+    
+    private final javax.swing.JTextPane logViewPanel;
     
     private String eventsLog;
     private HashMap<UUID, ClientThread> serverClients;

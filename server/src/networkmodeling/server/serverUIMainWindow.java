@@ -9,10 +9,14 @@ public class serverUIMainWindow extends javax.swing.JFrame {
     /**
      * Creates new form serverUIMainWindow
      */
-    public serverUIMainWindow(ServerModel _model) {
+    public serverUIMainWindow() {
         initComponents();
         
-        model = _model;
+        try {
+            model = new ServerModel(serverLogTextPane);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(serverUIMainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
         isServerStarted = false;
         serverLog = new String();
     }
@@ -108,8 +112,6 @@ public class serverUIMainWindow extends javax.swing.JFrame {
             }
             startStopButton.setText("Стоп");
         }
-        
-        serverLogTextPane.setText(model.getServerLog());
     }//GEN-LAST:event_startStopButtonMouseClicked
 
     private boolean isServerStarted;

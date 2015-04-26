@@ -25,12 +25,13 @@ public class Client extends Thread {
     public void run()
     {
         try {
-            serverSocket = new Socket(InetAddress.getLocalHost(), 7772);
+            serverSocket = new Socket(InetAddress.getLocalHost(),
+                    GlobalConstants.serverPort);
             outputStream = new ObjectOutputStream(serverSocket.getOutputStream());
             inputStream = new ObjectInputStream(serverSocket.getInputStream());
             isConnectedToServer = true;
+
             try {
-                
                 clientID = (UUID)inputStream.readObject();
                 System.out.println("Connected\n");
                 while(true) 

@@ -11,7 +11,7 @@ public class ClientStarter {
         Client c = new Client();
         c.connectToServer();
         try {
-            sleep(100);
+            sleep(300);
         } catch (InterruptedException ex) {
             Logger.getLogger(ClientStarter.class.getName()).log(Level.SEVERE, null, ex);
         }
