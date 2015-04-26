@@ -3,6 +3,7 @@ package networkmodeling.client;
 import static java.lang.Thread.sleep;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import networkmodeling.core.*;
 
 public class ClientStarter {
 
@@ -10,8 +11,9 @@ public class ClientStarter {
         
         Client c = new Client();
         c.connectToServer();
+        c.SendAddDevicesRequest(new Hub(new MacAddress(), 2));
         try {
-            sleep(300);
+            sleep(900);
         } catch (InterruptedException ex) {
             Logger.getLogger(ClientStarter.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -84,16 +84,16 @@ public class Client extends Thread {
                         command.getArguments()[1]);
                 break;
             case UpdateFullModel:
-        {
-            try {
-                networkModel = (NetworkModel)inputStream.readObject();
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+            {
+                try {
+                    networkModel = (NetworkModel)inputStream.readObject();
+                } catch (IOException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 break;
+            }
         }
         
         if(!isCommandExecuted)
@@ -128,6 +128,82 @@ public class Client extends Thread {
             
             System.out.println("Disconnected\n");
         }
+    }
+    
+    public void SendConnectDevicesRequest(NetworkDevice dev1, NetworkDevice dev2)
+    {
+        if(isConnectedToServer)
+        {
+            NetworkDevice args[] = new NetworkDevice[2];
+            args[0] = dev1;
+            args[1] = dev2;
+
+            ServerCommand command = new ServerCommand(
+                    ServerCommandType.ConnectDevices, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public void SendDisonnectDevicesRequest(NetworkDevice dev1, NetworkDevice dev2)
+    {
+        if(isConnectedToServer)
+        {
+            NetworkDevice args[] = new NetworkDevice[2];
+            args[0] = dev1;
+            args[1] = dev2;
+
+            ServerCommand command = new ServerCommand(
+                    ServerCommandType.DisconnectDevices, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public void SendDeleteDeviceRequest(NetworkDevice dev1)
+    {
+        if(isConnectedToServer)
+        {
+            NetworkDevice args[] = new NetworkDevice[1];
+            args[0] = dev1;
+
+            ServerCommand command = new ServerCommand(
+                    ServerCommandType.DeleteDevice, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public void SendAddDevicesRequest(NetworkDevice dev1)
+    {
+        if(isConnectedToServer)
+        {
+            NetworkDevice args[] = new NetworkDevice[1];
+            args[0] = dev1;
+
+            ServerCommand command = new ServerCommand(ServerCommandType.AddDevice, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void LoadModelFromServer()
+    {
+        SendUpdateModelRequest();
+    }
+    
+    public NetworkModel GetModel()
+    {
+        return networkModel;
     }
     
     private void SendUpdateModelRequest()
