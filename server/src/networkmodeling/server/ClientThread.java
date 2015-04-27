@@ -43,6 +43,7 @@ public class ClientThread extends Thread{
                 ServerCommand command;
                 try {
                     command = (ServerCommand)inputStream.readObject();
+                    
                     if(command.getCommandType() != ServerCommandType.DropSenderConnection)
                         executeClientCommand(command);
                     else{
@@ -78,6 +79,7 @@ public class ClientThread extends Thread{
         switch (command.getCommandType())
         {
             case AddDevice:
+                System.out.println("statr execuntion\n");
                 parentServer.GetModel().AddDevice(command.getCommandArgs()[0]);
                 isCommandExecuted = true;
                 break;

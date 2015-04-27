@@ -52,6 +52,21 @@ public class NetworkModel implements Serializable {
 
     public boolean TestNetwork()
     {
+        LinkedList<NIC> allNICs = new LinkedList<>();
+        
+        Iterator<NetworkDevice> i = devices.iterator();
+        while(i.hasNext())
+        {
+            NetworkDevice devForCheck = i.next();
+            if(devForCheck instanceof NIC)
+                allNICs.add((NIC)devForCheck);
+        }
+        
+        if(!allNICs.isEmpty())
+        {
+            
+        }
+        
         return false;
     }
 

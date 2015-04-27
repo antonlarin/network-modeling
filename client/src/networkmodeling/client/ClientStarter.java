@@ -11,13 +11,13 @@ public class ClientStarter {
         
         Client c = new Client();
         c.connectToServer();
-        c.SendAddDevicesRequest(new Hub(new MacAddress(), 2));
         try {
+            sleep(800); 
+            c.SendAddDevicesRequest(new Hub(new MacAddress(), 2));
             sleep(900);
         } catch (InterruptedException ex) {
             Logger.getLogger(ClientStarter.class.getName()).log(Level.SEVERE, null, ex);
         }
         c.disconnect();
     }
-    
 }
