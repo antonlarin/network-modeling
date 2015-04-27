@@ -39,10 +39,9 @@ public class MainWindow extends javax.swing.JFrame {
         hubParametersPanel2 = new networkmodeling.client.ui.HubParametersPanel();
         switchParametersContainer = new javax.swing.JPanel();
         switchParametersPanel1 = new networkmodeling.client.ui.SwitchParametersPanel();
-        diagramPanel = new javax.swing.JPanel();
+        diagramPanel1 = new networkmodeling.client.ui.DiagramPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(800, 600));
 
         toolbarPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -115,16 +114,14 @@ public class MainWindow extends javax.swing.JFrame {
 
         deviceParametersPanel.add(switchParametersContainer, "SwitchCard");
 
-        diagramPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        javax.swing.GroupLayout diagramPanelLayout = new javax.swing.GroupLayout(diagramPanel);
-        diagramPanel.setLayout(diagramPanelLayout);
-        diagramPanelLayout.setHorizontalGroup(
-            diagramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 569, Short.MAX_VALUE)
+        javax.swing.GroupLayout diagramPanel1Layout = new javax.swing.GroupLayout(diagramPanel1);
+        diagramPanel1.setLayout(diagramPanel1Layout);
+        diagramPanel1Layout.setHorizontalGroup(
+            diagramPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 573, Short.MAX_VALUE)
         );
-        diagramPanelLayout.setVerticalGroup(
-            diagramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        diagramPanel1Layout.setVerticalGroup(
+            diagramPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
@@ -139,7 +136,7 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(deviceParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(paletteScrollPane))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(diagramPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(diagramPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -152,7 +149,7 @@ public class MainWindow extends javax.swing.JFrame {
                         .addComponent(paletteScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deviceParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(diagramPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(diagramPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -196,7 +193,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel deviceParametersPanel;
-    private javax.swing.JPanel diagramPanel;
+    private networkmodeling.client.ui.DiagramPanel diagramPanel1;
     private javax.swing.JPanel hubParametersContainer;
     private networkmodeling.client.ui.HubParametersPanel hubParametersPanel1;
     private networkmodeling.client.ui.HubParametersPanel hubParametersPanel2;

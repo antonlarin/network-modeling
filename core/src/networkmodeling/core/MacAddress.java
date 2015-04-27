@@ -12,8 +12,8 @@ public class MacAddress implements Serializable {
         this.octet6 = 0x00;
     }
     
-    public MacAddress(byte octet1, byte octet2, byte octet3,
-            byte octet4, byte octet5, byte octet6) {
+    public MacAddress(short octet1, short octet2, short octet3,
+            short octet4, short octet5, short octet6) {
         this.octet1 = octet1;
         this.octet2 = octet2;
         this.octet3 = octet3;
@@ -24,7 +24,7 @@ public class MacAddress implements Serializable {
 
     
     public static MacAddress getBroadcastAddress() {
-        byte octet = (byte) 0xFF;
+        short octet = (short) 0xFF;
         return new MacAddress(octet, octet, octet, octet, octet, octet);
     }
     
@@ -75,10 +75,10 @@ public class MacAddress implements Serializable {
     }
     
     
-    private final byte octet1;
-    private final byte octet2;
-    private final byte octet3;
-    private final byte octet4;
-    private final byte octet5;
-    private final byte octet6;
+    private final short octet1;
+    private final short octet2;
+    private final short octet3;
+    private final short octet4;
+    private final short octet5;
+    private final short octet6;
 }
