@@ -2,6 +2,7 @@ package networkmodeling.core;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,46 +11,48 @@ public class NetworkModel implements Serializable {
 
     public NetworkModel()
     {
-        devices = new LinkedList<>();
+        networkDevices = new HashMap<>();
     }
 
     public boolean AddDevice(NetworkDevice dev)
     {
-        if(!devices.contains(dev))
+        if(!networkDevices.containsKey(dev.getMacAddress()))
         {
-            devices.add(dev);
+            networkDevices.put(dev.getMacAddress(), dev);
             return true;
         }
+        
         return false;
     }
 
     public boolean ConnectDevices(NetworkDevice dev1, NetworkDevice dev2)
     {
-        if (devices.contains(dev2) && devices.contains(dev1))
+        if(networkDevices.containsKey(dev1.getMacAddress()) &&
+                networkDevices.containsKey(dev2.getMacAddress()))
         {
             try {
                 
-                NetworkDevice localDev1 = FindByMac(dev1.getMacAddress());
-                NetworkDevice localDev2 = FindByMac(dev2.getMacAddress());
+                NetworkDevice localDev1 = networkDevices.get(dev1.getMacAddress());
+                NetworkDevice localDev2 = networkDevices.get(dev2.getMacAddress());
                 localDev1.connectTo(localDev2);
-                
                 return true;
-            } catch (Exception ex) {
+                
+            } catch (NoFreePortsException ex) {
                 Logger.getLogger(NetworkModel.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
             }
         }
+        
         return false;
     }
 
     public boolean DisconnectDevices(NetworkDevice dev1, NetworkDevice dev2)
     {
-        if(devices.contains(dev2) && devices.contains(dev1))
+        if(networkDevices.containsKey(dev1.getMacAddress()) &&
+                networkDevices.containsKey(dev2.getMacAddress()))
         {
-            NetworkDevice localDev1 = FindByMac(dev1.getMacAddress());
-            NetworkDevice localDev2 = FindByMac(dev2.getMacAddress());
+            NetworkDevice localDev1 = networkDevices.get(dev1.getMacAddress());
+            NetworkDevice localDev2 = networkDevices.get(dev2.getMacAddress());
             localDev1.DisconnectFrom(localDev2);
-            
             return true;
         }
         return false;
@@ -59,12 +62,10 @@ public class NetworkModel implements Serializable {
     {
         LinkedList<NIC> allNICs = new LinkedList<>();
         
-        Iterator<NetworkDevice> i = devices.iterator();
-        while(i.hasNext())
+        for(NetworkDevice dev : networkDevices.values())
         {
-            NetworkDevice devForCheck = i.next();
-            if(devForCheck instanceof NIC)
-                allNICs.add((NIC)devForCheck);
+            if(dev instanceof NIC)
+                allNICs.add((NIC)dev);
         }
         
         while(!allNICs.isEmpty())
@@ -103,18 +104,15 @@ public class NetworkModel implements Serializable {
 
     public boolean DeleteDevice(NetworkDevice dev)
     {
-        Iterator<NetworkDevice> i = devices.iterator();
-        while(i.hasNext())
+        if(networkDevices.containsKey(dev.getMacAddress()))
         {
-            NetworkDevice devForDelete = i.next();
-            if(devForDelete.equals(dev))
-            {
-                devForDelete.DisconnectFromAll();
-                i.remove();
-                return true;
-            }
+            NetworkDevice devForDelete = networkDevices.get(dev.getMacAddress());
+            devForDelete.DisconnectFromAll();
+            networkDevices.remove(dev.getMacAddress());
             
+            return true;
         }
+        
         return false;
     }
 
@@ -125,51 +123,41 @@ public class NetworkModel implements Serializable {
 
     public boolean HasDevice(NetworkDevice dev)
     {
-        return devices.contains(dev);
+        return networkDevices.containsKey(dev.getMacAddress());
     }
 
-    public LinkedList<NetworkDevice> getDevicesList()
+    public HashMap<MacAddress, NetworkDevice> getDevicesMap()
     {
-        return devices;
-    }
-
-    private NIC FindNICByIP(IpAddress adress)
-    {
-        Iterator<NetworkDevice> i = devices.iterator();
-        while(i.hasNext())
-        {
-            NetworkDevice currentDev = i.next();
-
-            if(currentDev != null && currentDev instanceof NIC)
-            {
-                if(((NIC)currentDev).getIpAddress().equals(adress))
-                    return (NIC)currentDev;
-            }
-        }
-        return null;
-    }
-    
-    public NetworkDevice FindByMac(MacAddress adress)
-    {
-        Iterator<NetworkDevice> i = devices.iterator();
-        while(i.hasNext())
-        {
-            NetworkDevice currentDev = i.next();
-            if(currentDev.getMacAddress().equals(adress))
-                return currentDev;
-        }
-        return null;
+        return networkDevices;
     }
     
     public boolean ChangeDeviceIP(NIC dev, IpAddress newIP)
     {
-        if(devices.contains(dev))
+        if(networkDevices.containsKey(dev.getMacAddress()))
         {
-            ((NIC)FindByMac(dev.getMacAddress())).setIpAderss(newIP);
+            ((NIC)networkDevices.get(dev.getMacAddress())).setIpAderss(newIP);
             return true;
         }
+
         return false;
     }
+    
+    public NetworkDevice FindByMac(MacAddress address)
+    {
+        return networkDevices.get(address);
+    }
+    
+    private NIC FindNICByIP(IpAddress adress)
+    {
+        for(NetworkDevice dev : networkDevices.values())
+        {
+            if(dev instanceof NIC)
+                if(((NIC)dev).getIpAddress().equals(adress))
+                    return (NIC)dev;
+        }
+        
+        return null;
+    }
 
-    private final LinkedList<NetworkDevice> devices;
+    private final HashMap<MacAddress, NetworkDevice> networkDevices;
 }
