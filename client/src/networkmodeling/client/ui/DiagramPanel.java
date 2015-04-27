@@ -5,8 +5,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
@@ -17,6 +19,11 @@ public class DiagramPanel extends JPanel {
     public DiagramPanel() {
         connections = new LinkedList<>();
         devices = new LinkedList<>();
+        selectedDevice = null;
+        DiagramMouseHandler mouseListener = new DiagramMouseHandler();
+        addMouseListener(mouseListener);
+        addMouseMotionListener(mouseListener);
+        
         // Throwaway code!
         short o = (short) 1;
         NIC nic = new NIC(
@@ -71,6 +78,35 @@ public class DiagramPanel extends JPanel {
         }
     }
     
+    private class DiagramMouseHandler extends MouseInputAdapter {
+        
+        @Override
+        public void mousePressed(MouseEvent e) {
+            boolean pressedOnDevice = false;
+            for (NetworkDeviceVR device : devices) {
+                if (device.hasOnIt(e.getPoint())) {
+                    pressedOnDevice = true;
+                    selectedDevice = device;
+                    break;
+                }
+            }
+            
+            if (!pressedOnDevice) {
+                selectedDevice = null;
+            }
+        }
+        
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            if (selectedDevice != null) {
+                selectedDevice.setLocation(e.getX(), e.getY());
+                DiagramPanel.this.repaint();
+            }
+        }
+    }
+
+    
     private LinkedList<ConnectionVR> connections;
     private LinkedList<NetworkDeviceVR> devices;
+    private NetworkDeviceVR selectedDevice;
 }

@@ -41,6 +41,13 @@ public class NetworkDeviceVR {
         location = new Point(x, y);
     }
     
+    public boolean hasOnIt(Point point) {
+        return (point.x >= location.x - halfWidth) &&
+            (point.x <= location.x + halfWidth) &&
+            (point.y >= location.y - halfWidth) &&
+            (point.y <= location.y + halfWidth);
+    }
+    
     public void draw(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         int halfImageWidth = deviceIcon.getWidth() / 2;
@@ -56,6 +63,7 @@ public class NetworkDeviceVR {
     
 
     private static final String imageRoot = "img/";
+    private static final int halfWidth = 41;
     
     private final NetworkDevice device;
     private Point location;
