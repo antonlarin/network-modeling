@@ -55,7 +55,7 @@ public abstract class NetworkDevice implements Serializable {
     {
         for (Port port : ports) {
             Port otherPort = port.GetConnectedPort();
-            if (otherPort.isBound() && otherPort.getDevice().equals(otherDevice)) {
+            if (port.isBound() && otherPort.getDevice().equals(otherDevice)) {
                 otherPort.unbind();
                 port.unbind();
                 return;
@@ -67,7 +67,7 @@ public abstract class NetworkDevice implements Serializable {
     {
         for (Port port : ports) {
             Port otherPort = port.GetConnectedPort();
-            if (otherPort.isBound()) {        
+            if (port.isBound()) {        
                 port.unbind();
                 otherPort.unbind();  
             }

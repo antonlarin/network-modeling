@@ -11,6 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import networkmodeling.core.CliendCommandType;
 import networkmodeling.core.ClientCommand;
+import networkmodeling.core.IpAddress;
+import networkmodeling.core.NIC;
+import networkmodeling.core.NetworkDevice;
 
 public class ClientThread extends Thread{
     
@@ -80,19 +83,28 @@ public class ClientThread extends Thread{
         {
             case AddDevice:
                 System.out.println("statr execuntion\n");
-                parentServer.GetModel().AddDevice(command.getCommandArgs()[0]);
+                parentServer.GetModel().AddDevice((NetworkDevice)
+                        command.getCommandArgs()[0]);
                 isCommandExecuted = true;
                 break;
             case DeleteDevice:
-                isCommandExecuted = parentServer.GetModel().DeleteDevice(command.getCommandArgs()[0]);
+                isCommandExecuted = parentServer.GetModel().DeleteDevice(
+                        (NetworkDevice)command.getCommandArgs()[0]);
                 break;
             case ConnectDevices:
                 isCommandExecuted = parentServer.GetModel().ConnectDevices(
-                        command.getCommandArgs()[0], command.getCommandArgs()[1]);
+                        (NetworkDevice)command.getCommandArgs()[0],
+                        (NetworkDevice)command.getCommandArgs()[1]);
                 break;
             case DisconnectDevices:
                 isCommandExecuted = parentServer.GetModel().DisconnectDevices(
-                        command.getCommandArgs()[0], command.getCommandArgs()[1]);
+                        (NetworkDevice)command.getCommandArgs()[0],
+                        (NetworkDevice)command.getCommandArgs()[1]);
+                break;
+            case ChangeDeviceIP:
+                isCommandExecuted = parentServer.GetModel().ChangeDeviceIP(
+                        (NIC)command.getCommandArgs()[0],
+                        (IpAddress)command.getCommandArgs()[1]);
                 break;
             case GetFullNetworkModel:
                 UpdateClientModel();
@@ -109,11 +121,21 @@ public class ClientThread extends Thread{
     
     public void UpdateClientModel()
     {
+        Object args[] = new Object[1];
+        args[0] = parentServer.GetModel();
         ClientCommand updateCommand = new ClientCommand(
-                CliendCommandType.UpdateFullModel, null);
+                CliendCommandType.UpdateFullModel, args);
         try {
             outputStream.writeObject(updateCommand);
-            outputStream.writeObject(parentServer.GetModel());
+        } catch (IOException ex) {
+            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void SendCommand(ClientCommand command)
+    {
+        try {
+            outputStream.writeObject(command);
         } catch (IOException ex) {
             Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
         }

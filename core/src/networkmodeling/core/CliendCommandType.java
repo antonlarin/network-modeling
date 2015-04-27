@@ -6,6 +6,7 @@ public enum CliendCommandType
     DeleteDevice,
     ConnectDevices,
     DisconnectDevices,
+    ChangeDeviceIP,
     
     UpdateFullModel,
     

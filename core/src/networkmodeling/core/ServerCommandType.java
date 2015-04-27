@@ -5,6 +5,7 @@ public enum ServerCommandType {
     DeleteDevice,
     ConnectDevices,
     DisconnectDevices,
+    ChangeDeviceIP,
     
     GetFullNetworkModel,
     

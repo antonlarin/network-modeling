@@ -13,9 +13,14 @@ public class NetworkModel implements Serializable {
         devices = new LinkedList<>();
     }
 
-    public void AddDevice(NetworkDevice dev)
+    public boolean AddDevice(NetworkDevice dev)
     {
-        devices.add(dev);
+        if(!devices.contains(dev))
+        {
+            devices.add(dev);
+            return true;
+        }
+        return false;
     }
 
     public boolean ConnectDevices(NetworkDevice dev1, NetworkDevice dev2)
@@ -62,9 +67,22 @@ public class NetworkModel implements Serializable {
                 allNICs.add((NIC)devForCheck);
         }
         
-        if(!allNICs.isEmpty())
+        while(!allNICs.isEmpty())
         {
+            NIC nicForTest = allNICs.pop();
+            String data = new String("Test");
             
+            Iterator<NIC> j = allNICs.iterator();
+            while(j.hasNext())
+            {
+                NIC sender = j.next();
+                sender.sendData(data, nicForTest.getIpAddress());
+                if(!nicForTest.GetIncomingData().equals(data))
+                    return false;
+                nicForTest.sendData(data, sender.getIpAddress());
+                if(!sender.GetIncomingData().equals(data))
+                    return false;
+            }
         }
         
         return false;
@@ -73,10 +91,12 @@ public class NetworkModel implements Serializable {
     public boolean SendData(IpAddress sourceIP, Object data, IpAddress target)
     {
         NIC sourceDev = FindNICByIP(sourceIP);
-        if(sourceDev != null)
+        NIC targetDev = FindNICByIP(target);
+        if(sourceDev != null && targetDev != null)
         {
             sourceDev.sendData(data, target);
-            return true;
+            if (targetDev.GetIncomingData().equals(data))
+                return true;
         }
         return false;
     }
@@ -139,6 +159,16 @@ public class NetworkModel implements Serializable {
                 return currentDev;
         }
         return null;
+    }
+    
+    public boolean ChangeDeviceIP(NIC dev, IpAddress newIP)
+    {
+        if(devices.contains(dev))
+        {
+            ((NIC)FindByMac(dev.getMacAddress())).setIpAderss(newIP);
+            return true;
+        }
+        return false;
     }
 
     private final LinkedList<NetworkDevice> devices;

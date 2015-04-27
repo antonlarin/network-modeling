@@ -90,7 +90,17 @@ public class NIC extends IpBasedNetworkDevice {
             System.err.println("Attempt send through unbound NIC port");
         }
     }
-
+    
+    public Object GetIncomingData()
+    {
+        return incomingData.pop();
+    }
+    
+    public boolean isData()
+    {
+        return incomingData.isEmpty();
+    }
+            
 
     private final IpAddress gatewayIp;
     private final LinkedList<Object> incomingData;

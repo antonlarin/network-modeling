@@ -45,6 +45,12 @@ public abstract class IpBasedNetworkDevice extends NetworkDevice {
         }
     }
 
+    public void setIpAderss(IpAddress newIp)
+    {
+        if(newIp != null)
+            ipAddress = newIp;
+    }
+    
     public IpAddress getIpAddress() {
         return ipAddress;
     }
@@ -59,6 +65,6 @@ public abstract class IpBasedNetworkDevice extends NetworkDevice {
     }
 
 
-    private final IpAddress ipAddress;
+    private IpAddress ipAddress;
     private final HashMap<IpAddress, MacAddress> ipMacTable;
 }

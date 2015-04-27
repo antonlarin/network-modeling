@@ -1,13 +1,11 @@
 package networkmodeling.core;
 
-import networkmodeling.core.NetworkDevice;
-
 public class ServerCommand implements java.io.Serializable {
 
     public ServerCommand() {
 
     }
-    public ServerCommand(ServerCommandType _commandType, NetworkDevice[] _args) {
+    public ServerCommand(ServerCommandType _commandType, Object[] _args) {
         commandType = _commandType;
         commandArgs = _args;
     }
@@ -16,10 +14,10 @@ public class ServerCommand implements java.io.Serializable {
         return commandType;
     }
 
-    public NetworkDevice[] getCommandArgs() {
+    public Object[] getCommandArgs() {
         return commandArgs;
     }
 
     private ServerCommandType commandType;
-    private NetworkDevice[] commandArgs;
+    private Object[] commandArgs;
 }

@@ -68,32 +68,31 @@ public class Client extends Thread {
         switch(command.getCommandType())
         {
             case AddDevice:
-                networkModel.AddDevice(command.getArguments()[0]);
+                isCommandExecuted = networkModel.AddDevice(
+                        (NetworkDevice)command.getArguments()[0]);
                 break;
             case DeleteDevice:
-                networkModel.DeleteDevice(command.getArguments()[0]);
+                isCommandExecuted = networkModel.DeleteDevice(
+                        (NetworkDevice)command.getArguments()[0]);
                 break;
             case ConnectDevices:
-                networkModel.ConnectDevices(
-                        command.getArguments()[0],
-                        command.getArguments()[1]);
+                isCommandExecuted = networkModel.ConnectDevices(
+                        (NetworkDevice)command.getArguments()[0],
+                        (NetworkDevice)command.getArguments()[1]);
                 break;
             case DisconnectDevices:
-                networkModel.DisconnectDevices(
-                        command.getArguments()[0],
-                        command.getArguments()[1]);
+                isCommandExecuted = networkModel.DisconnectDevices(
+                        (NetworkDevice)command.getArguments()[0],
+                        (NetworkDevice)command.getArguments()[1]);
+                break;
+            case ChangeDeviceIP:
+                isCommandExecuted = networkModel.ChangeDeviceIP(
+                        (NIC)(command.getArguments()[0]),
+                        (IpAddress)(command.getArguments()[1]));
                 break;
             case UpdateFullModel:
-            {
-                try {
-                    networkModel = (NetworkModel)inputStream.readObject();
-                } catch (IOException ex) {
-                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                networkModel = (NetworkModel)command.getArguments()[0];
                 break;
-            }
         }
         
         if(!isCommandExecuted)
@@ -147,6 +146,24 @@ public class Client extends Thread {
             }
         }
     }
+    public void SendChangeDeviceIPRequest(NIC dev, IpAddress newIP)
+    {
+        if(isConnectedToServer)
+        {
+            Object args[] = new NetworkDevice[2];
+            args[0] = dev;
+            args[1] = (Object)newIP;
+
+            ServerCommand command = new ServerCommand(
+                    ServerCommandType.ChangeDeviceIP, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     public void SendDisonnectDevicesRequest(NetworkDevice dev1, NetworkDevice dev2)
     {
         if(isConnectedToServer)

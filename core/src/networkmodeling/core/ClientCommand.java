@@ -1,19 +1,17 @@
 package networkmodeling.core;
 
-import networkmodeling.core.NetworkDevice;
-
     public class ClientCommand implements java.io.Serializable
 {
-    public ClientCommand(CliendCommandType _type, NetworkDevice[] args)
+    public ClientCommand(CliendCommandType _type, Object[] args)
     {
         commandType = _type;
         arguments = args;
     }  
     
-    private NetworkDevice[] arguments;
+    private Object[] arguments;
     private CliendCommandType commandType;
 
-    public NetworkDevice[] getArguments() {
+    public Object[] getArguments() {
         return arguments;
     }
 

@@ -87,7 +87,40 @@ public class Server extends Thread{
         for(ClientThread value : serverClients.values())
         {
             if(!sourceID.equals(value.getUUID()))
-                value.UpdateClientModel();
+            {
+                ClientCommand updateCommand = null;
+                switch(command.getCommandType())
+                {
+                    case AddDevice:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.AddDevice,
+                                command.getCommandArgs());
+                        break;
+                    case ChangeDeviceIP:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.ChangeDeviceIP,
+                                command.getCommandArgs());
+                        break;
+                    case ConnectDevices:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.ConnectDevices,
+                                command.getCommandArgs());
+                        break;
+                    case DeleteDevice:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.DeleteDevice,
+                                command.getCommandArgs());
+                        break;
+                    case DisconnectDevices:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.DisconnectDevices,
+                                command.getCommandArgs());
+                        break;
+                }
+                
+                value.SendCommand(updateCommand);
+                //value.UpdateClientModel();
+            }
         }
     }
     
