@@ -27,10 +27,19 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        hubParametersPanel1 = new networkmodeling.client.ui.HubParametersPanel();
+        nICParametersPanel1 = new networkmodeling.client.ui.NICParametersPanel();
         toolbarPanel = new javax.swing.JPanel();
         paletteScrollPane = new javax.swing.JScrollPane();
         paletteDeviceList = new javax.swing.JList();
-        jPanel1 = new javax.swing.JPanel();
+        deviceParametersPanel = new javax.swing.JPanel();
+        nicParametersContainer = new javax.swing.JPanel();
+        nicParametersPanel = new networkmodeling.client.ui.NICParametersPanel();
+        hubParametersContainer = new javax.swing.JPanel();
+        hubParametersPanel2 = new networkmodeling.client.ui.HubParametersPanel();
+        switchParametersContainer = new javax.swing.JPanel();
+        switchParametersPanel1 = new networkmodeling.client.ui.SwitchParametersPanel();
+        diagramPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(800, 600));
@@ -51,24 +60,72 @@ public class MainWindow extends javax.swing.JFrame {
         paletteScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder("Device palette"));
 
         paletteDeviceList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            String[] strings = { "NIC", "Hub", "Switch", "Router" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         paletteDeviceList.setDragEnabled(true);
         paletteScrollPane.setViewportView(paletteDeviceList);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Device  parameters"));
+        deviceParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Device  parameters"));
+        deviceParametersPanel.setLayout(new java.awt.CardLayout());
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        javax.swing.GroupLayout nicParametersContainerLayout = new javax.swing.GroupLayout(nicParametersContainer);
+        nicParametersContainer.setLayout(nicParametersContainerLayout);
+        nicParametersContainerLayout.setHorizontalGroup(
+            nicParametersContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(nicParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 356, Short.MAX_VALUE)
+        nicParametersContainerLayout.setVerticalGroup(
+            nicParametersContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(nicParametersContainerLayout.createSequentialGroup()
+                .addComponent(nicParametersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 242, Short.MAX_VALUE))
+        );
+
+        deviceParametersPanel.add(nicParametersContainer, "NicCard");
+
+        javax.swing.GroupLayout hubParametersContainerLayout = new javax.swing.GroupLayout(hubParametersContainer);
+        hubParametersContainer.setLayout(hubParametersContainerLayout);
+        hubParametersContainerLayout.setHorizontalGroup(
+            hubParametersContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(hubParametersPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+        );
+        hubParametersContainerLayout.setVerticalGroup(
+            hubParametersContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(hubParametersContainerLayout.createSequentialGroup()
+                .addComponent(hubParametersPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 304, Short.MAX_VALUE))
+        );
+
+        deviceParametersPanel.add(hubParametersContainer, "HubCard");
+
+        javax.swing.GroupLayout switchParametersContainerLayout = new javax.swing.GroupLayout(switchParametersContainer);
+        switchParametersContainer.setLayout(switchParametersContainerLayout);
+        switchParametersContainerLayout.setHorizontalGroup(
+            switchParametersContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(switchParametersPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+        );
+        switchParametersContainerLayout.setVerticalGroup(
+            switchParametersContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(switchParametersContainerLayout.createSequentialGroup()
+                .addComponent(switchParametersPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 304, Short.MAX_VALUE))
+        );
+
+        deviceParametersPanel.add(switchParametersContainer, "SwitchCard");
+
+        diagramPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout diagramPanelLayout = new javax.swing.GroupLayout(diagramPanel);
+        diagramPanel.setLayout(diagramPanelLayout);
+        diagramPanelLayout.setHorizontalGroup(
+            diagramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 569, Short.MAX_VALUE)
+        );
+        diagramPanelLayout.setVerticalGroup(
+            diagramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -79,18 +136,23 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(paletteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
-                .addGap(0, 596, Short.MAX_VALUE))
+                    .addComponent(deviceParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(paletteScrollPane))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(diagramPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(toolbarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(paletteScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(paletteScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deviceParametersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(diagramPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -133,9 +195,18 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel deviceParametersPanel;
+    private javax.swing.JPanel diagramPanel;
+    private javax.swing.JPanel hubParametersContainer;
+    private networkmodeling.client.ui.HubParametersPanel hubParametersPanel1;
+    private networkmodeling.client.ui.HubParametersPanel hubParametersPanel2;
+    private networkmodeling.client.ui.NICParametersPanel nICParametersPanel1;
+    private javax.swing.JPanel nicParametersContainer;
+    private networkmodeling.client.ui.NICParametersPanel nicParametersPanel;
     private javax.swing.JList paletteDeviceList;
     private javax.swing.JScrollPane paletteScrollPane;
+    private javax.swing.JPanel switchParametersContainer;
+    private networkmodeling.client.ui.SwitchParametersPanel switchParametersPanel1;
     private javax.swing.JPanel toolbarPanel;
     // End of variables declaration//GEN-END:variables
 }
