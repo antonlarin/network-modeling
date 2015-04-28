@@ -98,6 +98,7 @@ public class Client extends SwingWorker<Void, Void> {
                 break;
             case UpdateFullModel:
                 networkModel = (NetworkModel)command.getArguments()[0];
+                isCommandExecuted = true;
                 break;
         }
         
