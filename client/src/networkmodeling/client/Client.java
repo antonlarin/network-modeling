@@ -56,6 +56,7 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 clientID = (UUID)inputStream.readObject();
                 System.out.println("Connected\n");
+                SendUpdateModelRequest();
                 while(!isCancelled()) 
                 {
                     ClientCommand command = (ClientCommand) inputStream.readObject();
@@ -115,6 +116,7 @@ public class Client extends SwingWorker<Void, Void> {
             case UpdateFullModel:
                 networkModel = (NetworkModel)command.getArguments()[0];
                 isCommandExecuted = true;
+                publish();
                 break;
         }
         
