@@ -1,5 +1,6 @@
 package networkmodeling.client;
 
+import java.util.List;
 import networkmodeling.core.ServerCommandType;
 import networkmodeling.core.ServerCommand;
 import networkmodeling.core.CliendCommandType;
@@ -13,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.LinkedList;
+import java.util.Observer;
 import javax.swing.SwingWorker;
 
 public class Client extends SwingWorker<Void, Void> {
@@ -23,6 +26,7 @@ public class Client extends SwingWorker<Void, Void> {
         networkModel = new NetworkModel();
         isConnectedToServer = false;
         serverSocket = null;
+        observers = new LinkedList<>();
     }
     
 
@@ -30,6 +34,13 @@ public class Client extends SwingWorker<Void, Void> {
     protected Void doInBackground() throws Exception {
         runServer();
         return null;
+    }
+    
+    @Override
+    protected void process(List<Void> chunks) {
+        for (Observer o : observers) {
+            o.update(null, null);
+        }
     }
     
     
@@ -76,25 +87,30 @@ public class Client extends SwingWorker<Void, Void> {
             case AddDevice:
                 isCommandExecuted = networkModel.AddDevice(
                         (NetworkDevice)command.getArguments()[0]);
+                publish();
                 break;
             case DeleteDevice:
                 isCommandExecuted = networkModel.DeleteDevice(
                         (NetworkDevice)command.getArguments()[0]);
+                publish();
                 break;
             case ConnectDevices:
                 isCommandExecuted = networkModel.ConnectDevices(
                         (NetworkDevice)command.getArguments()[0],
                         (NetworkDevice)command.getArguments()[1]);
+                publish();
                 break;
             case DisconnectDevices:
                 isCommandExecuted = networkModel.DisconnectDevices(
                         (NetworkDevice)command.getArguments()[0],
                         (NetworkDevice)command.getArguments()[1]);
+                publish();
                 break;
             case ChangeDeviceIP:
                 isCommandExecuted = networkModel.ChangeDeviceIP(
                         (NIC)(command.getArguments()[0]),
                         (IpAddress)(command.getArguments()[1]));
+                publish();
                 break;
             case UpdateFullModel:
                 networkModel = (NetworkModel)command.getArguments()[0];
@@ -214,7 +230,8 @@ public class Client extends SwingWorker<Void, Void> {
             NetworkDevice args[] = new NetworkDevice[1];
             args[0] = dev1;
 
-            ServerCommand command = new ServerCommand(ServerCommandType.AddDevice, args);
+            ServerCommand command = new ServerCommand(
+                ServerCommandType.AddDevice, args);
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {
@@ -231,6 +248,10 @@ public class Client extends SwingWorker<Void, Void> {
     public NetworkModel GetModel()
     {
         return networkModel;
+    }
+    
+    public void addObserver(Observer o) {
+        observers.add(o);
     }
     
     private void SendUpdateModelRequest()
@@ -250,4 +271,5 @@ public class Client extends SwingWorker<Void, Void> {
     private Socket serverSocket;
     private NetworkModel model;
     private UUID clientID;
+    private LinkedList<Observer> observers;
 }

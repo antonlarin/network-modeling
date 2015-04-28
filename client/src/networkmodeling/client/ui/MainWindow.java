@@ -20,7 +20,7 @@ public class MainWindow extends JFrame {
         toolbarPanel = new ButtonToolbar(client);
         JScrollPane palettePane = arrangeDevicePalette();
         propertiesPanel = new PropertiesPanel(client);
-        diagramPanel = new DiagramPanel();
+        diagramPanel = new DiagramPanel(client);
         
         setPreferredSize(new Dimension(800, 600));
         setDefaultCloseOperation(EXIT_ON_CLOSE);

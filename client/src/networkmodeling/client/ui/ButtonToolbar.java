@@ -37,12 +37,20 @@ public class ButtonToolbar extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             client.disconnect();
+            client = new Client();
             connectButton.setEnabled(true);
             disconnectButton.setEnabled(false);
         }
     }
     
-    private final Client client;
+    private class TestNetworkActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            client.GetModel().TestNetwork();
+        }
+    }
+    
+    private Client client;
     private final JButton connectButton;
     private final JButton disconnectButton;
     private final JButton testNetwork;

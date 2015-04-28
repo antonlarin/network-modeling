@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import javax.imageio.ImageIO;
 import networkmodeling.core.Hub;
 import networkmodeling.core.NIC;
@@ -17,19 +18,25 @@ public class NetworkDeviceVR {
 
     public NetworkDeviceVR(NetworkDevice device) {
         this.device = device;
-            try {
-                if (device instanceof NIC) {
-                    this.deviceIcon =
-                        ImageIO.read(new File(imageRoot + "pc.png"));
-                } else if (device instanceof Hub) {
-                    this.deviceIcon =
-                        ImageIO.read(new File(imageRoot + "hub.png"));
-                } else if (device instanceof Switch) {
-                    this.deviceIcon =
-                        ImageIO.read(new File(imageRoot + "switch.png"));
-                }
-            } catch (IOException ex) {
+        try {
+            if (device instanceof NIC) {
+                this.deviceIcon =
+                    ImageIO.read(new File(imageRoot + "pc.png"));
+            } else if (device instanceof Hub) {
+                this.deviceIcon =
+                    ImageIO.read(new File(imageRoot + "hub.png"));
+            } else if (device instanceof Switch) {
+                this.deviceIcon =
+                    ImageIO.read(new File(imageRoot + "switch.png"));
             }
+        } catch (IOException ex) {
+        }
+        Random generator = new Random();
+        this.location = new Point(generator.nextInt(500), generator.nextInt(500));
+    }
+    
+    public NetworkDevice getDevice() {
+        return device;
     }
     
     public Point getLocation() {
@@ -64,9 +71,9 @@ public class NetworkDeviceVR {
         g2.drawImage(deviceIcon,
             location.x - halfImageWidth, location.y - halfImageHeight, null);
         g2.setStroke(new BasicStroke(2));
-        g2.drawRoundRect(location.x - halfImageWidth,
-            location.y - halfImageHeight,
-            2 * halfImageWidth, 2 * halfImageHeight, 5, 5);
+//        g2.drawRoundRect(location.x - halfImageWidth,
+//        location.y - halfImageHeight,
+//        2 * halfImageWidth, 2 * halfImageHeight, 5, 5);
     }
     
 

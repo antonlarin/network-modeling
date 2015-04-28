@@ -13,19 +13,22 @@ import java.awt.event.MouseEvent;
 import static java.awt.event.MouseEvent.BUTTON1;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
+import networkmodeling.client.Client;
 import networkmodeling.core.Hub;
-import networkmodeling.core.IpAddress;
-import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.Switch;
 
-public class DiagramPanel extends JPanel {
+public class DiagramPanel extends JPanel implements Observer {
     
-    public DiagramPanel() {
+    public DiagramPanel(Client client) {
+        this.client = client;
+        client.addObserver(this);
         connections = new LinkedList<>();
         devices = new LinkedList<>();
         selectedDevice = null;
@@ -55,6 +58,22 @@ public class DiagramPanel extends JPanel {
         this.setTransferHandler(new AddDeviceHandler());
     }
     
+
+    @Override
+    public void update(Observable o, Object arg) {
+        LinkedList<NetworkDeviceVR> newNdvrs = new LinkedList<>();
+        for (NetworkDevice nd : client.GetModel().getDevicesMap().values()) {
+            newNdvrs.add(new NetworkDeviceVR(nd));
+            for (NetworkDeviceVR ndvr : devices) {
+                if (nd.getMacAddress().equals(ndvr.getDevice().getMacAddress())) {
+                    newNdvrs.getLast().setLocation(ndvr.getLocation());
+                }
+            }
+        }
+        devices = newNdvrs;
+        
+        repaint();
+    }
     
     @Override
     public void paintComponent(Graphics g) {
@@ -134,6 +153,8 @@ public class DiagramPanel extends JPanel {
                             new ConnectionVR(drawnConnectionStart, device);
                         connections.add(newConnection);
                         break;
+                    } else {
+                        repaint();
                     }
                 }
                 creatingConnection = false;
@@ -197,12 +218,16 @@ public class DiagramPanel extends JPanel {
         } else {
             underlyingDevice = new NIC();
         }
+        client.GetModel().AddDevice(underlyingDevice);
+        client.SendAddDevicesRequest(underlyingDevice);
+        
         newDevice = new NetworkDeviceVR(underlyingDevice);
         newDevice.setLocation(location);
         devices.add(newDevice);
         DiagramPanel.this.repaint();
     }
     
+    private final Client client;
     private LinkedList<ConnectionVR> connections;
     private LinkedList<NetworkDeviceVR> devices;
     private NetworkDeviceVR selectedDevice;
