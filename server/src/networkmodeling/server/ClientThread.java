@@ -84,9 +84,8 @@ public class ClientThread extends Thread{
         switch (command.getCommandType())
         {
             case AddDevice:
-                parentServer.GetModel().AddDevice((NetworkDevice)
+                isCommandExecuted = parentServer.GetModel().AddDevice((NetworkDevice)
                         command.getCommandArgs()[0]);
-                isCommandExecuted = true;
                 break;
             case DeleteDevice:
                 isCommandExecuted = parentServer.GetModel().DeleteDevice(
