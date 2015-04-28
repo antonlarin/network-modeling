@@ -5,6 +5,10 @@ public class Hub extends NetworkDevice {
         super(macAddress, portCount);
     }
 
+    public Hub() {
+        this(MacAddress.getRandomAddress(), 8);
+    }
+
     @Override
     public void handleIncomingFrame(Frame frame, Port receivingPort) {
         for (Port port : getPorts()) {

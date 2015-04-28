@@ -3,15 +3,23 @@ package networkmodeling.client.ui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.LinkedList;
 import javax.swing.JPanel;
+import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
+import networkmodeling.core.Hub;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
+import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.Switch;
 
 public class DiagramPanel extends JPanel {
@@ -40,6 +48,8 @@ public class DiagramPanel extends JPanel {
         devices.push(swvr);
         connections.push(conn);
         // Throwaway code!
+        
+        this.setTransferHandler(new AddDeviceHandler());
     }
     
     
@@ -104,7 +114,55 @@ public class DiagramPanel extends JPanel {
             }
         }
     }
+    
+    private class AddDeviceHandler extends TransferHandler {
+        
+        @Override
+        public boolean canImport(TransferSupport support) {
+            if (!support.isDrop()) {
+                return false;
+            }
+            
+            return support.isDataFlavorSupported(DataFlavor.stringFlavor);
+        }
+        
+        @Override
+        public boolean importData(TransferSupport support) {
+            if (!canImport(support)) {
+                return false;
+            }
+            
+            Transferable transferable = support.getTransferable();
+            String deviceType;
+            try {
+                deviceType = (String) transferable.getTransferData(
+                        DataFlavor.stringFlavor);
+            } catch (UnsupportedFlavorException | IOException ex) {
+                return false;
+            }
 
+            DropLocation location = support.getDropLocation();
+            DiagramPanel.this.addDevice(deviceType, location.getDropPoint());
+
+            return true;
+        }
+    }
+
+    private void addDevice(String deviceType, Point location) {
+        NetworkDeviceVR newDevice;
+        NetworkDevice underlyingDevice;
+        if (deviceType.equals("Hub")) {
+            underlyingDevice = new Hub();
+        } else if (deviceType.equals("Switch")) {
+            underlyingDevice = new Switch();
+        } else {
+            underlyingDevice = new NIC();
+        }
+        newDevice = new NetworkDeviceVR(underlyingDevice);
+        newDevice.setLocation(location);
+        devices.add(newDevice);
+        DiagramPanel.this.repaint();
+    }
     
     private LinkedList<ConnectionVR> connections;
     private LinkedList<NetworkDeviceVR> devices;

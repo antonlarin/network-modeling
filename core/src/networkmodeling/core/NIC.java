@@ -12,6 +12,12 @@ public class NIC extends IpBasedNetworkDevice {
         this.gatewayIp = gatewayIp;
     }
 
+    public NIC() {
+        this(MacAddress.getRandomAddress(),
+            new IpAddress((short)0, (short)0, (short)0, (short)0),
+            new IpAddress((short)0, (short)0, (short)0, (short)0));
+    }
+
     @Override
     public void handleIncomingFrame(Frame frame, Port receivingPort) {
         FrameData frameData = frame.getData();

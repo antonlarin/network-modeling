@@ -1,6 +1,8 @@
 package networkmodeling.core;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.Random;
 
 public class MacAddress implements Serializable {
     public MacAddress() {
@@ -26,6 +28,24 @@ public class MacAddress implements Serializable {
     public static MacAddress getBroadcastAddress() {
         short octet = (short) 0xFF;
         return new MacAddress(octet, octet, octet, octet, octet, octet);
+    }
+    
+    public static MacAddress getRandomAddress() {
+        Random generator = new Random();
+        
+        MacAddress newMac;
+        do {
+            short octet1 = (short) generator.nextInt(256);
+            short octet2 = (short) generator.nextInt(256);
+            short octet3 = (short) generator.nextInt(256);
+            short octet4 = (short) generator.nextInt(256);
+            short octet5 = (short) generator.nextInt(256);
+            short octet6 = (short) generator.nextInt(256);
+            newMac = new MacAddress(octet1, octet2, octet3, octet4,
+                octet5, octet6);
+        } while (assigned(newMac));
+        assignedAddresses.push(newMac);
+        return newMac;
     }
     
     
@@ -74,6 +94,17 @@ public class MacAddress implements Serializable {
                 this.octet6 == 0x00);
     }
     
+
+    private static boolean assigned(MacAddress newMac) {
+        if (assignedAddresses == null) {
+            assignedAddresses = new LinkedList<>();
+            return false;
+        } else {
+            return assignedAddresses.contains(newMac);
+        }
+    }
+    
+    private static LinkedList<MacAddress> assignedAddresses;
     
     private final short octet1;
     private final short octet2;

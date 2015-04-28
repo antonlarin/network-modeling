@@ -10,6 +10,10 @@ public class Switch extends NetworkDevice {
         camTable = new HashMap<>();
     }
 
+    public Switch() {
+        this(MacAddress.getRandomAddress(), 8);
+    }
+
     @Override
     public void handleIncomingFrame(Frame frame, Port receivingPort) {
         camTable.put(frame.getSenderMac(), receivingPort);

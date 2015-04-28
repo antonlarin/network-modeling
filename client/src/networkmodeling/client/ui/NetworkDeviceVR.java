@@ -17,7 +17,6 @@ public class NetworkDeviceVR {
 
     public NetworkDeviceVR(NetworkDevice device) {
         this.device = device;
-        System.out.println(System.getProperty("user.dir"));
             try {
                 if (device instanceof NIC) {
                     this.deviceIcon =
@@ -36,9 +35,13 @@ public class NetworkDeviceVR {
     public Point getLocation() {
         return location;
     }
+
+    void setLocation(Point location) {
+        this.location = location;
+    }
     
     public void setLocation(int x, int y) {
-        location = new Point(x, y);
+        setLocation(new Point(x, y));
     }
     
     public boolean hasOnIt(Point point) {
