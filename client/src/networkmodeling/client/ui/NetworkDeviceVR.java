@@ -53,9 +53,14 @@ public class NetworkDeviceVR {
     
     public void draw(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        int halfImageWidth = deviceIcon.getWidth() / 2;
-        int halfImageHeight = deviceIcon.getHeight() / 2;
-        
+        int halfImageWidth = 0;
+        int halfImageHeight = 0;
+        try {
+            halfImageWidth = deviceIcon.getWidth() / 2;
+            halfImageHeight = deviceIcon.getHeight() / 2;
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        }
         g2.drawImage(deviceIcon,
             location.x - halfImageWidth, location.y - halfImageHeight, null);
         g2.setStroke(new BasicStroke(2));

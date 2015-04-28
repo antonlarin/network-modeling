@@ -13,9 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import networkmodeling.server.*;
+import javax.swing.SwingWorker;
 
-public class Client extends Thread {
+public class Client extends SwingWorker<Void, Void> {
 
     
     public Client()
@@ -25,9 +25,15 @@ public class Client extends Thread {
         serverSocket = null;
     }
     
-    
+
     @Override
-    public void run()
+    protected Void doInBackground() throws Exception {
+        runServer();
+        return null;
+    }
+    
+    
+    public void runServer()
     {
         try {
             serverSocket = new Socket(InetAddress.getLocalHost(),
@@ -39,7 +45,7 @@ public class Client extends Thread {
             try {
                 clientID = (UUID)inputStream.readObject();
                 System.out.println("Connected\n");
-                while(true) 
+                while(!isCancelled()) 
                 {
                     ClientCommand command = (ClientCommand) inputStream.readObject();
                     if(command.getCommandType() != CliendCommandType.DropConnection)
@@ -106,7 +112,10 @@ public class Client extends Thread {
     
     public void connectToServer()
     {
-        this.start();
+        try {
+            this.doInBackground();
+        } catch (Exception ex) {
+        }
     }
     public void disconnect()
     {
@@ -117,7 +126,7 @@ public class Client extends Thread {
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-            this.stop();
+            this.cancel(true);
             try {
                 serverSocket.close();
                 isConnectedToServer = false;

@@ -36,20 +36,20 @@ public class DiagramPanel extends JPanel {
         addMouseMotionListener(mouseListener);
         
         // Throwaway code!
-        short o = (short) 1;
-        NIC nic = new NIC(
-            new MacAddress(o, o, o, o, o, o),
-            new IpAddress(o, o, o, o), new IpAddress(o, o, o, o));
-
-        Switch sw = new Switch(new MacAddress(o, o, o, o, o, o), 8);
-        NetworkDeviceVR nicvr = new NetworkDeviceVR(nic);
-        nicvr.setLocation(100, 100);
-        NetworkDeviceVR swvr = new NetworkDeviceVR(sw);
-        swvr.setLocation(200, 250);
-        ConnectionVR conn = new ConnectionVR(nicvr, swvr);
-        devices.push(nicvr);
-        devices.push(swvr);
-        connections.push(conn);
+//        short o = (short) 1;
+//        NIC nic = new NIC(
+//            new MacAddress(o, o, o, o, o, o),
+//            new IpAddress(o, o, o, o), new IpAddress(o, o, o, o));
+//
+//        Switch sw = new Switch(new MacAddress(o, o, o, o, o, o), 8);
+//        NetworkDeviceVR nicvr = new NetworkDeviceVR(nic);
+//        nicvr.setLocation(100, 100);
+//        NetworkDeviceVR swvr = new NetworkDeviceVR(sw);
+//        swvr.setLocation(200, 250);
+//        ConnectionVR conn = new ConnectionVR(nicvr, swvr);
+//        devices.push(nicvr);
+//        devices.push(swvr);
+//        connections.push(conn);
         // Throwaway code!
         
         this.setTransferHandler(new AddDeviceHandler());
