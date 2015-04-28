@@ -113,7 +113,7 @@ public class Client extends SwingWorker<Void, Void> {
     public void connectToServer()
     {
         try {
-            this.doInBackground();
+            this.execute();
         } catch (Exception ex) {
         }
     }
