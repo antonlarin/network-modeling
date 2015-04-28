@@ -41,6 +41,7 @@ public class ClientThread extends Thread{
                     connectionSocket.getInputStream());
             
             outputStream.writeObject(clientID);
+            UpdateClientModel();
             
             while (true) {
                 ServerCommand command;
@@ -79,10 +80,10 @@ public class ClientThread extends Thread{
     private synchronized void executeClientCommand(ServerCommand command) throws Exception
     {
         boolean isCommandExecuted = false;
+        System.out.println("Start execuntion \n");
         switch (command.getCommandType())
         {
             case AddDevice:
-                System.out.println("statr execuntion\n");
                 parentServer.GetModel().AddDevice((NetworkDevice)
                         command.getCommandArgs()[0]);
                 isCommandExecuted = true;
