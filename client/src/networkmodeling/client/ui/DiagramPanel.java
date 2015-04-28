@@ -10,6 +10,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
+import static java.awt.event.MouseEvent.BUTTON1;
 import java.io.IOException;
 import java.util.LinkedList;
 import javax.swing.JPanel;
@@ -28,6 +29,8 @@ public class DiagramPanel extends JPanel {
         connections = new LinkedList<>();
         devices = new LinkedList<>();
         selectedDevice = null;
+        drawnConnectionStart = null;
+        drawnConnectionEnd = null;
         DiagramMouseHandler mouseListener = new DiagramMouseHandler();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
@@ -80,6 +83,13 @@ public class DiagramPanel extends JPanel {
         for (ConnectionVR connection : connections) {
             connection.draw(g);
         }
+        
+        if (creatingConnection) {
+            Graphics2D g2 = (Graphics2D) g;
+            Point start = drawnConnectionStart.getLocation();
+            Point end = drawnConnectionEnd;
+            g.drawLine(start.x, start.y, end.x, end.y);
+        }
     }
 
     private void drawDevices(Graphics g) {
@@ -94,9 +104,17 @@ public class DiagramPanel extends JPanel {
         public void mousePressed(MouseEvent e) {
             boolean pressedOnDevice = false;
             for (NetworkDeviceVR device : devices) {
-                if (device.hasOnIt(e.getPoint())) {
-                    pressedOnDevice = true;
-                    selectedDevice = device;
+                if (device.hasOnIt(e.getPoint()) && e.getButton() == BUTTON1) {
+                    if (e.isControlDown()) {
+                        pressedOnDevice = true;
+                        creatingConnection = true;
+                        drawnConnectionStart = device;
+                        drawnConnectionEnd = e.getPoint();
+                        selectedDevice = null;
+                    } else {
+                        pressedOnDevice = true;
+                        selectedDevice = device;
+                    }
                     break;
                 }
             }
@@ -107,9 +125,30 @@ public class DiagramPanel extends JPanel {
         }
         
         @Override
+        public void mouseReleased(MouseEvent e) {
+            if (creatingConnection) {
+                for (NetworkDeviceVR device : devices) {
+                    if (device != drawnConnectionStart &&
+                        device.hasOnIt(e.getPoint())) {
+                        ConnectionVR newConnection =
+                            new ConnectionVR(drawnConnectionStart, device);
+                        connections.add(newConnection);
+                        break;
+                    }
+                }
+                creatingConnection = false;
+                drawnConnectionStart = null;
+                drawnConnectionEnd = null;
+            }
+        }
+        
+        @Override
         public void mouseDragged(MouseEvent e) {
             if (selectedDevice != null) {
                 selectedDevice.setLocation(e.getX(), e.getY());
+                DiagramPanel.this.repaint();
+            } else if (creatingConnection) {
+                drawnConnectionEnd = e.getPoint();
                 DiagramPanel.this.repaint();
             }
         }
@@ -167,4 +206,7 @@ public class DiagramPanel extends JPanel {
     private LinkedList<ConnectionVR> connections;
     private LinkedList<NetworkDeviceVR> devices;
     private NetworkDeviceVR selectedDevice;
+    private boolean creatingConnection;
+    private NetworkDeviceVR drawnConnectionStart;
+    private Point drawnConnectionEnd;
 }
