@@ -18,7 +18,7 @@ public class NetworkModelGraph implements Serializable {
     {
         if(!graphNodes.contains(dev))
         {
-            getGraphNodes().add(dev);
+            graphNodes.add(dev);
             return true;
         }
         return false;
@@ -28,7 +28,7 @@ public class NetworkModelGraph implements Serializable {
         NetworkGraphEdge newEdge = new NetworkGraphEdge(dev1, dev2);
         if(!graphEdges.contains(newEdge))
         {
-            getGraphEdges().add(newEdge);
+            graphEdges.add(newEdge);
             return true;
         }
         return false;
@@ -36,9 +36,9 @@ public class NetworkModelGraph implements Serializable {
     public boolean DisconnectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
         NetworkGraphEdge edgeForDel = new NetworkGraphEdge(dev1, dev2);
-        if(getGraphEdges().contains(edgeForDel))
+        if(graphEdges.contains(edgeForDel))
         {
-            Iterator<NetworkGraphEdge> i = getGraphEdges().iterator();
+            Iterator<NetworkGraphEdge> i = graphEdges.iterator();
             while(i.hasNext())
             {
                 NetworkGraphEdge currentEdge = i.next();
@@ -53,9 +53,9 @@ public class NetworkModelGraph implements Serializable {
     }
     public boolean DeleteDevice(NetworkGraphNode dev)
     {
-        boolean isOperationPerformed = getGraphNodes().remove(dev);
+        boolean isOperationPerformed = graphNodes.remove(dev);
         
-        Iterator<NetworkGraphEdge> i = getGraphEdges().iterator();
+        Iterator<NetworkGraphEdge> i = graphEdges.iterator();
         while(i.hasNext())
         {
             NetworkGraphEdge currentEdge = i.next();
@@ -80,6 +80,4 @@ public class NetworkModelGraph implements Serializable {
     
     private LinkedList<NetworkGraphNode> graphNodes;
     private LinkedList<NetworkGraphEdge> graphEdges;
-
-
 }
