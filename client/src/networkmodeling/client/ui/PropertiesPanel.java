@@ -16,8 +16,8 @@ public class PropertiesPanel extends JPanel {
         
         setLayout(new CardLayout());
         
-        add(switchProps, "SwitchProps");
         add(emptyProps, "EmptyProps");
+        add(switchProps, "SwitchProps");
         add(nicProps, "NicProps");
         add(hubProps, "HubProps");
         

@@ -10,12 +10,14 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
-import static java.awt.event.MouseEvent.BUTTON1;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
@@ -36,13 +38,15 @@ public class DiagramPanel extends JPanel implements Observer {
         selectedDevice = null;
         drawnConnectionStart = null;
         drawnConnectionEnd = null;
+        viewportStart = new Point(0, 0);
         DiagramMouseHandler mouseListener = new DiagramMouseHandler();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
         
         this.setTransferHandler(new AddDeviceHandler());
     }
-    
+
+
 
     @Override
     public void update(Observable o, Object arg) {
@@ -97,32 +101,45 @@ public class DiagramPanel extends JPanel implements Observer {
     }
 
     private void drawDevices(Graphics g) {
-        for (NetworkDeviceVR device : devices) {
-            device.draw(g);
+        Graphics2D g2 = (Graphics2D) g;
+        LinkedList<NetworkGraphNode> deviceNodes =
+            client.GetVisualModel().GetGraph().getNodes();
+        for (NetworkGraphNode deviceNode : deviceNodes) {
+            BufferedImage deviceIcon = getDeviceIcon(deviceNode);
+            int halfImageWidth = deviceIcon.getWidth() / 2;
+            int halfImageHeight = deviceIcon.getHeight() / 2;
+            
+            Point location = convertToPanelSpace(
+                new Point2D.Double(deviceNode.getX(), deviceNode.getY()));
+            g2.drawImage(deviceIcon, location.x - halfImageWidth,
+                location.y - halfImageHeight, null);
         }
     }
-    
+
     private void addDevice(String deviceTypeName, Point location) {
-        NetworkDeviceVR newDevice;
         NetworkDevice underlyingDevice;
         NetworkGraphNode deviceNode;
         Point2D.Double diagramSpaceLocation = convertToDiagramSpace(location);
-        if (deviceTypeName.equals("Hub")) {
+        switch (deviceTypeName) {
+        case "Hub":
             underlyingDevice = new Hub();
-        } else if (deviceTypeName.equals("Switch")) {
+            break;
+        case "Switch":
             underlyingDevice = new Switch();
-        } else {
+            break;
+//        case "Router":
+//            underlyingDevice = new Router();
+//            break;
+        default:
             underlyingDevice = new NIC();
+            break;
         }
         deviceNode = new NetworkGraphNode(underlyingDevice,
             diagramSpaceLocation.x, diagramSpaceLocation.y);
-        client.GetVisualModel().GetModel().AddDevice(underlyingDevice);
+        client.GetVisualModel().AddDevice(deviceNode);
         client.SendAddDevicesRequest(deviceNode);
-        
-        newDevice = new NetworkDeviceVR(underlyingDevice);
-        newDevice.setLocation(location);
-        devices.add(newDevice);
-        DiagramPanel.this.repaint();
+
+        repaint();
     }
 
     private Point2D.Double convertToDiagramSpace(Point location) {
@@ -132,7 +149,7 @@ public class DiagramPanel extends JPanel implements Observer {
         double y = (location.y - viewportStart.y) * yScalingFactor;
         return new Point2D.Double(x, y);
     }
-    
+
     private Point convertToPanelSpace(Point2D.Double location) {
         double xScalingFactor = this.getWidth();
         double yScalingFactor = this.getHeight();
@@ -140,42 +157,101 @@ public class DiagramPanel extends JPanel implements Observer {
         int y = viewportStart.y + (int)(location.y * yScalingFactor);
         return new Point(x, y);
     }
-
     
+    private BufferedImage getDeviceIcon(NetworkGraphNode deviceNode) {
+        if (deviceNode.getNodeDevice() instanceof NIC) {
+            return nicImage;
+        } else if (deviceNode.getNodeDevice() instanceof Hub) {
+            return hubImage;
+        } else if (deviceNode.getNodeDevice() instanceof Switch) {
+            return switchImage;
+        } else { // if (deviceNode.getNodeDevice() instanceof Router)
+            return routerImage;
+        }
+    }
+    
+    private Rectangle getDeviceNodeRectangle(NetworkGraphNode deviceNode) {
+        Point location = convertToPanelSpace(
+            new Point2D.Double(deviceNode.getX(), deviceNode.getY()));
+        BufferedImage deviceIcon;
+        if (deviceNode.getNodeDevice() instanceof NIC) {
+            deviceIcon = nicImage;
+        } else if (deviceNode.getNodeDevice() instanceof Hub) {
+            deviceIcon = hubImage;
+        } else if (deviceNode.getNodeDevice() instanceof Switch) {
+            deviceIcon = switchImage;
+        } else { // if (deviceNode.getNodeDevice() instanceof Router)
+            deviceIcon = routerImage;
+        }
+        int fullWidth = deviceIcon.getWidth();
+        int fullHeight = deviceIcon.getHeight();
+        int halfWidth = fullWidth / 2;
+        int halfHeight= fullHeight / 2;
+        int offset = 2;
+        
+        return new Rectangle(
+            location.x - halfWidth - offset, location.y - halfHeight - offset,
+            fullWidth + 2 * offset, fullHeight + 2 * offset);
+    }
+
+
+
+    private static final String imageRoot = "img/";
+    private static final BufferedImage nicImage;
+    private static final BufferedImage hubImage;
+    private static final BufferedImage switchImage;
+    private static final BufferedImage routerImage;
+    
+    static {
+        try {
+            nicImage = ImageIO.read(new File(imageRoot + "pc.png"));
+            hubImage = ImageIO.read(new File(imageRoot + "hub.png"));
+            switchImage = ImageIO.read(new File(imageRoot + "switch.png"));
+            routerImage = ImageIO.read(new File(imageRoot + "router.png"));
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not load diagram icons.");
+        }
+    }
+
     private final Client client;
     private Point viewportStart;
     private LinkedList<ConnectionVR> connections;
     private LinkedList<NetworkDeviceVR> devices;
-    private NetworkDeviceVR selectedDevice;
+    private NetworkGraphNode selectedDevice;
     private boolean creatingConnection;
     private NetworkDeviceVR drawnConnectionStart;
     private Point drawnConnectionEnd;
-    
+
+
+
     private class DiagramMouseHandler extends MouseInputAdapter {
         
-        @Override
-        public void mousePressed(MouseEvent e) {
-            boolean pressedOnDevice = false;
-            for (NetworkDeviceVR device : devices) {
-                if (device.hasOnIt(e.getPoint()) && e.getButton() == BUTTON1) {
-                    if (e.isControlDown()) {
-                        pressedOnDevice = true;
-                        creatingConnection = true;
-                        drawnConnectionStart = device;
-                        drawnConnectionEnd = e.getPoint();
-                        selectedDevice = null;
-                    } else {
-                        pressedOnDevice = true;
-                        selectedDevice = device;
-                    }
-                    break;
-                }
-            }
-            
-            if (!pressedOnDevice) {
-                selectedDevice = null;
-            }
-        }
+//        @Override
+//        public void mousePressed(MouseEvent e) {
+//            boolean pressedOnDevice = false;
+//            LinkedList<NetworkGraphNode> deviceNodes =
+//                client.GetVisualModel().GetGraph().getNodes();
+//            for (NetworkGraphNode deviceNode : deviceNodes) {
+//                if (pointOverNode(deviceNode, e.getPoint()) &&
+//                    e.getButton() == BUTTON1) {
+//                    if (e.isControlDown()) {
+//                        pressedOnDevice = true;
+//                        creatingConnection = true;
+//                        drawnConnectionStart = deviceNode;
+//                        drawnConnectionEnd = e.getPoint();
+//                        selectedDevice = null;
+//                    } else {
+//                        pressedOnDevice = true;
+//                        selectedDevice = deviceNode;
+//                    }
+//                    break;
+//                }
+//            }
+//            
+//            if (!pressedOnDevice) {
+//                selectedDevice = null;
+//            }
+//        }
         
         @Override
         public void mouseReleased(MouseEvent e) {
@@ -200,7 +276,8 @@ public class DiagramPanel extends JPanel implements Observer {
         @Override
         public void mouseDragged(MouseEvent e) {
             if (selectedDevice != null) {
-                selectedDevice.setLocation(e.getX(), e.getY());
+                selectedDevice.setX(e.getX());
+                selectedDevice.setY(e.getY());
                 DiagramPanel.this.repaint();
             } else if (creatingConnection) {
                 drawnConnectionEnd = e.getPoint();
