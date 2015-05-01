@@ -77,7 +77,7 @@ public class ClientThread extends Thread{
     private synchronized void executeClientCommand(ServerCommand command) throws Exception
     {
         boolean isCommandExecuted = false;
-        System.out.println("Start execuntion of");
+        System.out.print("Start execuntion of");
         switch (command.getCommandType())
         {
             case AddDevice:
@@ -119,7 +119,7 @@ public class ClientThread extends Thread{
                                 (NetworkGraphNode)command.getCommandArgs()[0],
                                 (double)command.getCommandArgs()[1],
                                 (double)command.getCommandArgs()[2]);
-                System.out.println("move node command\n");
+                System.out.println(" move node command\n");
                 break;
         }
         
@@ -127,7 +127,10 @@ public class ClientThread extends Thread{
             parentServer.BroadcastChanges(command, clientID);
         
         if(!isCommandExecuted)
+        {
+            System.out.println("Execution failed, updating full model\n");
             UpdateClientModel();
+        }
     }
     
     public void UpdateClientModel()

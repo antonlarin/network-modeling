@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import networkmodeling.core.IpAddress;
+import networkmodeling.core.MacAddress;
+import networkmodeling.core.NetworkDevice;
 
 
 public class NetworkModelGraph implements Serializable {
@@ -25,7 +27,11 @@ public class NetworkModelGraph implements Serializable {
     }
     public boolean ConnectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
-        NetworkGraphEdge newEdge = new NetworkGraphEdge(dev1, dev2);
+        NetworkGraphNode localDev1 = FindNodeByMac(dev1.getNodeDevice().getMacAddress());
+        NetworkGraphNode localDev2 = FindNodeByMac(dev2.getNodeDevice().getMacAddress());
+
+        NetworkGraphEdge newEdge = new NetworkGraphEdge(localDev1, localDev2);
+        
         if(!graphEdges.contains(newEdge))
         {
             graphEdges.add(newEdge);
@@ -95,6 +101,18 @@ public class NetworkModelGraph implements Serializable {
 
     public LinkedList<NetworkGraphEdge> getEdges() {
         return graphEdges;
+    }
+    
+    private NetworkGraphNode FindNodeByMac(MacAddress mac)
+    {
+        Iterator<NetworkGraphNode> i = graphNodes.iterator();
+            while(i.hasNext())
+            {
+                NetworkGraphNode currentNode = i.next();
+                if(currentNode.getNodeDevice().getMacAddress().equals(mac))
+                    return currentNode;
+            }
+        return null;
     }
     
     private LinkedList<NetworkGraphNode> graphNodes;
