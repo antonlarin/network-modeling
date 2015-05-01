@@ -115,6 +115,12 @@ public class Client extends SwingWorker<Void, Void> {
                         (IpAddress)(command.getArguments()[1]));
                 publish();
                 break;
+            case MoveGraphNode:
+                isCommandExecuted = networkModel.GetGraph().ChangeNodeCoordinates(
+                        (NetworkGraphNode)command.getArguments()[0],
+                        (double)command.getArguments()[1],
+                        (double)command.getArguments()[2]);
+                break;
             case UpdateFullModel:
                 networkModel = (NetworkVisualModel)command.getArguments()[0];
                 isCommandExecuted = true;
@@ -234,6 +240,25 @@ public class Client extends SwingWorker<Void, Void> {
 
             ServerCommand command = new ServerCommand(
                 ServerCommandType.AddDevice, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void SendchangeNodeCoordinatesRequest(NetworkGraphNode dev, double x, double y)
+    {
+        if(isConnectedToServer)
+        {
+            Object args[] = new NetworkGraphNode[3];
+            args[0] = dev;
+            args[1] = x;
+            args[2] = y;
+
+            ServerCommand command = new ServerCommand(
+                ServerCommandType.MoveGraphNode, args);
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {

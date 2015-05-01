@@ -70,6 +70,25 @@ public class NetworkModelGraph implements Serializable {
         return true;
     }
     
+    public boolean ChangeNodeCoordinates(NetworkGraphNode dev, double x, double y)
+    {
+        if(graphNodes.contains(dev))
+        {
+            Iterator<NetworkGraphNode> i = graphNodes.iterator();
+            while(i.hasNext())
+            {
+                NetworkGraphNode currentNode = i.next();
+                if(currentNode.equals(dev))
+                {
+                      currentNode.setX(x);
+                      currentNode.setY(y);
+                      return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public LinkedList<NetworkGraphNode> getNodes() {
         return graphNodes;
     }

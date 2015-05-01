@@ -8,6 +8,8 @@ public enum CliendCommandType
     DisconnectDevices,
     ChangeDeviceIP,
     
+    MoveGraphNode,
+    
     UpdateFullModel,
     
     DropConnection

@@ -116,6 +116,11 @@ public class Server extends Thread{
                                 CliendCommandType.DisconnectDevices,
                                 command.getCommandArgs());
                         break;
+                    case MoveGraphNode:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.MoveGraphNode,
+                                command.getCommandArgs());
+                        break;
                 }
                 
                 value.SendCommand(updateCommand);

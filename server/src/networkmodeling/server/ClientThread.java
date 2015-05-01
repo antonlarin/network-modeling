@@ -107,6 +107,13 @@ public class ClientThread extends Thread{
                 UpdateClientModel();
                 isCommandExecuted = true;
                 break;
+            case MoveGraphNode:
+                isCommandExecuted = parentServer.GetModel().GetGraph().
+                        ChangeNodeCoordinates(
+                                (NetworkGraphNode)command.getCommandArgs()[0],
+                                (double)command.getCommandArgs()[1],
+                                (double)command.getCommandArgs()[2]);
+                break;
         }
         
         if(command.getCommandType() != ServerCommandType.GetFullNetworkModel)
