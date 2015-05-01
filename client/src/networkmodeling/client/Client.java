@@ -1,19 +1,25 @@
 package networkmodeling.client;
 
-import java.util.List;
-import networkmodeling.core.*;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Observer;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.SocketException;
-import java.util.LinkedList;
-import java.util.Observer;
 import javax.swing.SwingWorker;
+import networkmodeling.core.CliendCommandType;
+import networkmodeling.core.ClientCommand;
+import networkmodeling.core.GlobalConstants;
+import networkmodeling.core.IpAddress;
+import networkmodeling.core.NetworkVisualModel;
+import networkmodeling.core.ServerCommand;
+import networkmodeling.core.ServerCommandType;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 import networkmodeling.exceptions.ConnectionClosedException;
 import networkmodeling.exceptions.NMException;
@@ -120,6 +126,7 @@ public class Client extends SwingWorker<Void, Void> {
                         (NetworkGraphNode)command.getArguments()[0],
                         (double)command.getArguments()[1],
                         (double)command.getArguments()[2]);
+                publish();
                 break;
             case UpdateFullModel:
                 networkModel = (NetworkVisualModel)command.getArguments()[0];
@@ -248,11 +255,11 @@ public class Client extends SwingWorker<Void, Void> {
         }
     }
     
-    public void SendchangeNodeCoordinatesRequest(NetworkGraphNode dev, double x, double y)
+    public void SendСhangeNodeCoordinatesRequest(NetworkGraphNode dev, double x, double y)
     {
         if(isConnectedToServer)
         {
-            Object args[] = new NetworkGraphNode[3];
+            Object args[] = new Object[3];
             args[0] = dev;
             args[1] = x;
             args[2] = y;

@@ -286,6 +286,8 @@ public class DiagramPanel extends JPanel implements Observer {
                         pointOverNode(deviceNode, e.getPoint())) {
                         client.GetVisualModel().ConnectDevices(
                             drawnConnectionStart, deviceNode);
+                        client.SendConnectDevicesRequest(
+                            drawnConnectionStart, deviceNode);
                         break;
                     } else {
                         repaint();
@@ -304,6 +306,8 @@ public class DiagramPanel extends JPanel implements Observer {
                     convertToDiagramSpace(e.getPoint());
                 selectedDevice.setX(diagramLocation.getX());
                 selectedDevice.setY(diagramLocation.getY());
+                client.SendСhangeNodeCoordinatesRequest(selectedDevice,
+                    diagramLocation.getX(), diagramLocation.getY());
                 DiagramPanel.this.repaint();
             } else if (creatingConnection) {
                 drawnConnectionEnd = e.getPoint();
