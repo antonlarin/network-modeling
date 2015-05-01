@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import static java.awt.event.MouseEvent.BUTTON1;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -37,15 +39,16 @@ public class DiagramPanel extends JPanel implements Observer {
     public DiagramPanel(Client client) {
         this.client = client;
         client.addObserver(this);
-        devices = new LinkedList<>();
         selectedDevice = null;
         drawnConnectionStart = null;
         drawnConnectionEnd = null;
         viewportStart = new Point(0, 0);
+        propChangeSupport = new PropertyChangeSupport(this);
         DiagramMouseHandler mouseListener = new DiagramMouseHandler();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
-        
+
+        this.setDoubleBuffered(true);
         this.setTransferHandler(new AddDeviceHandler());
     }
 
@@ -53,17 +56,6 @@ public class DiagramPanel extends JPanel implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        LinkedList<NetworkDeviceVR> newNdvrs = new LinkedList<>();
-        for (NetworkDevice nd : client.GetVisualModel().GetModel().getDevicesMap().values()) {
-            newNdvrs.add(new NetworkDeviceVR(nd));
-            for (NetworkDeviceVR ndvr : devices) {
-                if (nd.getMacAddress().equals(ndvr.getDevice().getMacAddress())) {
-                    newNdvrs.getLast().setLocation(ndvr.getLocation());
-                }
-            }
-        }
-        devices = newNdvrs;
-        
         repaint();
     }
     
@@ -81,7 +73,31 @@ public class DiagramPanel extends JPanel implements Observer {
         drawDevices(g);
     }
 
+    public NetworkGraphNode getSelectedDevice() {
+        return selectedDevice;
+    }
+
+    public void setSelectedDevice(NetworkGraphNode device) {
+        NetworkGraphNode oldSelectedDevice = selectedDevice;
+        selectedDevice = device;
+        propChangeSupport.firePropertyChange("selectedDevice",
+            oldSelectedDevice, device);
+    }
     
+    @Override
+    public void addPropertyChangeListener(String propertyName,
+        PropertyChangeListener listener) {
+        propChangeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName,
+        PropertyChangeListener listener) {
+        propChangeSupport.removePropertyChangeListener(propertyName, listener);
+    }
+
+
+
     private void fillBackgroundWithWhite(Graphics g) {
         Rectangle bounds = g.getClipBounds();
         Color oldColor = g.getColor();
@@ -133,6 +149,21 @@ public class DiagramPanel extends JPanel implements Observer {
                 new Point2D.Double(deviceNode.getX(), deviceNode.getY()));
             g2.drawImage(deviceIcon, location.x - halfImageWidth,
                 location.y - halfImageHeight, null);
+            
+            if (deviceNode == selectedDevice) {
+                Stroke defaultStroke = g2.getStroke();
+                Color defaultColor = g2.getColor();
+                BasicStroke selectionStroke = new BasicStroke(1.3f);
+                g2.setStroke(selectionStroke);
+                g2.setColor(new Color(0, 204, 0));
+                
+                Rectangle nodeRect = getDeviceNodeRectangle(deviceNode);
+                g2.drawRoundRect(nodeRect.x, nodeRect.y,
+                    nodeRect.width, nodeRect.height, 8, 8);
+                
+                g2.setColor(defaultColor);
+                g2.setStroke(defaultStroke);
+            }
         }
     }
 
@@ -238,12 +269,12 @@ public class DiagramPanel extends JPanel implements Observer {
     }
 
     private final Client client;
-    private Point viewportStart;
-    private LinkedList<NetworkDeviceVR> devices;
+    private final Point viewportStart;
     private NetworkGraphNode selectedDevice;
     private boolean creatingConnection;
     private NetworkGraphNode drawnConnectionStart;
     private Point drawnConnectionEnd;
+    private PropertyChangeSupport propChangeSupport;
 
 
 
@@ -262,18 +293,19 @@ public class DiagramPanel extends JPanel implements Observer {
                         creatingConnection = true;
                         drawnConnectionStart = deviceNode;
                         drawnConnectionEnd = e.getPoint();
-                        selectedDevice = null;
+                        setSelectedDevice(null);
                     } else {
                         pressedOnDevice = true;
-                        selectedDevice = deviceNode;
+                        setSelectedDevice(deviceNode);
                     }
                     break;
                 }
             }
             
             if (!pressedOnDevice) {
-                selectedDevice = null;
+                setSelectedDevice(null);
             }
+            repaint();
         }
         
         @Override
