@@ -18,7 +18,7 @@ public class NetworkModelGraph implements Serializable {
     {
         if(!graphNodes.contains(dev))
         {
-            graphNodes.add(dev);
+            getGraphNodes().add(dev);
             return true;
         }
         return false;
@@ -28,7 +28,7 @@ public class NetworkModelGraph implements Serializable {
         NetworkGraphEdge newEdge = new NetworkGraphEdge(dev1, dev2);
         if(!graphEdges.contains(newEdge))
         {
-            graphEdges.add(newEdge);
+            getGraphEdges().add(newEdge);
             return true;
         }
         return false;
@@ -36,9 +36,9 @@ public class NetworkModelGraph implements Serializable {
     public boolean DisconnectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
         NetworkGraphEdge edgeForDel = new NetworkGraphEdge(dev1, dev2);
-        if(graphEdges.contains(edgeForDel))
+        if(getGraphEdges().contains(edgeForDel))
         {
-            Iterator<NetworkGraphEdge> i = graphEdges.iterator();
+            Iterator<NetworkGraphEdge> i = getGraphEdges().iterator();
             while(i.hasNext())
             {
                 NetworkGraphEdge currentEdge = i.next();
@@ -53,9 +53,9 @@ public class NetworkModelGraph implements Serializable {
     }
     public boolean DeleteDevice(NetworkGraphNode dev)
     {
-        boolean isOperationPerformed = graphNodes.remove(dev);
+        boolean isOperationPerformed = getGraphNodes().remove(dev);
         
-        Iterator<NetworkGraphEdge> i = graphEdges.iterator();
+        Iterator<NetworkGraphEdge> i = getGraphEdges().iterator();
         while(i.hasNext())
         {
             NetworkGraphEdge currentEdge = i.next();
@@ -70,6 +70,16 @@ public class NetworkModelGraph implements Serializable {
         return true;
     }
     
+    public LinkedList<NetworkGraphNode> getNodes() {
+        return graphNodes;
+    }
+
+    public LinkedList<NetworkGraphEdge> getEdges() {
+        return graphEdges;
+    }
+    
     private LinkedList<NetworkGraphNode> graphNodes;
     private LinkedList<NetworkGraphEdge> graphEdges;
+
+
 }
