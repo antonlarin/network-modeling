@@ -1,3 +1,4 @@
+package networkmodeling.core;
 
 import java.io.Serializable;
 

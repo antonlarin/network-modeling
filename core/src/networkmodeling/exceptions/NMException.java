@@ -1,3 +1,3 @@
-package networkmodeling.core;
+package networkmodeling.exceptions;
 
 public class NMException extends Exception {}

@@ -1,6 +1,7 @@
 package networkmodeling.core;
 
 import java.util.HashMap;
+import networkmodeling.exceptions.UnboundPortException;
 
 public abstract class IpBasedNetworkDevice extends NetworkDevice {
 

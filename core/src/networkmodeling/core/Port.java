@@ -1,6 +1,7 @@
 package networkmodeling.core;
 
 import java.io.Serializable;
+import networkmodeling.exceptions.UnboundPortException;
 
 public class Port implements Serializable {
     public Port(NetworkDevice device) {

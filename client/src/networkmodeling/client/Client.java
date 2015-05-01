@@ -10,9 +10,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.Observer;
 import javax.swing.SwingWorker;
+import networkmodeling.exceptions.ConnectionClosedException;
+import networkmodeling.exceptions.NMException;
 
 public class Client extends SwingWorker<Void, Void> {
 
@@ -23,11 +26,12 @@ public class Client extends SwingWorker<Void, Void> {
         isConnectedToServer = false;
         serverSocket = null;
         observers = new LinkedList<>();
+        exceptionQueue = new LinkedList<>();
     }
     
 
     @Override
-    protected Void doInBackground() throws Exception {
+    protected Void doInBackground() {
         runServer();
         return null;
     }
@@ -70,7 +74,8 @@ public class Client extends SwingWorker<Void, Void> {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+        } catch (SocketException ex) {
+            exceptionQueue.push(new ConnectionClosedException());
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -127,11 +132,9 @@ public class Client extends SwingWorker<Void, Void> {
     
     public void connectToServer()
     {
-        try {
-            this.execute();
-        } catch (Exception ex) {
-        }
+        this.execute();
     }
+    
     public void disconnect()
     {
         if(isConnectedToServer)
@@ -269,4 +272,5 @@ public class Client extends SwingWorker<Void, Void> {
     private Socket serverSocket;
     private UUID clientID;
     private LinkedList<Observer> observers;
+    private LinkedList<NMException> exceptionQueue;
 }

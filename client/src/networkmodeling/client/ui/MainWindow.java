@@ -2,6 +2,8 @@ package networkmodeling.client.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -23,18 +25,23 @@ public class MainWindow extends JFrame {
         diagramPanel = new DiagramPanel(client);
         
         setPreferredSize(new Dimension(800, 600));
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new MainWindowListener(this));
         
         JPanel leftMenu = new JPanel();
         leftMenu.setLayout(new BoxLayout(leftMenu, BoxLayout.PAGE_AXIS));
         leftMenu.add(palettePane);
         leftMenu.add(propertiesPanel);
-        leftMenu.setPreferredSize(new Dimension(200, 50));
+        leftMenu.setPreferredSize(new Dimension(220, 50));
         
         setLayout(new BorderLayout());
         add(toolbarPanel, BorderLayout.NORTH);
         add(leftMenu, BorderLayout.WEST);
         add(diagramPanel, BorderLayout.CENTER);
+    }
+    
+    public void cleanup() {
+        client.disconnect();
     }
 
     
@@ -69,9 +76,44 @@ public class MainWindow extends JFrame {
             }
         });
     }
-    
+
     private final Client client;
     private final ButtonToolbar toolbarPanel;
     private final PropertiesPanel propertiesPanel;
     private final DiagramPanel diagramPanel;
+    
+    
+    private class MainWindowListener implements WindowListener {
+        
+        public MainWindowListener(MainWindow window) {
+            this.mainWindow = window;
+        }
+
+        @Override
+        public void windowOpened(WindowEvent e) {}
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            mainWindow.cleanup();
+            mainWindow.dispose();
+            System.exit(0);
+        }
+
+        @Override
+        public void windowClosed(WindowEvent e) {}
+
+        @Override
+        public void windowIconified(WindowEvent e) {}
+
+        @Override
+        public void windowDeiconified(WindowEvent e) {}
+
+        @Override
+        public void windowActivated(WindowEvent e) {}
+
+        @Override
+        public void windowDeactivated(WindowEvent e) {}
+
+        private final MainWindow mainWindow;
+    }
 }

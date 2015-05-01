@@ -1,5 +1,7 @@
 package networkmodeling.core;
 
+import networkmodeling.exceptions.UnboundPortException;
+
 public class Hub extends NetworkDevice {
     public Hub(MacAddress macAddress, int portCount) {
         super(macAddress, portCount);
