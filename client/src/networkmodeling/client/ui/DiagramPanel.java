@@ -11,6 +11,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
 import static java.awt.event.MouseEvent.BUTTON1;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -23,6 +24,7 @@ import networkmodeling.core.Hub;
 import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.Switch;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class DiagramPanel extends JPanel implements Observer {
     
@@ -37,23 +39,6 @@ public class DiagramPanel extends JPanel implements Observer {
         DiagramMouseHandler mouseListener = new DiagramMouseHandler();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
-        
-        // Throwaway code!
-//        short o = (short) 1;
-//        NIC nic = new NIC(
-//            new MacAddress(o, o, o, o, o, o),
-//            new IpAddress(o, o, o, o), new IpAddress(o, o, o, o));
-//
-//        Switch sw = new Switch(new MacAddress(o, o, o, o, o, o), 8);
-//        NetworkDeviceVR nicvr = new NetworkDeviceVR(nic);
-//        nicvr.setLocation(100, 100);
-//        NetworkDeviceVR swvr = new NetworkDeviceVR(sw);
-//        swvr.setLocation(200, 250);
-//        ConnectionVR conn = new ConnectionVR(nicvr, swvr);
-//        devices.push(nicvr);
-//        devices.push(swvr);
-//        connections.push(conn);
-        // Throwaway code!
         
         this.setTransferHandler(new AddDeviceHandler());
     }
@@ -116,6 +101,55 @@ public class DiagramPanel extends JPanel implements Observer {
             device.draw(g);
         }
     }
+    
+    private void addDevice(String deviceTypeName, Point location) {
+        NetworkDeviceVR newDevice;
+        NetworkDevice underlyingDevice;
+        NetworkGraphNode deviceNode;
+        Point2D.Double diagramSpaceLocation = convertToDiagramSpace(location);
+        if (deviceTypeName.equals("Hub")) {
+            underlyingDevice = new Hub();
+        } else if (deviceTypeName.equals("Switch")) {
+            underlyingDevice = new Switch();
+        } else {
+            underlyingDevice = new NIC();
+        }
+        deviceNode = new NetworkGraphNode(underlyingDevice,
+            diagramSpaceLocation.x, diagramSpaceLocation.y);
+        client.GetVisualModel().GetModel().AddDevice(underlyingDevice);
+        client.SendAddDevicesRequest(deviceNode);
+        
+        newDevice = new NetworkDeviceVR(underlyingDevice);
+        newDevice.setLocation(location);
+        devices.add(newDevice);
+        DiagramPanel.this.repaint();
+    }
+
+    private Point2D.Double convertToDiagramSpace(Point location) {
+        double xScalingFactor = 1.0 / this.getWidth();
+        double yScalingFactor = 1.0 / this.getHeight();
+        double x = (location.x - viewportStart.x) * xScalingFactor;
+        double y = (location.y - viewportStart.y) * yScalingFactor;
+        return new Point2D.Double(x, y);
+    }
+    
+    private Point convertToPanelSpace(Point2D.Double location) {
+        double xScalingFactor = this.getWidth();
+        double yScalingFactor = this.getHeight();
+        int x = viewportStart.x + (int)(location.x * xScalingFactor);
+        int y = viewportStart.y + (int)(location.y * yScalingFactor);
+        return new Point(x, y);
+    }
+
+    
+    private final Client client;
+    private Point viewportStart;
+    private LinkedList<ConnectionVR> connections;
+    private LinkedList<NetworkDeviceVR> devices;
+    private NetworkDeviceVR selectedDevice;
+    private boolean creatingConnection;
+    private NetworkDeviceVR drawnConnectionStart;
+    private Point drawnConnectionEnd;
     
     private class DiagramMouseHandler extends MouseInputAdapter {
         
@@ -207,31 +241,4 @@ public class DiagramPanel extends JPanel implements Observer {
             return true;
         }
     }
-
-    private void addDevice(String deviceType, Point location) {
-        NetworkDeviceVR newDevice;
-        NetworkDevice underlyingDevice;
-        if (deviceType.equals("Hub")) {
-            underlyingDevice = new Hub();
-        } else if (deviceType.equals("Switch")) {
-            underlyingDevice = new Switch();
-        } else {
-            underlyingDevice = new NIC();
-        }
-        client.GetVisualModel().GetModel().AddDevice(underlyingDevice);
-        client.SendAddDevicesRequest(underlyingDevice);
-        
-        newDevice = new NetworkDeviceVR(underlyingDevice);
-        newDevice.setLocation(location);
-        devices.add(newDevice);
-        DiagramPanel.this.repaint();
-    }
-    
-    private final Client client;
-    private LinkedList<ConnectionVR> connections;
-    private LinkedList<NetworkDeviceVR> devices;
-    private NetworkDeviceVR selectedDevice;
-    private boolean creatingConnection;
-    private NetworkDeviceVR drawnConnectionStart;
-    private Point drawnConnectionEnd;
 }
