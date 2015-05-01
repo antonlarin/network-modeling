@@ -39,11 +39,11 @@ public class MainWindow extends JFrame {
 
     
     private JScrollPane arrangeDevicePalette() {
-        JList devicePalette = new JList();
+        JList<String> devicePalette = new JList<>();
         devicePalette.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         devicePalette.setLayoutOrientation(JList.VERTICAL);
         
-        DefaultListModel devices = new DefaultListModel();
+        DefaultListModel<String> devices = new DefaultListModel<>();
         devices.addElement("NIC");
         devices.addElement("Hub");
         devices.addElement("Switch");
@@ -72,7 +72,6 @@ public class MainWindow extends JFrame {
     
     private final Client client;
     private final ButtonToolbar toolbarPanel;
-//    private final JList devicePalette;
     private final PropertiesPanel propertiesPanel;
     private final DiagramPanel diagramPanel;
 }
