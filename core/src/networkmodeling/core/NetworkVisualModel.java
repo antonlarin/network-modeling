@@ -23,7 +23,7 @@ public class NetworkVisualModel implements Serializable {
     }
     public boolean DisconnectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
-        return  model.ConnectDevices(dev1.getNodeDevice(), dev2.getNodeDevice()) &&
+        return  model.DisconnectDevices(dev1.getNodeDevice(), dev2.getNodeDevice()) &&
                 graph.DisconnectDevices(dev1, dev2);
         
     }
