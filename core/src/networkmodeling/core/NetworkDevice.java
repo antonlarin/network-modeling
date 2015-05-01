@@ -9,6 +9,9 @@ public abstract class NetworkDevice implements Serializable {
     public NetworkDevice(MacAddress macAddress, int portCount) {
         this.macAddress = macAddress;
         this.ports = new Port[portCount];
+        for (int i = 0; i < portCount; ++i) {
+            this.ports[i] = new Port(this);
+        }
     }
 
     public abstract void handleIncomingFrame(Frame frame, Port receivingPort);

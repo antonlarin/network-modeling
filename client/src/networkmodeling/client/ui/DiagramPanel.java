@@ -1,15 +1,18 @@
 package networkmodeling.client.ui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
+import static java.awt.event.MouseEvent.BUTTON1;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -26,6 +29,7 @@ import networkmodeling.core.Hub;
 import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.Switch;
+import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class DiagramPanel extends JPanel implements Observer {
@@ -33,7 +37,6 @@ public class DiagramPanel extends JPanel implements Observer {
     public DiagramPanel(Client client) {
         this.client = client;
         client.addObserver(this);
-        connections = new LinkedList<>();
         devices = new LinkedList<>();
         selectedDevice = null;
         drawnConnectionStart = null;
@@ -88,16 +91,33 @@ public class DiagramPanel extends JPanel implements Observer {
     }
 
     private void drawConnections(Graphics g) {
-        for (ConnectionVR connection : connections) {
-            connection.draw(g);
+        Graphics2D g2 = (Graphics2D) g;
+        Stroke defaultStroke = g2.getStroke();
+        BasicStroke connectionStroke = new BasicStroke(2f);
+        g2.setStroke(connectionStroke);
+
+        LinkedList<NetworkGraphEdge> connections =
+            client.GetVisualModel().GetGraph().getEdges();
+        for (NetworkGraphEdge connection : connections) {
+            NetworkGraphNode end1 = connection.getFirstNode();
+            NetworkGraphNode end2 = connection.getSecondNode();
+            Point end1Location = convertToPanelSpace(
+                new Point2D.Double(end1.getX(), end1.getY()));
+            Point end2Location = convertToPanelSpace(
+                new Point2D.Double(end2.getX(), end2.getY()));
+            g2.drawLine(end1Location.x, end1Location.y,
+                end2Location.x, end2Location.y);
         }
-        
+
         if (creatingConnection) {
-            Graphics2D g2 = (Graphics2D) g;
-            Point start = drawnConnectionStart.getLocation();
+            Point start = convertToPanelSpace(
+                new Point2D.Double(drawnConnectionStart.getX(),
+                    drawnConnectionStart.getY()));
             Point end = drawnConnectionEnd;
             g.drawLine(start.x, start.y, end.x, end.y);
         }
+
+        g2.setStroke(defaultStroke);
     }
 
     private void drawDevices(Graphics g) {
@@ -193,6 +213,10 @@ public class DiagramPanel extends JPanel implements Observer {
             location.x - halfWidth - offset, location.y - halfHeight - offset,
             fullWidth + 2 * offset, fullHeight + 2 * offset);
     }
+    
+    private boolean pointOverNode(NetworkGraphNode deviceNode, Point point) {
+        return getDeviceNodeRectangle(deviceNode).contains(point);
+    }
 
 
 
@@ -215,53 +239,53 @@ public class DiagramPanel extends JPanel implements Observer {
 
     private final Client client;
     private Point viewportStart;
-    private LinkedList<ConnectionVR> connections;
     private LinkedList<NetworkDeviceVR> devices;
     private NetworkGraphNode selectedDevice;
     private boolean creatingConnection;
-    private NetworkDeviceVR drawnConnectionStart;
+    private NetworkGraphNode drawnConnectionStart;
     private Point drawnConnectionEnd;
 
 
 
     private class DiagramMouseHandler extends MouseInputAdapter {
         
-//        @Override
-//        public void mousePressed(MouseEvent e) {
-//            boolean pressedOnDevice = false;
-//            LinkedList<NetworkGraphNode> deviceNodes =
-//                client.GetVisualModel().GetGraph().getNodes();
-//            for (NetworkGraphNode deviceNode : deviceNodes) {
-//                if (pointOverNode(deviceNode, e.getPoint()) &&
-//                    e.getButton() == BUTTON1) {
-//                    if (e.isControlDown()) {
-//                        pressedOnDevice = true;
-//                        creatingConnection = true;
-//                        drawnConnectionStart = deviceNode;
-//                        drawnConnectionEnd = e.getPoint();
-//                        selectedDevice = null;
-//                    } else {
-//                        pressedOnDevice = true;
-//                        selectedDevice = deviceNode;
-//                    }
-//                    break;
-//                }
-//            }
-//            
-//            if (!pressedOnDevice) {
-//                selectedDevice = null;
-//            }
-//        }
+        @Override
+        public void mousePressed(MouseEvent e) {
+            boolean pressedOnDevice = false;
+            LinkedList<NetworkGraphNode> deviceNodes =
+                client.GetVisualModel().GetGraph().getNodes();
+            for (NetworkGraphNode deviceNode : deviceNodes) {
+                if (pointOverNode(deviceNode, e.getPoint()) &&
+                    e.getButton() == BUTTON1) {
+                    if (e.isControlDown()) {
+                        pressedOnDevice = true;
+                        creatingConnection = true;
+                        drawnConnectionStart = deviceNode;
+                        drawnConnectionEnd = e.getPoint();
+                        selectedDevice = null;
+                    } else {
+                        pressedOnDevice = true;
+                        selectedDevice = deviceNode;
+                    }
+                    break;
+                }
+            }
+            
+            if (!pressedOnDevice) {
+                selectedDevice = null;
+            }
+        }
         
         @Override
         public void mouseReleased(MouseEvent e) {
             if (creatingConnection) {
-                for (NetworkDeviceVR device : devices) {
-                    if (device != drawnConnectionStart &&
-                        device.hasOnIt(e.getPoint())) {
-                        ConnectionVR newConnection =
-                            new ConnectionVR(drawnConnectionStart, device);
-                        connections.add(newConnection);
+                LinkedList<NetworkGraphNode> deviceNodes =
+                client.GetVisualModel().GetGraph().getNodes();
+                for (NetworkGraphNode deviceNode : deviceNodes) {
+                    if (deviceNode != drawnConnectionStart &&
+                        pointOverNode(deviceNode, e.getPoint())) {
+                        client.GetVisualModel().ConnectDevices(
+                            drawnConnectionStart, deviceNode);
                         break;
                     } else {
                         repaint();
@@ -276,8 +300,10 @@ public class DiagramPanel extends JPanel implements Observer {
         @Override
         public void mouseDragged(MouseEvent e) {
             if (selectedDevice != null) {
-                selectedDevice.setX(e.getX());
-                selectedDevice.setY(e.getY());
+                Point2D.Double diagramLocation =
+                    convertToDiagramSpace(e.getPoint());
+                selectedDevice.setX(diagramLocation.getX());
+                selectedDevice.setY(diagramLocation.getY());
                 DiagramPanel.this.repaint();
             } else if (creatingConnection) {
                 drawnConnectionEnd = e.getPoint();
