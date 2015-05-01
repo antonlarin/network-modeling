@@ -20,7 +20,7 @@ public class NICPropertiesPage extends JPanel {
     
 
     private void setupPage() {
-        JLabel titleLabel = new JLabel("NIC properties:");
+        JLabel deviceTypeLabel = new JLabel("Device type: NIC");
         JLabel macTitleLabel = new JLabel("MAC address:");
         JLabel ipTitleLabel = new JLabel("IP address:");
         JLabel gatewayIpTitleLabel = new JLabel("Gateway IP:");
@@ -33,7 +33,7 @@ public class NICPropertiesPage extends JPanel {
         
         layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                .addComponent(titleLabel)
+                .addComponent(deviceTypeLabel)
                 .addGroup(layout.createSequentialGroup()
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macTitleLabel)
@@ -47,7 +47,7 @@ public class NICPropertiesPage extends JPanel {
         );
         layout.setVerticalGroup(
             layout.createSequentialGroup()
-                .addComponent(titleLabel)
+                .addComponent(deviceTypeLabel)
                 .addGroup(layout.createParallelGroup()
                     .addComponent(macTitleLabel)
                     .addComponent(macLabel))

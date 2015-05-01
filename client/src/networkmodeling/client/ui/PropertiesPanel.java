@@ -1,6 +1,7 @@
 package networkmodeling.client.ui;
 
 import java.awt.CardLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import networkmodeling.client.Client;
 
@@ -15,10 +16,12 @@ public class PropertiesPanel extends JPanel {
         
         setLayout(new CardLayout());
         
+        add(switchProps, "SwitchProps");
         add(emptyProps, "EmptyProps");
         add(nicProps, "NicProps");
         add(hubProps, "HubProps");
-        add(switchProps, "SwitchProps");
+        
+        setBorder(BorderFactory.createTitledBorder("Device properties:"));
     }
     
     private final Client client;
