@@ -9,11 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import networkmodeling.core.CliendCommandType;
-import networkmodeling.core.ClientCommand;
-import networkmodeling.core.IpAddress;
-import networkmodeling.core.NIC;
-import networkmodeling.core.NetworkDevice;
+import networkmodeling.core.*;
 
 public class ClientThread extends Thread{
     

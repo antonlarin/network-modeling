@@ -46,7 +46,7 @@ public class ButtonToolbar extends JPanel {
     private class TestNetworkActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            client.GetModel().TestNetwork();
+            client.GetVisualModel().GetModel().TestNetwork();
         }
     }
     

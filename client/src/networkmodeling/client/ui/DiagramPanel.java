@@ -62,7 +62,7 @@ public class DiagramPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         LinkedList<NetworkDeviceVR> newNdvrs = new LinkedList<>();
-        for (NetworkDevice nd : client.GetModel().getDevicesMap().values()) {
+        for (NetworkDevice nd : client.GetVisualModel().GetModel().getDevicesMap().values()) {
             newNdvrs.add(new NetworkDeviceVR(nd));
             for (NetworkDeviceVR ndvr : devices) {
                 if (nd.getMacAddress().equals(ndvr.getDevice().getMacAddress())) {
@@ -218,7 +218,7 @@ public class DiagramPanel extends JPanel implements Observer {
         } else {
             underlyingDevice = new NIC();
         }
-        client.GetModel().AddDevice(underlyingDevice);
+        client.GetVisualModel().GetModel().AddDevice(underlyingDevice);
         client.SendAddDevicesRequest(underlyingDevice);
         
         newDevice = new NetworkDeviceVR(underlyingDevice);

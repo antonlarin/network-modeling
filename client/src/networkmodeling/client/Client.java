@@ -1,14 +1,10 @@
 package networkmodeling.client;
 
 import java.util.List;
-import networkmodeling.core.ServerCommandType;
-import networkmodeling.core.ServerCommand;
-import networkmodeling.core.CliendCommandType;
-import networkmodeling.core.ClientCommand;
+import networkmodeling.core.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import networkmodeling.core.*;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +19,7 @@ public class Client extends SwingWorker<Void, Void> {
     
     public Client()
     {
-        networkModel = new NetworkModel();
+        networkModel = new NetworkVisualModel();
         isConnectedToServer = false;
         serverSocket = null;
         observers = new LinkedList<>();
@@ -114,7 +110,7 @@ public class Client extends SwingWorker<Void, Void> {
                 publish();
                 break;
             case UpdateFullModel:
-                networkModel = (NetworkModel)command.getArguments()[0];
+                networkModel = (NetworkVisualModel)command.getArguments()[0];
                 isCommandExecuted = true;
                 publish();
                 break;
@@ -247,7 +243,7 @@ public class Client extends SwingWorker<Void, Void> {
         SendUpdateModelRequest();
     }
     
-    public NetworkModel GetModel()
+    public NetworkVisualModel GetVisualModel()
     {
         return networkModel;
     }
@@ -266,12 +262,11 @@ public class Client extends SwingWorker<Void, Void> {
         }
     }
     
-    private NetworkModel networkModel;
+    private NetworkVisualModel networkModel;
     private boolean isConnectedToServer;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private Socket serverSocket;
-    private NetworkModel model;
     private UUID clientID;
     private LinkedList<Observer> observers;
 }

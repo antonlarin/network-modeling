@@ -20,7 +20,7 @@ public class Server extends Thread{
         serverClients = new HashMap<>();
         eventsLog = new String();
         logViewPanel = _logViewPanel;
-        mainNetworkModel = new NetworkModel();
+        mainNetworkModel = new NetworkVisualModel();
     }
     
     @Override
@@ -77,7 +77,7 @@ public class Server extends Thread{
             serverClients.remove(clientID);
         }
     }
-    public NetworkModel GetModel()
+    public NetworkVisualModel GetModel()
     {
         return mainNetworkModel;
     }
@@ -131,7 +131,7 @@ public class Server extends Thread{
     
     private final javax.swing.JTextPane logViewPanel;
     
-    private final NetworkModel mainNetworkModel;
+    private final NetworkVisualModel mainNetworkModel;
     
     private String eventsLog;
     private final HashMap<UUID, ClientThread> serverClients;
