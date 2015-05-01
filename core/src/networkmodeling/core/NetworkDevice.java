@@ -2,6 +2,7 @@ package networkmodeling.core;
 
 import java.io.Serializable;
 import java.util.Objects;
+import networkmodeling.exceptions.NoFreePortsException;
 
 public abstract class NetworkDevice implements Serializable {
 

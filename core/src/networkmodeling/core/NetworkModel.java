@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import networkmodeling.exceptions.NoFreePortsException;
 
 public class NetworkModel implements Serializable {
 
