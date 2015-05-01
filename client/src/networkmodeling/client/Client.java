@@ -14,6 +14,7 @@ import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.Observer;
 import javax.swing.SwingWorker;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
 import networkmodeling.exceptions.ConnectionClosedException;
 import networkmodeling.exceptions.NMException;
 
@@ -88,29 +89,29 @@ public class Client extends SwingWorker<Void, Void> {
         {
             case AddDevice:
                 isCommandExecuted = networkModel.AddDevice(
-                        (NetworkDevice)command.getArguments()[0]);
+                        (NetworkGraphNode)command.getArguments()[0]);
                 publish();
                 break;
             case DeleteDevice:
                 isCommandExecuted = networkModel.DeleteDevice(
-                        (NetworkDevice)command.getArguments()[0]);
+                        (NetworkGraphNode)command.getArguments()[0]);
                 publish();
                 break;
             case ConnectDevices:
                 isCommandExecuted = networkModel.ConnectDevices(
-                        (NetworkDevice)command.getArguments()[0],
-                        (NetworkDevice)command.getArguments()[1]);
+                        (NetworkGraphNode)command.getArguments()[0],
+                        (NetworkGraphNode)command.getArguments()[1]);
                 publish();
                 break;
             case DisconnectDevices:
                 isCommandExecuted = networkModel.DisconnectDevices(
-                        (NetworkDevice)command.getArguments()[0],
-                        (NetworkDevice)command.getArguments()[1]);
+                        (NetworkGraphNode)command.getArguments()[0],
+                        (NetworkGraphNode)command.getArguments()[1]);
                 publish();
                 break;
             case ChangeDeviceIP:
                 isCommandExecuted = networkModel.ChangeDeviceIP(
-                        (NIC)(command.getArguments()[0]),
+                        (NetworkGraphNode)(command.getArguments()[0]),
                         (IpAddress)(command.getArguments()[1]));
                 publish();
                 break;
@@ -156,11 +157,11 @@ public class Client extends SwingWorker<Void, Void> {
         }
     }
     
-    public void SendConnectDevicesRequest(NetworkDevice dev1, NetworkDevice dev2)
+    public void SendConnectDevicesRequest(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
         if(isConnectedToServer)
         {
-            NetworkDevice args[] = new NetworkDevice[2];
+            Object args[] = new NetworkGraphNode[2];
             args[0] = dev1;
             args[1] = dev2;
 
@@ -173,11 +174,11 @@ public class Client extends SwingWorker<Void, Void> {
             }
         }
     }
-    public void SendChangeDeviceIPRequest(NIC dev, IpAddress newIP)
+    public void SendChangeDeviceIPRequest(NetworkGraphNode dev, IpAddress newIP)
     {
         if(isConnectedToServer)
         {
-            Object args[] = new NetworkDevice[2];
+            Object args[] = new NetworkGraphNode[2];
             args[0] = dev;
             args[1] = (Object)newIP;
 
@@ -191,11 +192,11 @@ public class Client extends SwingWorker<Void, Void> {
         }
     }
     
-    public void SendDisonnectDevicesRequest(NetworkDevice dev1, NetworkDevice dev2)
+    public void SendDisonnectDevicesRequest(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
         if(isConnectedToServer)
         {
-            NetworkDevice args[] = new NetworkDevice[2];
+            Object args[] = new NetworkGraphNode[2];
             args[0] = dev1;
             args[1] = dev2;
 
@@ -208,11 +209,11 @@ public class Client extends SwingWorker<Void, Void> {
             }
         }
     }
-    public void SendDeleteDeviceRequest(NetworkDevice dev1)
+    public void SendDeleteDeviceRequest(NetworkGraphNode dev1)
     {
         if(isConnectedToServer)
         {
-            NetworkDevice args[] = new NetworkDevice[1];
+            Object args[] = new NetworkGraphNode[1];
             args[0] = dev1;
 
             ServerCommand command = new ServerCommand(
@@ -224,11 +225,11 @@ public class Client extends SwingWorker<Void, Void> {
             }
         }
     }
-    public void SendAddDevicesRequest(NetworkDevice dev1)
+    public void SendAddDevicesRequest(NetworkGraphNode dev1)
     {
         if(isConnectedToServer)
         {
-            NetworkDevice args[] = new NetworkDevice[1];
+            Object args[] = new NetworkGraphNode[1];
             args[0] = dev1;
 
             ServerCommand command = new ServerCommand(

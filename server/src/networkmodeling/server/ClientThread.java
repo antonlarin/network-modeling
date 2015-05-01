@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import networkmodeling.core.*;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class ClientThread extends Thread{
     
@@ -80,26 +81,26 @@ public class ClientThread extends Thread{
         switch (command.getCommandType())
         {
             case AddDevice:
-                isCommandExecuted = parentServer.GetModel().AddDevice((NetworkDevice)
+                isCommandExecuted = parentServer.GetModel().AddDevice((NetworkGraphNode)
                         command.getCommandArgs()[0]);
                 break;
             case DeleteDevice:
                 isCommandExecuted = parentServer.GetModel().DeleteDevice(
-                        (NetworkDevice)command.getCommandArgs()[0]);
+                        (NetworkGraphNode)command.getCommandArgs()[0]);
                 break;
             case ConnectDevices:
                 isCommandExecuted = parentServer.GetModel().ConnectDevices(
-                        (NetworkDevice)command.getCommandArgs()[0],
-                        (NetworkDevice)command.getCommandArgs()[1]);
+                        (NetworkGraphNode)command.getCommandArgs()[0],
+                        (NetworkGraphNode)command.getCommandArgs()[1]);
                 break;
             case DisconnectDevices:
                 isCommandExecuted = parentServer.GetModel().DisconnectDevices(
-                        (NetworkDevice)command.getCommandArgs()[0],
-                        (NetworkDevice)command.getCommandArgs()[1]);
+                        (NetworkGraphNode)command.getCommandArgs()[0],
+                        (NetworkGraphNode)command.getCommandArgs()[1]);
                 break;
             case ChangeDeviceIP:
                 isCommandExecuted = parentServer.GetModel().ChangeDeviceIP(
-                        (NIC)command.getCommandArgs()[0],
+                        (NetworkGraphNode)command.getCommandArgs()[0],
                         (IpAddress)command.getCommandArgs()[1]);
                 break;
             case GetFullNetworkModel:

@@ -132,11 +132,11 @@ public class NetworkModel implements Serializable {
         return networkDevices;
     }
     
-    public boolean ChangeDeviceIP(NIC dev, IpAddress newIP)
+    public boolean ChangeDeviceIP(IpBasedNetworkDevice dev, IpAddress newIP)
     {
         if(networkDevices.containsKey(dev.getMacAddress()))
         {
-            ((NIC)networkDevices.get(dev.getMacAddress())).setIpAderss(newIP);
+            ((IpBasedNetworkDevice)networkDevices.get(dev.getMacAddress())).setIpAderss(newIP);
             return true;
         }
 

@@ -1,5 +1,6 @@
 package networkmodeling.core;
 
+import networkmodeling.core.modelgraph.*;
 import java.io.Serializable;
 
 public class NetworkVisualModel implements Serializable {
@@ -10,30 +11,30 @@ public class NetworkVisualModel implements Serializable {
         graph = new NetworkModelGraph();
     }
     
-    public boolean AddDevice(NetworkDevice dev)
+    public boolean AddDevice(NetworkGraphNode dev)
     {
-        return model.AddDevice(dev) &&
+        return model.AddDevice(dev.getNodeDevice()) &&
                 graph.AddDevice(dev);
     }
-    public boolean ConnectDevices(NetworkDevice dev1, NetworkDevice dev2)
+    public boolean ConnectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
-        return model.ConnectDevices(dev1, dev2) &&
+        return model.ConnectDevices(dev1.getNodeDevice(), dev2.getNodeDevice()) &&
                 graph.ConnectDevices(dev1, dev2);
     }
-    public boolean DisconnectDevices(NetworkDevice dev1, NetworkDevice dev2)
+    public boolean DisconnectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
-        return  model.ConnectDevices(dev1, dev2) &&
+        return  model.ConnectDevices(dev1.getNodeDevice(), dev2.getNodeDevice()) &&
                 graph.DisconnectDevices(dev1, dev2);
         
     }
-    public boolean DeleteDevice(NetworkDevice dev)
+    public boolean DeleteDevice(NetworkGraphNode dev)
     {
-        return  model.DeleteDevice(dev) &&
+        return  model.DeleteDevice(dev.getNodeDevice()) &&
                 graph.DeleteDevice(dev);
     }
-    public boolean ChangeDeviceIP(NIC dev, IpAddress newIP)
+    public boolean ChangeDeviceIP(NetworkGraphNode dev, IpAddress newIP)
     {
-        return  model.ChangeDeviceIP(dev, newIP) &&
+        return  model.ChangeDeviceIP((IpBasedNetworkDevice)dev.getNodeDevice(), newIP) &&
                 graph.ChangeDeviceIP(dev, newIP);
     }
    
