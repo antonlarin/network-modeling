@@ -77,35 +77,41 @@ public class ClientThread extends Thread{
     private synchronized void executeClientCommand(ServerCommand command) throws Exception
     {
         boolean isCommandExecuted = false;
-        System.out.println("Start execuntion \n");
+        System.out.println("Start execuntion of");
         switch (command.getCommandType())
         {
             case AddDevice:
                 isCommandExecuted = parentServer.GetModel().AddDevice((NetworkGraphNode)
                         command.getCommandArgs()[0]);
+                System.out.println(" add device command\n");
                 break;
             case DeleteDevice:
                 isCommandExecuted = parentServer.GetModel().DeleteDevice(
                         (NetworkGraphNode)command.getCommandArgs()[0]);
+                System.out.println(" delete device command\n");
                 break;
             case ConnectDevices:
                 isCommandExecuted = parentServer.GetModel().ConnectDevices(
                         (NetworkGraphNode)command.getCommandArgs()[0],
                         (NetworkGraphNode)command.getCommandArgs()[1]);
+                System.out.println(" connect devices command\n");
                 break;
             case DisconnectDevices:
                 isCommandExecuted = parentServer.GetModel().DisconnectDevices(
                         (NetworkGraphNode)command.getCommandArgs()[0],
                         (NetworkGraphNode)command.getCommandArgs()[1]);
+                System.out.println(" disconnect devices command\n");
                 break;
             case ChangeDeviceIP:
                 isCommandExecuted = parentServer.GetModel().ChangeDeviceIP(
                         (NetworkGraphNode)command.getCommandArgs()[0],
                         (IpAddress)command.getCommandArgs()[1]);
+                System.out.println(" change device Ip command\n");
                 break;
             case GetFullNetworkModel:
                 UpdateClientModel();
                 isCommandExecuted = true;
+                System.out.println(" get full model command\n");
                 break;
             case MoveGraphNode:
                 isCommandExecuted = parentServer.GetModel().GetGraph().
@@ -113,6 +119,7 @@ public class ClientThread extends Thread{
                                 (NetworkGraphNode)command.getCommandArgs()[0],
                                 (double)command.getCommandArgs()[1],
                                 (double)command.getCommandArgs()[2]);
+                System.out.println("move node command\n");
                 break;
         }
         

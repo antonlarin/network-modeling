@@ -96,46 +96,41 @@ public class Client extends SwingWorker<Void, Void> {
             case AddDevice:
                 isCommandExecuted = networkModel.AddDevice(
                         (NetworkGraphNode)command.getArguments()[0]);
-                publish();
                 break;
             case DeleteDevice:
                 isCommandExecuted = networkModel.DeleteDevice(
                         (NetworkGraphNode)command.getArguments()[0]);
-                publish();
                 break;
             case ConnectDevices:
                 isCommandExecuted = networkModel.ConnectDevices(
                         (NetworkGraphNode)command.getArguments()[0],
                         (NetworkGraphNode)command.getArguments()[1]);
-                publish();
                 break;
             case DisconnectDevices:
                 isCommandExecuted = networkModel.DisconnectDevices(
                         (NetworkGraphNode)command.getArguments()[0],
                         (NetworkGraphNode)command.getArguments()[1]);
-                publish();
                 break;
             case ChangeDeviceIP:
                 isCommandExecuted = networkModel.ChangeDeviceIP(
                         (NetworkGraphNode)(command.getArguments()[0]),
                         (IpAddress)(command.getArguments()[1]));
-                publish();
                 break;
             case MoveGraphNode:
                 isCommandExecuted = networkModel.GetGraph().ChangeNodeCoordinates(
                         (NetworkGraphNode)command.getArguments()[0],
                         (double)command.getArguments()[1],
                         (double)command.getArguments()[2]);
-                publish();
                 break;
             case UpdateFullModel:
                 networkModel = (NetworkVisualModel)command.getArguments()[0];
                 isCommandExecuted = true;
-                publish();
                 break;
         }
         
-        if(!isCommandExecuted)
+        if(isCommandExecuted)
+            publish();
+        else
             SendUpdateModelRequest();
     }
     
