@@ -39,8 +39,8 @@ public class MainWindow extends JFrame {
         add(leftMenu, BorderLayout.WEST);
         add(diagramPanel, BorderLayout.CENTER);
         
-        diagramPanel.addPropertyChangeListener("selectedDevice",
-            propertiesPanel.new SelectedDeviceChangeListener());
+        diagramPanel.addPropertyChangeListener("selectedNode",
+            propertiesPanel.new SelectedNodeChangeListener());
     }
     
     public void cleanup() {

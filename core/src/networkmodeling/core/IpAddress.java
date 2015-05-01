@@ -33,7 +33,13 @@ public class IpAddress implements Serializable {
         return hash;
     }
     
-    
+    @Override
+    public String toString() {
+        return String.format("%d.%d.%d.%d", octet1, octet2, octet3, octet4);
+    }
+
+
+
     private final short octet1;
     private final short octet2;
     private final short octet3;

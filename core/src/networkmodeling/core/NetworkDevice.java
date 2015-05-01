@@ -81,6 +81,12 @@ public abstract class NetworkDevice implements Serializable {
     public MacAddress getMacAddress() {
         return macAddress;
     }
+    
+    public int getPortsCount() {
+        return ports.length;
+    }
+
+
 
     protected Port getFreePort() {
         for (Port port : ports) {

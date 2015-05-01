@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import networkmodeling.core.Hub;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class HubPropertiesPage extends JPanel {
     
@@ -13,6 +15,15 @@ public class HubPropertiesPage extends JPanel {
         
         setupPage();
     }
+
+    public void associateNode(NetworkGraphNode node) {
+        associatedDevice = (Hub) node.getNodeDevice();
+        macLabel.setText(associatedDevice.getMacAddress().toString());
+        portsCountLabel.setText(String.format("%d",
+            associatedDevice.getPortsCount()));
+    }
+
+
 
     private void setupPage() {
         JLabel deviceTypeLabel = new JLabel("Device type: Hub");
@@ -30,10 +41,10 @@ public class HubPropertiesPage extends JPanel {
                 .addGroup(layout.createSequentialGroup()
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macTitleLabel)
-                        .addComponent(portsCountTitleLabel)
+                        .addComponent(portsCountTitleLabel))
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macLabel)
-                        .addComponent(portsCountLabel))))
+                        .addComponent(portsCountLabel)))
         );
         layout.setVerticalGroup(
             layout.createSequentialGroup()
@@ -53,4 +64,5 @@ public class HubPropertiesPage extends JPanel {
     
     private final JLabel macLabel;
     private final JLabel portsCountLabel;
+    private Hub associatedDevice;
 }

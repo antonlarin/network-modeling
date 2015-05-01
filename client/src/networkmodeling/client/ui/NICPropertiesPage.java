@@ -6,6 +6,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import networkmodeling.core.NIC;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class NICPropertiesPage extends JPanel {
     
@@ -18,6 +22,13 @@ public class NICPropertiesPage extends JPanel {
         setupPage();
     }
     
+    public void associateNode(NetworkGraphNode node) {
+        associatedDevice = (NIC) node.getNodeDevice();
+        macLabel.setText(associatedDevice.getMacAddress().toString());
+        ipTextField.setText(associatedDevice.getIpAddress().toString());
+    }
+
+
 
     private void setupPage() {
         JLabel deviceTypeLabel = new JLabel("Device type: NIC");
@@ -63,10 +74,42 @@ public class NICPropertiesPage extends JPanel {
         controlsContainer.setLayout(layout);
         setLayout(new BorderLayout());
         add(controlsContainer, BorderLayout.NORTH);
+        
+        ipTextField.getDocument().addDocumentListener(new IpChangeListener());
     }
 
     private final JLabel macLabel;
     private final JTextField ipTextField;
     private final JTextField gatewayIpTextField;
     private final JButton applyButton;
+    private NIC associatedDevice;
+
+
+
+    private class IpChangeListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+        
+        private void handleUpdate() {
+            String newIp = ipTextField.getText();
+            if (!newIp.equals(associatedDevice.getIpAddress().toString())) {
+                applyButton.setEnabled(true);
+            } else {
+                applyButton.setEnabled(false);
+            }
+        }
+    }
 }

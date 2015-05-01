@@ -10,6 +10,7 @@ import networkmodeling.core.Hub;
 import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.Switch;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class PropertiesPanel extends JPanel {
     
@@ -40,7 +41,7 @@ public class PropertiesPanel extends JPanel {
     
     
     
-    public class SelectedDeviceChangeListener
+    public class SelectedNodeChangeListener
         implements PropertyChangeListener {
 
         @Override
@@ -48,19 +49,24 @@ public class PropertiesPanel extends JPanel {
             DiagramPanel diagramPanel = (DiagramPanel) evt.getSource();
             CardLayout layout = (CardLayout) getLayout();
 
-            if (diagramPanel.getSelectedDevice() == null) {
+            NetworkGraphNode selectedNode = diagramPanel.getSelectedNode();
+            if (selectedNode == null) {
                 layout.show(PropertiesPanel.this, "EmptyProps");
             } else {
                 NetworkDevice selectedDevice =
-                    diagramPanel.getSelectedDevice().getNodeDevice();
+                    diagramPanel.getSelectedNode().getNodeDevice();
                 if (selectedDevice instanceof NIC) {
                     layout.show(PropertiesPanel.this, "NicProps");
+                    nicProps.associateNode(selectedNode);
                 } else if (selectedDevice instanceof Hub) {
                     layout.show(PropertiesPanel.this, "HubProps");
+                    hubProps.associateNode(selectedNode);
                 } else if (selectedDevice instanceof Switch) {
                     layout.show(PropertiesPanel.this, "SwitchProps");
+                    switchProps.associateNode(selectedNode);
 //                } else { // if (selectedDevice instanceof Router)
 //                    layout.show(PropertiesPanel.this, "RouterProps");
+//                    routerProps.associateNode(selectedNode);
                 }
             }
         }

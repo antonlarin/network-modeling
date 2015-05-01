@@ -39,7 +39,7 @@ public class DiagramPanel extends JPanel implements Observer {
     public DiagramPanel(Client client) {
         this.client = client;
         client.addObserver(this);
-        selectedDevice = null;
+        selectedNode = null;
         drawnConnectionStart = null;
         drawnConnectionEnd = null;
         viewportStart = new Point(0, 0);
@@ -73,14 +73,14 @@ public class DiagramPanel extends JPanel implements Observer {
         drawDevices(g);
     }
 
-    public NetworkGraphNode getSelectedDevice() {
-        return selectedDevice;
+    public NetworkGraphNode getSelectedNode() {
+        return selectedNode;
     }
 
-    public void setSelectedDevice(NetworkGraphNode device) {
-        NetworkGraphNode oldSelectedDevice = selectedDevice;
-        selectedDevice = device;
-        propChangeSupport.firePropertyChange("selectedDevice",
+    public void setSelectedNode(NetworkGraphNode device) {
+        NetworkGraphNode oldSelectedDevice = selectedNode;
+        selectedNode = device;
+        propChangeSupport.firePropertyChange("selectedNode",
             oldSelectedDevice, device);
     }
     
@@ -150,7 +150,7 @@ public class DiagramPanel extends JPanel implements Observer {
             g2.drawImage(deviceIcon, location.x - halfImageWidth,
                 location.y - halfImageHeight, null);
             
-            if (deviceNode == selectedDevice) {
+            if (deviceNode == selectedNode) {
                 Stroke defaultStroke = g2.getStroke();
                 Color defaultColor = g2.getColor();
                 BasicStroke selectionStroke = new BasicStroke(1.3f);
@@ -270,7 +270,7 @@ public class DiagramPanel extends JPanel implements Observer {
 
     private final Client client;
     private final Point viewportStart;
-    private NetworkGraphNode selectedDevice;
+    private NetworkGraphNode selectedNode;
     private boolean creatingConnection;
     private NetworkGraphNode drawnConnectionStart;
     private Point drawnConnectionEnd;
@@ -293,17 +293,17 @@ public class DiagramPanel extends JPanel implements Observer {
                         creatingConnection = true;
                         drawnConnectionStart = deviceNode;
                         drawnConnectionEnd = e.getPoint();
-                        setSelectedDevice(null);
+                        setSelectedNode(null);
                     } else {
                         pressedOnDevice = true;
-                        setSelectedDevice(deviceNode);
+                        setSelectedNode(deviceNode);
                     }
                     break;
                 }
             }
             
             if (!pressedOnDevice) {
-                setSelectedDevice(null);
+                setSelectedNode(null);
             }
             repaint();
         }
@@ -333,12 +333,12 @@ public class DiagramPanel extends JPanel implements Observer {
         
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (selectedDevice != null) {
+            if (selectedNode != null) {
                 Point2D.Double diagramLocation =
                     convertToDiagramSpace(e.getPoint());
-                selectedDevice.setX(diagramLocation.getX());
-                selectedDevice.setY(diagramLocation.getY());
-                client.SendСhangeNodeCoordinatesRequest(selectedDevice,
+                selectedNode.setX(diagramLocation.getX());
+                selectedNode.setY(diagramLocation.getY());
+                client.SendСhangeNodeCoordinatesRequest(selectedNode,
                     diagramLocation.getX(), diagramLocation.getY());
                 DiagramPanel.this.repaint();
             } else if (creatingConnection) {

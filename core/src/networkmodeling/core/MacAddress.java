@@ -93,7 +93,14 @@ public class MacAddress implements Serializable {
                 this.octet5 == 0x00 &&
                 this.octet6 == 0x00);
     }
-    
+
+    @Override
+    public String toString() {
+        return String.format("%X:%X:%X:%X:%X:%X", octet1, octet2, octet3,
+            octet4, octet5, octet6);
+    }
+
+
 
     private static boolean assigned(MacAddress newMac) {
         if (assignedAddresses == null) {

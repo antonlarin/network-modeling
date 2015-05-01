@@ -4,27 +4,35 @@ import java.awt.BorderLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import networkmodeling.core.Switch;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class SwitchPropertiesPage extends JPanel {
     
     public SwitchPropertiesPage() {
         macLabel = new JLabel("");
         portsCountLabel = new JLabel("");
-        camTable = new JTable();
+//        camTable = new JTable();
         
         setupPage();
     }
+
+    public void associateNode(NetworkGraphNode node) {
+        associatedDevice = (Switch) node.getNodeDevice();
+        macLabel.setText(associatedDevice.getMacAddress().toString());
+        portsCountLabel.setText(String.format("%d",
+            associatedDevice.getPortsCount()));
+    }
+
 
 
     private void setupPage() {
         JLabel deviceTypeLabel = new JLabel("Device type: Switch");
         JLabel macTitleLabel = new JLabel("MAC address:");
         JLabel portsCountTitleLabel = new JLabel("Ports count:");
-        JLabel camTableTitleLabel = new JLabel("CAM table:");
-        JScrollPane camTablePane = new JScrollPane(camTable);
-        camTable.setFillsViewportHeight(true);
+//        JLabel camTableTitleLabel = new JLabel("CAM table:");
+//        JScrollPane camTablePane = new JScrollPane(camTable);
+//        camTable.setFillsViewportHeight(true);
         
         JPanel controlsContainer = new JPanel();
         GroupLayout layout = new GroupLayout(controlsContainer);
@@ -41,8 +49,8 @@ public class SwitchPropertiesPage extends JPanel {
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macLabel)
                         .addComponent(portsCountLabel)))
-                .addComponent(camTableTitleLabel)
-                .addComponent(camTablePane)
+//                .addComponent(camTableTitleLabel)
+//                .addComponent(camTablePane)
         );
         layout.setVerticalGroup(
             layout.createSequentialGroup()
@@ -53,8 +61,8 @@ public class SwitchPropertiesPage extends JPanel {
                 .addGroup(layout.createParallelGroup()
                     .addComponent(portsCountTitleLabel)
                     .addComponent(portsCountLabel))
-                .addComponent(camTableTitleLabel)
-                .addComponent(camTablePane)
+//                .addComponent(camTableTitleLabel)
+//                .addComponent(camTablePane)
         );
         
         controlsContainer.setLayout(layout);
@@ -64,5 +72,6 @@ public class SwitchPropertiesPage extends JPanel {
     
     private final JLabel macLabel;
     private final JLabel portsCountLabel;
-    private final JTable camTable;
+//    private final JTable camTable;
+    private Switch associatedDevice;
 }
