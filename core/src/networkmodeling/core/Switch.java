@@ -17,7 +17,9 @@ public class Switch extends NetworkDevice {
     @Override
     public void handleIncomingFrame(Frame frame, Port receivingPort) {
         camTable.put(frame.getSenderMac(), receivingPort);
-
+        
+        frame.getRoute().add(this);
+        
         Port outputPort = camTable.get(frame.getTargetMac());
         if (outputPort == null) {
             broadcastFrame(frame, receivingPort);
@@ -34,7 +36,8 @@ public class Switch extends NetworkDevice {
         for (Port port : getPorts()) {
             if (port != receivingPort) {
                 try {
-                    port.sendFrame(frame);
+                    //port.sendFrame(frame);                    
+                    port.sendFrame(new Frame(frame));
                 } catch (Exception ex) {
                     System.err.println(
                         "Attempt send through unbound switch port");
