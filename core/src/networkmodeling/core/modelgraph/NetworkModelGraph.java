@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.MacAddress;
-import networkmodeling.core.NetworkDevice;
-
 
 public class NetworkModelGraph implements Serializable {
     
