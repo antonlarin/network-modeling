@@ -5,10 +5,12 @@ import java.util.LinkedList;
 public class NetworkModelTestResult {
     
     public NetworkModelTestResult(boolean isTestPassed,
-            LinkedList<LinkedList<NetworkDevice>> testRoutes)
+            LinkedList<LinkedList<NetworkDevice>> testRoutes,
+            LinkedList<NetworkDevice> failedRoute)
     {
         this.isTestPassed = isTestPassed;
         this.testRoutes = testRoutes;
+        this.failedRoute = failedRoute;
         this.testLog = generateTestLog();
     }
     
@@ -21,29 +23,42 @@ public class NetworkModelTestResult {
         for(int i=0; i< logStringsNumber; i++)
         {
             LinkedList<NetworkDevice> currentRoute = testRoutes.pop();
-        
-            log[i] = "\nSender: " + 
-                    ((NIC)currentRoute.peekFirst()).getDescription();
-            log[i] += "\nReceiver: " + 
-                    ((NIC)currentRoute.peekLast()).getDescription() + "\n";
-            currentRoute.removeFirst();
-            currentRoute.removeLast();
             
-            log[i] += "Route:";
-            if(currentRoute.isEmpty())
-                log[i] += " direct";
-            while(!currentRoute.isEmpty())
+            if(!currentRoute.isEmpty())
             {
-                NetworkDevice dev = currentRoute.pollFirst();
-                log[i] += " " + dev.getDescription();
+                if(currentRoute.peekFirst() != null &&
+                        currentRoute.peekLast()!= null)
+                {
+                    log[i] = "\nSender: " + 
+                            currentRoute.peekFirst().getDescription();
+                    log[i] += "\nReceiver: " + 
+                            currentRoute.peekLast().getDescription() + "\n";
+                    currentRoute.removeFirst();
+                    currentRoute.removeLast();
+                }
+                log[i] += "Route:";
+                if(currentRoute.isEmpty())
+                    log[i] += " direct";
+                while(!currentRoute.isEmpty())
+                {
+                    NetworkDevice dev = currentRoute.pollFirst();
+                    log[i] += " " + dev.getDescription();
+                }
+                log[i] += "\n";
             }
-            log[i]+="\n";
+            else
+                log[i] = "";
         }
         
         if(isTestPassed)
             log[logStringsNumber] = "\nResult: test passed.";
         else
-            log[logStringsNumber] = "\nResult: test failed.";
+        {
+            log[logStringsNumber] = "\nResult: test failed.\n";
+            log[logStringsNumber]+= "\nUnable to transfer data \nfrom " +
+                    failedRoute.peekFirst().getDescription() + "\nto " +
+                    failedRoute.peekLast().getDescription();
+        }
         
         return log;
     }
@@ -58,6 +73,7 @@ public class NetworkModelTestResult {
         return isTestPassed;
     }
     
+    private LinkedList<NetworkDevice> failedRoute;
     private String[] testLog;
     private final boolean isTestPassed;
     private final LinkedList<LinkedList<NetworkDevice>> testRoutes;

@@ -76,17 +76,29 @@ public class NetworkModel implements Serializable {
                 routes.add(nicForTest.getLastIncomingDataRoute());
 
                 if(!nicForTest.GetIncomingData().equals(data))
-                    return new NetworkModelTestResult(false, routes);
+                {
+                    LinkedList<NetworkDevice> failedRoute = 
+                            new LinkedList<>();
+                    failedRoute.add(sender);
+                    failedRoute.add(nicForTest);
+                    return new NetworkModelTestResult(false, routes, failedRoute);
+                }
 
                 nicForTest.sendData(data, sender.getIpAddress());
                 routes.add(sender.getLastIncomingDataRoute());
 
                 if(!sender.GetIncomingData().equals(data))
-                    return new NetworkModelTestResult(false, routes);
+                {
+                    LinkedList<NetworkDevice> failedRoute = 
+                            new LinkedList<>();
+                    failedRoute.add(sender);
+                    failedRoute.add(nicForTest);
+                    return new NetworkModelTestResult(false, routes, failedRoute);
+                }
             }
         }
 
-        return new NetworkModelTestResult(true, routes);
+        return new NetworkModelTestResult(true, routes, null);
     }
 
     public boolean SendData(IpAddress sourceIP, Object data, IpAddress target)
