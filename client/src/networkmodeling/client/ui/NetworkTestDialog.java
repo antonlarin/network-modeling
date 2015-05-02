@@ -66,13 +66,13 @@ public class NetworkTestDialog extends JDialog {
         public void propertyChange(PropertyChangeEvent evt) {
             String[] testNetworkLog =
                 clientAppModel.getNetworkTestResult().getTestLog();
-            for (String line : testNetworkLog) {
-                testLogTextArea.append(line);
+            for (int i = 0; i < testNetworkLog.length; ++i) {
+                testLogTextArea.append(testNetworkLog[i]);
             }
             if (clientAppModel.getNetworkTestResult().getTestResult()) {
-                testLogTextArea.append("Result: test failed.");
-            } else {
                 testLogTextArea.append("Result: test passed.");
+            } else {
+                testLogTextArea.append("Result: test failed.");
             }
         }
     }
