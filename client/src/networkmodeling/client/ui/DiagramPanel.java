@@ -243,31 +243,52 @@ public class DiagramPanel extends JPanel implements Observer {
             new Point2D.Double(edgeEnd1Node.getX(), edgeEnd1Node.getY()));
         Point edgeEnd2 = convertToPanelSpace(
             new Point2D.Double(edgeEnd2Node.getX(), edgeEnd2Node.getY()));
-        double left = Math.min(edgeEnd1.x, edgeEnd2.x);
-        double right = Math.max(edgeEnd1.x, edgeEnd2.x);
-        double top = Math.min(edgeEnd1.y, edgeEnd2.y);
-        double bottom = Math.max(edgeEnd1.y, edgeEnd2.y);
-        double width = right - left;
-        double height = bottom - top;
+        
+        double width = Math.abs(edgeEnd1.x - edgeEnd2.x);
+        double height = Math.abs(edgeEnd1.y - edgeEnd2.y);
         double offset = 3.5;
         if (width > height) {
-            double alpha = (point.x - left) / width;
+            double leftX;
+            double leftY;
+            double rightY;
+            if (edgeEnd1.x < edgeEnd2.x) {
+                leftX = edgeEnd1.x;
+                leftY = edgeEnd1.y;
+                rightY = edgeEnd2.y;
+            } else {
+                leftX = edgeEnd2.x;
+                leftY = edgeEnd2.y;
+                rightY = edgeEnd1.y;
+            }
+            double alpha = (point.x - leftX) / width;
             if (alpha < 0 || 1 < alpha) {
                 return false;
             } else {
                 double tangent = height / width;
                 double offsetMultiplier = Math.sqrt(1 + tangent * tangent);
-                return Math.abs(point.y - top - alpha * height) <=
+                return Math.abs(point.y - leftY - alpha * (rightY - leftY)) <=
                     offset * offsetMultiplier;
             }
         } else {
-            double alpha = (point.y - top) / height;
+            double topX;
+            double bottomX;
+            double topY;
+            if (edgeEnd1.y < edgeEnd2.y) {
+                topY = edgeEnd1.y;
+                topX = edgeEnd1.x;
+                bottomX = edgeEnd2.x;
+            } else {
+                topY = edgeEnd2.y;
+                topX = edgeEnd2.x;
+                bottomX = edgeEnd1.x;
+            }
+            double alpha = (point.y - topY) / height;
             if (alpha < 0 || 1 < alpha) {
                 return false;
             } else {
                 double tangent = width / height;
                 double offsetMultiplier = Math.sqrt(1 + tangent * tangent);
-                return Math.abs(point.x - left - alpha * width) <=
+                return Math.abs(point.x - topX - alpha * (bottomX - topX)) <=
                     offset * offsetMultiplier;
             }
         }
