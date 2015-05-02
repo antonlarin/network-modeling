@@ -10,6 +10,7 @@ import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkVisualModel;
 import networkmodeling.core.Switch;
+import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class ClientAppModel {
@@ -19,6 +20,7 @@ public class ClientAppModel {
         clientDaemon = new ClientDaemon(this);
         pcs = new PropertyChangeSupport(this);
         selectedNode = null;
+        selectedEdge = null;
     }
     
     public ClientDaemon getClientDaemon() {
@@ -44,8 +46,17 @@ public class ClientAppModel {
     public void setSelectedNode(NetworkGraphNode device) {
         NetworkGraphNode oldSelectedDevice = selectedNode;
         selectedNode = device;
-        pcs.firePropertyChange("selectedNode",
-            oldSelectedDevice, device);
+        pcs.firePropertyChange("selectedNode", oldSelectedDevice, device);
+    }
+    
+    public NetworkGraphEdge getSelectedEdge() {
+        return selectedEdge;
+    }
+    
+    public void setSelectedEdge(NetworkGraphEdge connection) {
+        NetworkGraphEdge oldSelectedEdge = selectedEdge;
+        selectedEdge = connection;
+        pcs.firePropertyChange("selectedEdge", oldSelectedEdge, connection);
     }
 
     public void addPropertyChangeListener(String propertyName,
@@ -114,4 +125,5 @@ public class ClientAppModel {
     private ClientDaemon clientDaemon;
     private NetworkVisualModel visualModel;
     private NetworkGraphNode selectedNode;
+    private NetworkGraphEdge selectedEdge;
 }
