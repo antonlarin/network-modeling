@@ -8,10 +8,12 @@ public class Switch extends NetworkDevice {
         super(macAddress, portCount);
 
         camTable = new HashMap<>();
+        deviceType = NetworkDeviceType.Switch;
     }
 
     public Switch() {
         this(MacAddress.getRandomAddress(), 8);
+        deviceType = NetworkDeviceType.Switch;
     }
 
     @Override

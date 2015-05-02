@@ -59,7 +59,7 @@ public class NetworkModel implements Serializable {
 
         for(NetworkDevice dev : networkDevices.values())
         {
-            if(dev instanceof NIC)
+            if(dev.getType() == NetworkDeviceType.NIC)
                 allNICs.add((NIC)dev);
         }
 
@@ -151,7 +151,7 @@ public class NetworkModel implements Serializable {
     {
         for(NetworkDevice dev : networkDevices.values())
         {
-            if(dev instanceof NIC)
+            if(dev.getType() == NetworkDeviceType.NIC)
                 if(((NIC)dev).getIpAddress().equals(adress))
                     return (NIC)dev;
         }

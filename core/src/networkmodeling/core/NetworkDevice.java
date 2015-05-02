@@ -12,6 +12,7 @@ public abstract class NetworkDevice implements Serializable {
         for (int i = 0; i < portCount; ++i) {
             this.ports[i] = new Port(this);
         }
+        deviceType = null;
     }
 
     public abstract void handleIncomingFrame(Frame frame, Port receivingPort);
@@ -89,6 +90,11 @@ public abstract class NetworkDevice implements Serializable {
     public int getPortsCount() {
         return ports.length;
     }
+    
+    public NetworkDeviceType getType()
+    {
+        return deviceType;
+    }
 
     public abstract String getDescription();
 
@@ -110,4 +116,5 @@ public abstract class NetworkDevice implements Serializable {
 
     private final MacAddress macAddress;
     private final Port[] ports;
+    protected NetworkDeviceType deviceType;
 }

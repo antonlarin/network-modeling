@@ -14,34 +14,36 @@ public class NetworkModelTestResult {
     
     private String[] generateTestLog()
     {
-        String log[] = new String[testRoutes.size()];
+        String log[] = new String[testRoutes.size() + 1];
         
-        int logStringsNumber = log.length;
+        int logStringsNumber = testRoutes.size();
         
         for(int i=0; i< logStringsNumber; i++)
         {
             LinkedList<NetworkDevice> currentRoute = testRoutes.pop();
         
-            if(currentRoute.peekFirst() instanceof NIC && 
-                    currentRoute.peek() instanceof NIC)
-            {
-                log[i] = "\nSender: NIC with Ip: " + 
-                        ((NIC)currentRoute.peekFirst()).getIpAddress().toString();
-                log[i] += "\nReceiver " + ((NIC)currentRoute.peekLast()).getIpAddress().toString() + "\n";
-                currentRoute.removeFirst();
-                currentRoute.removeLast();
-            }
+            log[i] = "\nSender: " + 
+                    ((NIC)currentRoute.peekFirst()).getDescription();
+            log[i] += "\nReceiver: " + 
+                    ((NIC)currentRoute.peekLast()).getDescription() + "\n";
+            currentRoute.removeFirst();
+            currentRoute.removeLast();
+            
             log[i] += "Route:";
+            if(currentRoute.isEmpty())
+                log[i] += " direct";
             while(!currentRoute.isEmpty())
             {
                 NetworkDevice dev = currentRoute.pollFirst();
-                if(dev instanceof Switch)
-                    log[i] +=" switch with mac" + dev.getMacAddress().toString();
-                else if(dev instanceof Hub)
-                    log[i] +=" hub with mac" + dev.getMacAddress().toString();
+                log[i] += " " + dev.getDescription();
             }
             log[i]+="\n";
         }
+        
+        if(isTestPassed)
+            log[logStringsNumber] = "\nResult: test passed.";
+        else
+            log[logStringsNumber] = "\nResult: test failed.";
         
         return log;
     }

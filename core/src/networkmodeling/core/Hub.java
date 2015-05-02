@@ -5,10 +5,12 @@ import networkmodeling.exceptions.UnboundPortException;
 public class Hub extends NetworkDevice {
     public Hub(MacAddress macAddress, int portCount) {
         super(macAddress, portCount);
+        deviceType = NetworkDeviceType.Hub;
     }
 
     public Hub() {
         this(MacAddress.getRandomAddress(), 8);
+        deviceType = NetworkDeviceType.Hub;
     }
 
     @Override

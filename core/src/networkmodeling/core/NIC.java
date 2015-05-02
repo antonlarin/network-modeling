@@ -11,12 +11,14 @@ public class NIC extends IpBasedNetworkDevice {
         this.incomingData = new LinkedList<>();
         this.gatewayIp = gatewayIp;
         this.lastIncomingDataRoute = new LinkedList<>();
+        deviceType = NetworkDeviceType.NIC;
     }
 
     public NIC() {
         this(MacAddress.getRandomAddress(),
             new IpAddress((short)0, (short)0, (short)0, (short)0),
             new IpAddress((short)0, (short)0, (short)0, (short)0));
+        deviceType = NetworkDeviceType.NIC;
     }
 
     public IpAddress getGateway() {

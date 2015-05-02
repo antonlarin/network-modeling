@@ -69,11 +69,6 @@ public class NetworkTestDialog extends JDialog {
             for (int i = 0; i < testNetworkLog.length; ++i) {
                 testLogTextArea.append(testNetworkLog[i]);
             }
-            if (clientAppModel.getNetworkTestResult().getTestResult()) {
-                testLogTextArea.append("Result: test passed.");
-            } else {
-                testLogTextArea.append("Result: test failed.");
-            }
         }
     }
 }
