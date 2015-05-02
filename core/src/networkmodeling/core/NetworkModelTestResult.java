@@ -27,7 +27,7 @@ public class NetworkModelTestResult {
             {
                 log[i] = "\nSender: NIC with Ip: " + 
                         ((NIC)currentRoute.peekFirst()).getIpAddress().toString();
-                log[i] += "\nReceiver " + ((NIC)currentRoute.peek()).getIpAddress().toString() + "\n";
+                log[i] += "\nReceiver " + ((NIC)currentRoute.peekLast()).getIpAddress().toString() + "\n";
                 currentRoute.removeFirst();
                 currentRoute.removeLast();
             }
