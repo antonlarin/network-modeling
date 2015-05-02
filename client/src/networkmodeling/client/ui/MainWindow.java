@@ -15,10 +15,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
 public class MainWindow extends JFrame {
-    
+
     public MainWindow(WindowManager windowManager) {
         this.windowManager = windowManager;
-        toolbarPanel = new ButtonToolbar(windowManager.getClientAppModel());
+        toolbarPanel = new ButtonToolbar(windowManager);
         JScrollPane palettePane = arrangeDevicePalette();
         propertiesPanel =
             new PropertiesPanel(windowManager.getClientAppModel());
@@ -28,45 +28,45 @@ public class MainWindow extends JFrame {
         setPreferredSize(new Dimension(800, 600));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new MainWindowListener(this));
-        
+
         JPanel leftMenu = new JPanel();
         leftMenu.setLayout(new BoxLayout(leftMenu, BoxLayout.PAGE_AXIS));
         leftMenu.add(palettePane);
         leftMenu.add(propertiesPanel);
         leftMenu.setPreferredSize(new Dimension(220, 50));
-        
+
         setLayout(new BorderLayout());
         add(toolbarPanel, BorderLayout.NORTH);
         add(leftMenu, BorderLayout.WEST);
         add(diagramPanel, BorderLayout.CENTER);
-        
+
         windowManager.getClientAppModel().
             addPropertyChangeListener("selectedNode",
             propertiesPanel.new SelectedNodeChangeListener());
     }
-    
+
     public void cleanup() {
         windowManager.getClientAppModel().getClientDaemon().disconnect();
     }
 
-    
+
     private JScrollPane arrangeDevicePalette() {
         JList<String> devicePalette = new JList<>();
         devicePalette.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         devicePalette.setLayoutOrientation(JList.VERTICAL);
-        
+
         DefaultListModel<String> devices = new DefaultListModel<>();
         devices.addElement("NIC");
         devices.addElement("Hub");
         devices.addElement("Switch");
         devicePalette.setModel(devices);
-        
+
         devicePalette.setDragEnabled(true);
-        
+
         JScrollPane palettePane = new JScrollPane(devicePalette);
         palettePane.setBorder(
             BorderFactory.createTitledBorder("Device palette"));
-        
+
         return palettePane;
     }
 
@@ -84,10 +84,10 @@ public class MainWindow extends JFrame {
     private final ButtonToolbar toolbarPanel;
     private final PropertiesPanel propertiesPanel;
     private final DiagramPanel diagramPanel;
-    
-    
+
+
     private class MainWindowListener implements WindowListener {
-        
+
         public MainWindowListener(MainWindow window) {
             this.mainWindow = window;
         }

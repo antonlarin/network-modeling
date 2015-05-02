@@ -3,11 +3,16 @@ package networkmodeling.client.ui;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingWorker;
 import networkmodeling.client.ClientDaemon;
 import networkmodeling.core.Hub;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
+import networkmodeling.core.NetworkModelTestResult;
 import networkmodeling.core.NetworkVisualModel;
 import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphEdge;
@@ -21,6 +26,8 @@ public class ClientAppModel {
         pcs = new PropertyChangeSupport(this);
         selectedNode = null;
         selectedEdge = null;
+        networkTestRunner = null;
+        networkTestResult = null;
     }
 
     public ClientDaemon getClientDaemon() {
@@ -57,6 +64,15 @@ public class ClientAppModel {
         NetworkGraphEdge oldSelectedEdge = selectedEdge;
         selectedEdge = connection;
         pcs.firePropertyChange("selectedEdge", oldSelectedEdge, connection);
+    }
+
+    public NetworkModelTestResult getNetworkTestResult() {
+        return networkTestResult;
+    }
+
+    public void setNetworkTestResult(NetworkModelTestResult result) {
+        networkTestResult = result;
+        pcs.firePropertyChange("networkTestResult", null, result);
     }
 
     public void addPropertyChangeListener(String propertyName,
@@ -136,10 +152,39 @@ public class ClientAppModel {
         selectedNode.setY(newLocation.getY());
     }
 
+    public void testNetwork() {
+        networkTestResult = null;
+        networkTestRunner = new NetworkTestRunner();
+        networkTestRunner.execute();
+    }
+
 
     private final PropertyChangeSupport pcs;
     private ClientDaemon clientDaemon;
     private NetworkVisualModel visualModel;
     private NetworkGraphNode selectedNode;
     private NetworkGraphEdge selectedEdge;
+    private NetworkTestRunner networkTestRunner;
+    private NetworkModelTestResult networkTestResult;
+
+
+
+    private class NetworkTestRunner
+        extends SwingWorker<NetworkModelTestResult, Void> {
+
+        @Override
+        protected NetworkModelTestResult doInBackground() {
+            return visualModel.GetModel().TestNetwork();
+        }
+
+        @Override
+        protected void done() {
+            try {
+                setNetworkTestResult(get());
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(ClientAppModel.class.getName()).log(
+                    Level.SEVERE, null, ex);
+            }
+        }
+    }
 }

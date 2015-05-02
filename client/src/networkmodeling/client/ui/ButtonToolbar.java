@@ -12,9 +12,9 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 public class ButtonToolbar extends JPanel {
-    
-    public ButtonToolbar(ClientAppModel clientAppModel) {
-        this.clientAppModel = clientAppModel;
+
+    public ButtonToolbar(WindowManager windowManager) {
+        this.windowManager = windowManager;
         connectButton = new JButton("Connect");
         disconnectButton = new JButton("Disconnect");
         testNetworkButton = new JButton("Test network");
@@ -33,8 +33,10 @@ public class ButtonToolbar extends JPanel {
         removeButton.addActionListener(new RemoveElementListener());
         removeButton.setEnabled(false);
         ElementForRemovalListener efrListener = new ElementForRemovalListener();
-        clientAppModel.addPropertyChangeListener("selectedNode", efrListener);
-        clientAppModel.addPropertyChangeListener("selectedEdge", efrListener);
+        windowManager.getClientAppModel().addPropertyChangeListener(
+            "selectedNode", efrListener);
+        windowManager.getClientAppModel().addPropertyChangeListener(
+            "selectedEdge", efrListener);
 
         setLayout(new FlowLayout(FlowLayout.LEADING));
         add(connectButton);
@@ -46,7 +48,7 @@ public class ButtonToolbar extends JPanel {
 
 
 
-    private ClientAppModel clientAppModel;
+    private final WindowManager windowManager;
     private final JButton connectButton;
     private final JButton disconnectButton;
     private final JButton testNetworkButton;
@@ -57,33 +59,36 @@ public class ButtonToolbar extends JPanel {
     private class ConnectListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            clientAppModel.getClientDaemon().connectToServer();
+            windowManager.getClientAppModel().getClientDaemon().
+                connectToServer();
             connectButton.setEnabled(false);
             disconnectButton.setEnabled(true);
         }
     }
-    
+
     private class DisconnectListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            clientAppModel.getClientDaemon().disconnect();
-            clientAppModel.resetClientDaemon();
+            windowManager.getClientAppModel().getClientDaemon().disconnect();
+            windowManager.getClientAppModel().resetClientDaemon();
             connectButton.setEnabled(true);
             disconnectButton.setEnabled(false);
         }
     }
-    
+
     private class TestNetworkListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-//            clientAppModel.getVisualModel().GetModel().TestNetwork();
+            windowManager.showNetworkTestDialog();
+            windowManager.getClientAppModel().testNetwork();
         }
     }
-    
+
     private class ElementForRemovalListener implements PropertyChangeListener {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
+            ClientAppModel clientAppModel = windowManager.getClientAppModel();
             if (clientAppModel.getSelectedEdge() == null &&
                 clientAppModel.getSelectedNode() == null) {
                 removeButton.setEnabled(false);
@@ -92,12 +97,13 @@ public class ButtonToolbar extends JPanel {
             }
         }
     }
-    
+
     private class RemoveElementListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (clientAppModel.getSelectedEdge() != null) {                
+            ClientAppModel clientAppModel = windowManager.getClientAppModel();
+            if (clientAppModel.getSelectedEdge() != null) {
                 clientAppModel.removeSelectedEdge();
             } else if (clientAppModel.getSelectedNode() != null) {
                 clientAppModel.removeSelectedNode();
