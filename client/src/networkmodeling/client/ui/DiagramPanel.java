@@ -2,6 +2,7 @@ package networkmodeling.client.ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,7 +13,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
-import static java.awt.event.MouseEvent.BUTTON1;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
@@ -40,6 +40,8 @@ public class DiagramPanel extends JPanel implements Observer {
         drawnConnectionStart = null;
         drawnConnectionEnd = null;
         viewportStart = new Point(0, 0);
+        viewportPanStart = null;
+        panningViewport = false;
         DiagramMouseHandler mouseListener = new DiagramMouseHandler();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
@@ -178,18 +180,18 @@ public class DiagramPanel extends JPanel implements Observer {
     }
 
     private Point2D.Double convertToDiagramSpace(Point location) {
-        double xScalingFactor = 1.0 / this.getWidth();
-        double yScalingFactor = 1.0 / this.getHeight();
-        double x = (location.x - viewportStart.x) * xScalingFactor;
-        double y = (location.y - viewportStart.y) * yScalingFactor;
+        double xScalingFactor = 1.0 / panelDiagramSpacesRatio;
+        double yScalingFactor = 1.0 / panelDiagramSpacesRatio;
+        double x = (location.x + viewportStart.x) * xScalingFactor;
+        double y = (location.y + viewportStart.y) * yScalingFactor;
         return new Point2D.Double(x, y);
     }
 
     private Point convertToPanelSpace(Point2D.Double location) {
-        double xScalingFactor = this.getWidth();
-        double yScalingFactor = this.getHeight();
-        int x = viewportStart.x + (int)(location.x * xScalingFactor);
-        int y = viewportStart.y + (int)(location.y * yScalingFactor);
+        double xScalingFactor = panelDiagramSpacesRatio;
+        double yScalingFactor = panelDiagramSpacesRatio;
+        int x = (int)(location.x * xScalingFactor) - viewportStart.x;
+        int y = (int)(location.y * yScalingFactor) - viewportStart.y;
         return new Point(x, y);
     }
     
@@ -273,6 +275,7 @@ public class DiagramPanel extends JPanel implements Observer {
 
 
 
+    private static final int panelDiagramSpacesRatio = 500;
     private static final String imageRoot = "img/";
     private static final BufferedImage nicImage;
     private static final BufferedImage hubImage;
@@ -291,7 +294,10 @@ public class DiagramPanel extends JPanel implements Observer {
     }
 
     private final WindowManager windowManager;
-    private final Point viewportStart;
+    private Point oldViewportStart;
+    private Point viewportStart;
+    private Point viewportPanStart;
+    private boolean panningViewport;
     private boolean creatingConnection;
     private NetworkGraphNode drawnConnectionStart;
     private Point drawnConnectionEnd;
@@ -302,51 +308,61 @@ public class DiagramPanel extends JPanel implements Observer {
         
         @Override
         public void mousePressed(MouseEvent e) {
-            boolean pressedOnDevice = false;
-            LinkedList<NetworkGraphNode> deviceNodes =
-                windowManager.getClientAppModel().getVisualModel().
-                GetGraph().getNodes();
-            for (NetworkGraphNode deviceNode : deviceNodes) {
-                if (pointOverNode(deviceNode, e.getPoint()) &&
-                    e.getButton() == BUTTON1) {
-                    if (e.isControlDown()) {
-                        pressedOnDevice = true;
-                        creatingConnection = true;
-                        drawnConnectionStart = deviceNode;
-                        drawnConnectionEnd = e.getPoint();
-                        windowManager.getClientAppModel().setSelectedNode(null);
-                    } else {
-                        pressedOnDevice = true;
-                        windowManager.getClientAppModel().setSelectedNode(
-                            deviceNode);
-                    }
-                    windowManager.getClientAppModel().setSelectedEdge(null);
-                    break;
-                }
-            }
-            
-            if (!pressedOnDevice) {
-                windowManager.getClientAppModel().setSelectedNode(null);
-
-                boolean pressedOnConnection = false;
-                LinkedList<NetworkGraphEdge> connectionEdges =
+            if (e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
+                boolean pressedOnDevice = false;
+                LinkedList<NetworkGraphNode> deviceNodes =
                     windowManager.getClientAppModel().getVisualModel().
-                    GetGraph().getEdges();
-                for (NetworkGraphEdge connectionEdge : connectionEdges) {
-                    if (pointOverEdge(connectionEdge, e.getPoint()) &&
-                        e.getButton() == BUTTON1) {
-                        windowManager.getClientAppModel().setSelectedEdge(
-                            connectionEdge);
-                        pressedOnConnection = true;
+                    GetGraph().getNodes();
+                for (NetworkGraphNode deviceNode : deviceNodes) {
+                    if (pointOverNode(deviceNode, e.getPoint())) {
+                        if (e.isControlDown()) {
+                            pressedOnDevice = true;
+                            creatingConnection = true;
+                            drawnConnectionStart = deviceNode;
+                            drawnConnectionEnd = e.getPoint();
+                            windowManager.getClientAppModel().
+                                setSelectedNode(null);
+                        } else {
+                            pressedOnDevice = true;
+                            windowManager.getClientAppModel().setSelectedNode(
+                                deviceNode);
+                        }
+                        windowManager.getClientAppModel().setSelectedEdge(null);
                         break;
                     }
                 }
 
-                if (!pressedOnConnection) {
-                    windowManager.getClientAppModel().setSelectedEdge(null);
+                if (!pressedOnDevice) {
+                    windowManager.getClientAppModel().setSelectedNode(null);
+
+                    boolean pressedOnConnection = false;
+                    LinkedList<NetworkGraphEdge> connectionEdges =
+                        windowManager.getClientAppModel().getVisualModel().
+                        GetGraph().getEdges();
+                    for (NetworkGraphEdge connectionEdge : connectionEdges) {
+                        if (pointOverEdge(connectionEdge, e.getPoint())) {
+                            windowManager.getClientAppModel().setSelectedEdge(
+                                connectionEdge);
+                            pressedOnConnection = true;
+                            break;
+                        }
+                    }
+
+                    if (!pressedOnConnection) {
+                        windowManager.getClientAppModel().setSelectedEdge(null);
+                    }
                 }
+            } else if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
+                windowManager.getClientAppModel().setSelectedNode(null);
+                windowManager.getClientAppModel().setSelectedEdge(null);
+                panningViewport = true;
+                oldViewportStart = new Point(viewportStart.x, viewportStart.y);
+                viewportPanStart = new Point();
+                viewportPanStart.x = e.getPoint().x;
+                viewportPanStart.y = e.getPoint().y;
+                DiagramPanel.this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
             }
-            repaint();
+            DiagramPanel.this.repaint();
         }
         
         @Override
@@ -362,12 +378,17 @@ public class DiagramPanel extends JPanel implements Observer {
                             connectDevices(drawnConnectionStart, deviceNode);
                         break;
                     } else {
-                        repaint();
+                        DiagramPanel.this.repaint();
                     }
                 }
                 creatingConnection = false;
                 drawnConnectionStart = null;
                 drawnConnectionEnd = null;
+            } else if (panningViewport) {
+                panningViewport = false;
+                oldViewportStart = null;
+                viewportPanStart = null;
+                DiagramPanel.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         }
         
@@ -378,11 +399,15 @@ public class DiagramPanel extends JPanel implements Observer {
                     convertToDiagramSpace(e.getPoint());
                 windowManager.getClientAppModel().changeSelectedNodeLocation(
                     diagramLocation);
-                DiagramPanel.this.repaint();
             } else if (creatingConnection) {
                 drawnConnectionEnd = e.getPoint();
-                DiagramPanel.this.repaint();
+            } else if (panningViewport) {
+                viewportStart.x = oldViewportStart.x - e.getX() +
+                    viewportPanStart.x;
+                viewportStart.y = oldViewportStart.y - e.getY() +
+                    viewportPanStart.y;
             }
+            DiagramPanel.this.repaint();
         }
     }
     
