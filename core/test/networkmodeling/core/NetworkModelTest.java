@@ -1,6 +1,7 @@
 
 package networkmodeling.core;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import junit.framework.TestCase;
 
@@ -53,8 +54,9 @@ public class NetworkModelTest extends TestCase {
         boolean expResult = true;
         
         assertEquals(expResult, result);
-
-        if(! instance.TestNetwork())
+        
+        System.out.print(Arrays.toString(instance.TestNetwork().getTestLog()));
+        if(! instance.TestNetwork().getTestResult())
             fail("testNetwork Failed!");
     }
 /*

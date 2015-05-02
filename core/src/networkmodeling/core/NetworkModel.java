@@ -59,9 +59,10 @@ public class NetworkModel implements Serializable {
         return false;
     }
 
-    public boolean TestNetwork()
+    public NetworkModelTestResult TestNetwork()
     {
         LinkedList<NIC> allNICs = new LinkedList<>();
+        LinkedList<LinkedList<NetworkDevice>> routes = new LinkedList<>();
         
         for(NetworkDevice dev : networkDevices.values())
         {
@@ -79,15 +80,20 @@ public class NetworkModel implements Serializable {
             {
                 NIC sender = j.next();
                 sender.sendData(data, nicForTest.getIpAddress());
+                routes.add(nicForTest.getLastIncomingDataRoute());
+                
                 if(!nicForTest.GetIncomingData().equals(data))
-                    return false;
+                    return new NetworkModelTestResult(false, routes);
+                
                 nicForTest.sendData(data, sender.getIpAddress());
+                routes.add(sender.getLastIncomingDataRoute());
+                
                 if(!sender.GetIncomingData().equals(data))
-                    return false;
+                    return new NetworkModelTestResult(false, routes);
             }
         }
         
-        return true;
+        return new NetworkModelTestResult(true, routes);
     }
 
     public boolean SendData(IpAddress sourceIP, Object data, IpAddress target)
