@@ -111,6 +111,8 @@ public class NIC extends IpBasedNetworkDevice {
     
     public Object GetIncomingData()
     {
+        if(incomingData.isEmpty())
+            return new String();
         return incomingData.pop();
     }
     
