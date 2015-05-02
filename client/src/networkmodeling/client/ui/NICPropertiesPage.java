@@ -19,8 +19,8 @@ public class NICPropertiesPage extends JPanel {
     public NICPropertiesPage(ClientAppModel clientAppModel) {
         this.clientAppModel = clientAppModel;
         macLabel = new JLabel("");
-        ipTextField = new JTextField("<nic-ip>");
-        gatewayIpTextField = new JTextField("<gateway-ip>");
+        ipTextField = new JTextField("");
+        gatewayTextField = new JTextField("");
         applyButton = new JButton("Apply changes");
 
         setupPage();
@@ -30,6 +30,7 @@ public class NICPropertiesPage extends JPanel {
         associatedDevice = (NIC) node.getNodeDevice();
         macLabel.setText(associatedDevice.getMacAddress().toString());
         ipTextField.setText(associatedDevice.getIpAddress().toString());
+        gatewayTextField.setText(associatedDevice.getGateway().toString());
     }
 
 
@@ -38,7 +39,7 @@ public class NICPropertiesPage extends JPanel {
         JLabel deviceTypeLabel = new JLabel("Device type: NIC");
         JLabel macTitleLabel = new JLabel("MAC address:");
         JLabel ipTitleLabel = new JLabel("IP address:");
-        JLabel gatewayIpTitleLabel = new JLabel("Gateway IP:");
+        JLabel gatewayTitleLabel = new JLabel("Gateway IP:");
         ipTextField.getDocument().addDocumentListener(new IpChangeListener());
         applyButton.setEnabled(false);
         applyButton.addActionListener(new IpAssignmentListener());
@@ -55,11 +56,11 @@ public class NICPropertiesPage extends JPanel {
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macTitleLabel)
                         .addComponent(ipTitleLabel)
-                        .addComponent(gatewayIpTitleLabel))
+                        .addComponent(gatewayTitleLabel))
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macLabel)
                         .addComponent(ipTextField)
-                        .addComponent(gatewayIpTextField)))
+                        .addComponent(gatewayTextField)))
                 .addComponent(applyButton)
         );
         layout.setVerticalGroup(
@@ -72,8 +73,8 @@ public class NICPropertiesPage extends JPanel {
                     .addComponent(ipTitleLabel)
                     .addComponent(ipTextField))
                 .addGroup(layout.createParallelGroup()
-                    .addComponent(gatewayIpTitleLabel)
-                    .addComponent(gatewayIpTextField))
+                    .addComponent(gatewayTitleLabel)
+                    .addComponent(gatewayTextField))
                 .addComponent(applyButton)
         );
         
@@ -84,7 +85,7 @@ public class NICPropertiesPage extends JPanel {
 
     private final JLabel macLabel;
     private final JTextField ipTextField;
-    private final JTextField gatewayIpTextField;
+    private final JTextField gatewayTextField;
     private final JButton applyButton;
     private NIC associatedDevice;
     private final ClientAppModel clientAppModel;

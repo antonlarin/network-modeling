@@ -16,12 +16,13 @@ import javax.swing.SwingUtilities;
 
 public class MainWindow extends JFrame {
     
-    public MainWindow(ClientAppModel clientAppModel) {
-        this.clientAppModel = clientAppModel;
-        toolbarPanel = new ButtonToolbar(clientAppModel);
+    public MainWindow(WindowManager windowManager) {
+        this.windowManager = windowManager;
+        toolbarPanel = new ButtonToolbar(windowManager.getClientAppModel());
         JScrollPane palettePane = arrangeDevicePalette();
-        propertiesPanel = new PropertiesPanel(clientAppModel);
-        diagramPanel = new DiagramPanel(clientAppModel);
+        propertiesPanel =
+            new PropertiesPanel(windowManager.getClientAppModel());
+        diagramPanel = new DiagramPanel(windowManager);
 
         setTitle("Networkmodeling Client");
         setPreferredSize(new Dimension(800, 600));
@@ -39,12 +40,13 @@ public class MainWindow extends JFrame {
         add(leftMenu, BorderLayout.WEST);
         add(diagramPanel, BorderLayout.CENTER);
         
-        clientAppModel.addPropertyChangeListener("selectedNode",
+        windowManager.getClientAppModel().
+            addPropertyChangeListener("selectedNode",
             propertiesPanel.new SelectedNodeChangeListener());
     }
     
     public void cleanup() {
-        clientAppModel.getClientDaemon().disconnect();
+        windowManager.getClientAppModel().getClientDaemon().disconnect();
     }
 
     
@@ -72,15 +74,13 @@ public class MainWindow extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ClientAppModel clientAppModel = new ClientAppModel();
-                MainWindow mainWindow = new MainWindow(clientAppModel);
-                mainWindow.pack();
+                MainWindow mainWindow = new MainWindow(null);
                 mainWindow.setVisible(true);
             }
         });
     }
 
-    private final ClientAppModel clientAppModel;
+    private final WindowManager windowManager;
     private final ButtonToolbar toolbarPanel;
     private final PropertiesPanel propertiesPanel;
     private final DiagramPanel diagramPanel;

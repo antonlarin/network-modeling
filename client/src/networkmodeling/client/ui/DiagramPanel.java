@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import static java.awt.event.MouseEvent.BUTTON1;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -32,9 +34,9 @@ import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class DiagramPanel extends JPanel implements Observer {
     
-    public DiagramPanel(ClientAppModel clientAppModel) {
-        this.clientAppModel = clientAppModel;
-        clientAppModel.getClientDaemon().addObserver(this);
+    public DiagramPanel(WindowManager windowManager) {
+        this.windowManager = windowManager;
+        windowManager.getClientAppModel().getClientDaemon().addObserver(this);
         drawnConnectionStart = null;
         drawnConnectionEnd = null;
         viewportStart = new Point(0, 0);
@@ -44,6 +46,9 @@ public class DiagramPanel extends JPanel implements Observer {
 
         this.setDoubleBuffered(true);
         this.setTransferHandler(new AddDeviceHandler());
+        
+        windowManager.getClientAppModel().addPropertyChangeListener(
+            "visualModel", new VisualModelChangeListener());
     }
 
 
@@ -84,7 +89,8 @@ public class DiagramPanel extends JPanel implements Observer {
         g2.setStroke(connectionStroke);
 
         LinkedList<NetworkGraphEdge> connections =
-            clientAppModel.getVisualModel().GetGraph().getEdges();
+            windowManager.getClientAppModel().getVisualModel().
+            GetGraph().getEdges();
         for (NetworkGraphEdge connection : connections) {
             NetworkGraphNode end1 = connection.getFirstNode();
             NetworkGraphNode end2 = connection.getSecondNode();
@@ -110,7 +116,8 @@ public class DiagramPanel extends JPanel implements Observer {
     private void drawDevices(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         LinkedList<NetworkGraphNode> deviceNodes =
-            clientAppModel.getVisualModel().GetGraph().getNodes();
+            windowManager.getClientAppModel().getVisualModel().
+            GetGraph().getNodes();
         for (NetworkGraphNode deviceNode : deviceNodes) {
             BufferedImage deviceIcon = getDeviceIcon(deviceNode);
             int halfImageWidth = deviceIcon.getWidth() / 2;
@@ -121,7 +128,8 @@ public class DiagramPanel extends JPanel implements Observer {
             g2.drawImage(deviceIcon, location.x - halfImageWidth,
                 location.y - halfImageHeight, null);
             
-            if (deviceNode == clientAppModel.getSelectedNode()) {
+            if (deviceNode ==
+                windowManager.getClientAppModel().getSelectedNode()) {
                 Stroke defaultStroke = g2.getStroke();
                 Color defaultColor = g2.getColor();
                 BasicStroke selectionStroke = new BasicStroke(1.3f);
@@ -140,9 +148,20 @@ public class DiagramPanel extends JPanel implements Observer {
 
     private void addDevice(String deviceTypeName, Point location) {
         Point2D.Double diagramSpaceLocation = convertToDiagramSpace(location);
-        clientAppModel.addDevice(deviceTypeName, diagramSpaceLocation);
-
-        repaint();
+        switch (deviceTypeName) {
+        case "Hub":
+//            windowManager.showHubAdditionDialog(diagramSpaceLocation);
+            break;
+        case "Switch":
+//            windowManager.showSwitchAdditionDialog(diagramSpaceLocation);
+            break;
+//        case "Router":
+//            windowManager.showRouterAdditionDialog(diagramSpaceLocation);
+//            break;
+        default:
+            windowManager.showNICAdditionDialog(diagramSpaceLocation);
+            break;
+        }
     }
 
     private Point2D.Double convertToDiagramSpace(Point location) {
@@ -220,7 +239,7 @@ public class DiagramPanel extends JPanel implements Observer {
         }
     }
 
-    private final ClientAppModel clientAppModel;
+    private final WindowManager windowManager;
     private final Point viewportStart;
     private boolean creatingConnection;
     private NetworkGraphNode drawnConnectionStart;
@@ -234,7 +253,8 @@ public class DiagramPanel extends JPanel implements Observer {
         public void mousePressed(MouseEvent e) {
             boolean pressedOnDevice = false;
             LinkedList<NetworkGraphNode> deviceNodes =
-                clientAppModel.getVisualModel().GetGraph().getNodes();
+                windowManager.getClientAppModel().getVisualModel().
+                GetGraph().getNodes();
             for (NetworkGraphNode deviceNode : deviceNodes) {
                 if (pointOverNode(deviceNode, e.getPoint()) &&
                     e.getButton() == BUTTON1) {
@@ -243,17 +263,18 @@ public class DiagramPanel extends JPanel implements Observer {
                         creatingConnection = true;
                         drawnConnectionStart = deviceNode;
                         drawnConnectionEnd = e.getPoint();
-                        clientAppModel.setSelectedNode(null);
+                        windowManager.getClientAppModel().setSelectedNode(null);
                     } else {
                         pressedOnDevice = true;
-                        clientAppModel.setSelectedNode(deviceNode);
+                        windowManager.getClientAppModel().setSelectedNode(
+                            deviceNode);
                     }
                     break;
                 }
             }
             
             if (!pressedOnDevice) {
-                clientAppModel.setSelectedNode(null);
+                windowManager.getClientAppModel().setSelectedNode(null);
             }
             repaint();
         }
@@ -262,12 +283,13 @@ public class DiagramPanel extends JPanel implements Observer {
         public void mouseReleased(MouseEvent e) {
             if (creatingConnection) {
                 LinkedList<NetworkGraphNode> deviceNodes =
-                clientAppModel.getVisualModel().GetGraph().getNodes();
+                windowManager.getClientAppModel().getVisualModel().
+                    GetGraph().getNodes();
                 for (NetworkGraphNode deviceNode : deviceNodes) {
                     if (deviceNode != drawnConnectionStart &&
                         pointOverNode(deviceNode, e.getPoint())) {
-                        clientAppModel.connectDevices(drawnConnectionStart,
-                            deviceNode);
+                        windowManager.getClientAppModel().
+                            connectDevices(drawnConnectionStart, deviceNode);
                         break;
                     } else {
                         repaint();
@@ -281,10 +303,11 @@ public class DiagramPanel extends JPanel implements Observer {
         
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (clientAppModel.getSelectedNode() != null) {
+            if (windowManager.getClientAppModel().getSelectedNode() != null) {
                 Point2D.Double diagramLocation =
                     convertToDiagramSpace(e.getPoint());
-                clientAppModel.changeSelectedNodeLocation(diagramLocation);
+                windowManager.getClientAppModel().changeSelectedNodeLocation(
+                    diagramLocation);
                 DiagramPanel.this.repaint();
             } else if (creatingConnection) {
                 drawnConnectionEnd = e.getPoint();
@@ -323,6 +346,14 @@ public class DiagramPanel extends JPanel implements Observer {
             DiagramPanel.this.addDevice(deviceType, location.getDropPoint());
 
             return true;
+        }
+    }
+    
+    private class VisualModelChangeListener implements PropertyChangeListener {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            DiagramPanel.this.repaint();
         }
     }
 }

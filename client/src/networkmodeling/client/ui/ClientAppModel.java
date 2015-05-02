@@ -4,12 +4,10 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import networkmodeling.client.ClientDaemon;
-import networkmodeling.core.Hub;
 import networkmodeling.core.IpAddress;
+import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
-import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.NetworkVisualModel;
-import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class ClientAppModel {
@@ -58,27 +56,15 @@ public class ClientAppModel {
         pcs.removePropertyChangeListener(propertyName, listener);
     }
     
-    public void addDevice(String deviceTypeName, Point2D.Double location) {
-        NetworkDevice underlyingDevice;
-        NetworkGraphNode deviceNode;
-        switch (deviceTypeName) {
-        case "Hub":
-            underlyingDevice = new Hub();
-            break;
-        case "Switch":
-            underlyingDevice = new Switch();
-            break;
-//        case "Router":
-//            underlyingDevice = new Router();
-//            break;
-        default:
-            underlyingDevice = new NIC();
-            break;
-        }
-        deviceNode = new NetworkGraphNode(underlyingDevice,
+    public void addNICWithProperties(String ip, String gateway,
+        Point2D.Double location) {
+        NIC nic = new NIC(MacAddress.getRandomAddress(), new IpAddress(ip),
+            new IpAddress(gateway));
+        NetworkGraphNode deviceNode = new NetworkGraphNode(nic,
             location.x, location.y);
         clientDaemon.SendAddDevicesRequest(deviceNode);
         visualModel.AddDevice(deviceNode);
+        pcs.firePropertyChange("visualModel", null, visualModel);
     }
     
     public void connectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2) {
@@ -100,8 +86,8 @@ public class ClientAppModel {
     }
     
     
+    private final PropertyChangeSupport pcs;
     private ClientDaemon clientDaemon;
     private NetworkVisualModel visualModel;
-    private PropertyChangeSupport pcs;
     private NetworkGraphNode selectedNode;
 }

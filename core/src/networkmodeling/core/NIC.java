@@ -17,6 +17,10 @@ public class NIC extends IpBasedNetworkDevice {
             new IpAddress((short)0, (short)0, (short)0, (short)0),
             new IpAddress((short)0, (short)0, (short)0, (short)0));
     }
+    
+    public IpAddress getGateway() {
+        return gatewayIp;
+    }
 
     @Override
     public void handleIncomingFrame(Frame frame, Port receivingPort) {
