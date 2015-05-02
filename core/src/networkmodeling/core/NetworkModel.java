@@ -1,11 +1,9 @@
 package networkmodeling.core;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import networkmodeling.exceptions.NoFreePortsException;
 
 public class NetworkModel implements Serializable {
@@ -22,27 +20,22 @@ public class NetworkModel implements Serializable {
             networkDevices.put(dev.getMacAddress(), dev);
             return true;
         }
-        
+
         return false;
     }
 
     public boolean ConnectDevices(NetworkDevice dev1, NetworkDevice dev2)
+        throws NoFreePortsException
     {
         if(networkDevices.containsKey(dev1.getMacAddress()) &&
                 networkDevices.containsKey(dev2.getMacAddress()))
         {
-            try {
-                
                 NetworkDevice localDev1 = networkDevices.get(dev1.getMacAddress());
                 NetworkDevice localDev2 = networkDevices.get(dev2.getMacAddress());
                 localDev1.connectTo(localDev2);
                 return true;
-                
-            } catch (NoFreePortsException ex) {
-                Logger.getLogger(NetworkModel.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
-        
+
         return false;
     }
 
@@ -63,36 +56,36 @@ public class NetworkModel implements Serializable {
     {
         LinkedList<NIC> allNICs = new LinkedList<>();
         LinkedList<LinkedList<NetworkDevice>> routes = new LinkedList<>();
-        
+
         for(NetworkDevice dev : networkDevices.values())
         {
             if(dev instanceof NIC)
                 allNICs.add((NIC)dev);
         }
-        
+
         while(!allNICs.isEmpty())
         {
             NIC nicForTest = allNICs.pop();
             String data = new String("Test");
-            
+
             Iterator<NIC> j = allNICs.iterator();
             while(j.hasNext())
             {
                 NIC sender = j.next();
                 sender.sendData(data, nicForTest.getIpAddress());
                 routes.add(nicForTest.getLastIncomingDataRoute());
-                
+
                 if(!nicForTest.GetIncomingData().equals(data))
                     return new NetworkModelTestResult(false, routes);
-                
+
                 nicForTest.sendData(data, sender.getIpAddress());
                 routes.add(sender.getLastIncomingDataRoute());
-                
+
                 if(!sender.GetIncomingData().equals(data))
                     return new NetworkModelTestResult(false, routes);
             }
         }
-        
+
         return new NetworkModelTestResult(true, routes);
     }
 
@@ -116,10 +109,10 @@ public class NetworkModel implements Serializable {
             NetworkDevice devForDelete = networkDevices.get(dev.getMacAddress());
             devForDelete.DisconnectFromAll();
             networkDevices.remove(dev.getMacAddress());
-            
+
             return true;
         }
-        
+
         return false;
     }
 
@@ -137,7 +130,7 @@ public class NetworkModel implements Serializable {
     {
         return networkDevices;
     }
-    
+
     public boolean ChangeDeviceIP(IpBasedNetworkDevice dev, IpAddress newIP)
     {
         if(networkDevices.containsKey(dev.getMacAddress()))
@@ -148,12 +141,12 @@ public class NetworkModel implements Serializable {
 
         return false;
     }
-    
+
     public NetworkDevice FindByMac(MacAddress address)
     {
         return networkDevices.get(address);
     }
-    
+
     private NIC FindNICByIP(IpAddress adress)
     {
         for(NetworkDevice dev : networkDevices.values())
@@ -162,7 +155,7 @@ public class NetworkModel implements Serializable {
                 if(((NIC)dev).getIpAddress().equals(adress))
                     return (NIC)dev;
         }
-        
+
         return null;
     }
 

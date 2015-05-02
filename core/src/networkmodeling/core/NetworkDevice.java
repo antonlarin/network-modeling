@@ -37,10 +37,14 @@ public abstract class NetworkDevice implements Serializable {
         Port localPort = this.getFreePort();
         Port remotePort = other.getFreePort();
 
-        if (localPort != null && remotePort != null) {
-            localPort.bind(remotePort);
+        if (localPort != null) {
+            if (remotePort != null) {
+                localPort.bind(remotePort);
+            } else {
+                throw new NoFreePortsException(other);
+            }
         } else {
-            throw new NoFreePortsException();
+            throw new NoFreePortsException(this);
         }
     }
 
@@ -66,25 +70,27 @@ public abstract class NetworkDevice implements Serializable {
             }
         }
     }
-    
+
     public void DisconnectFromAll()
     {
         for (Port port : ports) {
             Port otherPort = port.GetConnectedPort();
-            if (port.isBound()) {        
+            if (port.isBound()) {
                 port.unbind();
-                otherPort.unbind();  
+                otherPort.unbind();
             }
         }
     }
-    
+
     public MacAddress getMacAddress() {
         return macAddress;
     }
-    
+
     public int getPortsCount() {
         return ports.length;
     }
+
+    public abstract String getDescription();
 
 
 

@@ -20,9 +20,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
@@ -31,12 +30,12 @@ import networkmodeling.core.NIC;
 import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
+import networkmodeling.exceptions.NoFreePortsException;
 
-public class DiagramPanel extends JPanel implements Observer {
-    
+public class DiagramPanel extends JPanel {
+
     public DiagramPanel(WindowManager windowManager) {
         this.windowManager = windowManager;
-        windowManager.getClientAppModel().getClientDaemon().addObserver(this);
         drawnConnectionStart = null;
         drawnConnectionEnd = null;
         viewportStart = new Point(0, 0);
@@ -48,18 +47,13 @@ public class DiagramPanel extends JPanel implements Observer {
 
         this.setDoubleBuffered(true);
         this.setTransferHandler(new AddDeviceHandler());
-        
+
         windowManager.getClientAppModel().addPropertyChangeListener(
             "visualModel", new VisualModelChangeListener());
     }
 
 
 
-    @Override
-    public void update(Observable o, Object arg) {
-        repaint();
-    }
-    
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -137,12 +131,12 @@ public class DiagramPanel extends JPanel implements Observer {
             BufferedImage deviceIcon = getDeviceIcon(deviceNode);
             int halfImageWidth = deviceIcon.getWidth() / 2;
             int halfImageHeight = deviceIcon.getHeight() / 2;
-            
+
             Point location = convertToPanelSpace(
                 new Point2D.Double(deviceNode.getX(), deviceNode.getY()));
             g2.drawImage(deviceIcon, location.x - halfImageWidth,
                 location.y - halfImageHeight, null);
-            
+
             if (deviceNode ==
                 windowManager.getClientAppModel().getSelectedNode()) {
                 Stroke defaultStroke = g2.getStroke();
@@ -150,11 +144,11 @@ public class DiagramPanel extends JPanel implements Observer {
                 BasicStroke selectionStroke = new BasicStroke(1.3f);
                 g2.setStroke(selectionStroke);
                 g2.setColor(new Color(0, 204, 0));
-                
+
                 Rectangle nodeRect = getDeviceNodeRectangle(deviceNode);
                 g2.drawRoundRect(nodeRect.x, nodeRect.y,
                     nodeRect.width, nodeRect.height, 8, 8);
-                
+
                 g2.setColor(defaultColor);
                 g2.setStroke(defaultStroke);
             }
@@ -194,7 +188,7 @@ public class DiagramPanel extends JPanel implements Observer {
         int y = (int)(location.y * yScalingFactor) - viewportStart.y;
         return new Point(x, y);
     }
-    
+
     private BufferedImage getDeviceIcon(NetworkGraphNode deviceNode) {
         if (deviceNode.getNodeDevice() instanceof NIC) {
             return nicImage;
@@ -206,7 +200,7 @@ public class DiagramPanel extends JPanel implements Observer {
             return routerImage;
         }
     }
-    
+
     private Rectangle getDeviceNodeRectangle(NetworkGraphNode deviceNode) {
         Point location = convertToPanelSpace(
             new Point2D.Double(deviceNode.getX(), deviceNode.getY()));
@@ -225,12 +219,12 @@ public class DiagramPanel extends JPanel implements Observer {
         int halfWidth = fullWidth / 2;
         int halfHeight= fullHeight / 2;
         int offset = 2;
-        
+
         return new Rectangle(
             location.x - halfWidth - offset, location.y - halfHeight - offset,
             fullWidth + 2 * offset, fullHeight + 2 * offset);
     }
-    
+
     private boolean pointOverNode(NetworkGraphNode deviceNode, Point point) {
         return getDeviceNodeRectangle(deviceNode).contains(point);
     }
@@ -243,7 +237,7 @@ public class DiagramPanel extends JPanel implements Observer {
             new Point2D.Double(edgeEnd1Node.getX(), edgeEnd1Node.getY()));
         Point edgeEnd2 = convertToPanelSpace(
             new Point2D.Double(edgeEnd2Node.getX(), edgeEnd2Node.getY()));
-        
+
         double width = Math.abs(edgeEnd1.x - edgeEnd2.x);
         double height = Math.abs(edgeEnd1.y - edgeEnd2.y);
         double offset = 3.5;
@@ -302,7 +296,7 @@ public class DiagramPanel extends JPanel implements Observer {
     private static final BufferedImage hubImage;
     private static final BufferedImage switchImage;
     private static final BufferedImage routerImage;
-    
+
     static {
         try {
             nicImage = ImageIO.read(new File(imageRoot + "pc.png"));
@@ -316,7 +310,7 @@ public class DiagramPanel extends JPanel implements Observer {
 
     private final WindowManager windowManager;
     private Point oldViewportStart;
-    private Point viewportStart;
+    private final Point viewportStart;
     private Point viewportPanStart;
     private boolean panningViewport;
     private boolean creatingConnection;
@@ -326,7 +320,7 @@ public class DiagramPanel extends JPanel implements Observer {
 
 
     private class DiagramMouseHandler extends MouseInputAdapter {
-        
+
         @Override
         public void mousePressed(MouseEvent e) {
             if (e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
@@ -385,7 +379,7 @@ public class DiagramPanel extends JPanel implements Observer {
             }
             DiagramPanel.this.repaint();
         }
-        
+
         @Override
         public void mouseReleased(MouseEvent e) {
             if (creatingConnection) {
@@ -395,16 +389,22 @@ public class DiagramPanel extends JPanel implements Observer {
                 for (NetworkGraphNode deviceNode : deviceNodes) {
                     if (deviceNode != drawnConnectionStart &&
                         pointOverNode(deviceNode, e.getPoint())) {
-                        windowManager.getClientAppModel().
-                            connectDevices(drawnConnectionStart, deviceNode);
+                        try {
+                            windowManager.getClientAppModel().
+                                connectDevices(
+                                    drawnConnectionStart, deviceNode);
+                        } catch (NoFreePortsException ex) {
+                            JOptionPane.showMessageDialog(
+                                windowManager.getMainWindow(),
+                                ex.getDescription());
+                        }
                         break;
-                    } else {
-                        DiagramPanel.this.repaint();
                     }
                 }
                 creatingConnection = false;
                 drawnConnectionStart = null;
                 drawnConnectionEnd = null;
+                DiagramPanel.this.repaint();
             } else if (panningViewport) {
                 panningViewport = false;
                 oldViewportStart = null;
@@ -412,7 +412,7 @@ public class DiagramPanel extends JPanel implements Observer {
                 DiagramPanel.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         }
-        
+
         @Override
         public void mouseDragged(MouseEvent e) {
             if (windowManager.getClientAppModel().getSelectedNode() != null) {
@@ -431,24 +431,24 @@ public class DiagramPanel extends JPanel implements Observer {
             DiagramPanel.this.repaint();
         }
     }
-    
+
     private class AddDeviceHandler extends TransferHandler {
-        
+
         @Override
         public boolean canImport(TransferSupport support) {
             if (!support.isDrop()) {
                 return false;
             }
-            
+
             return support.isDataFlavorSupported(DataFlavor.stringFlavor);
         }
-        
+
         @Override
         public boolean importData(TransferSupport support) {
             if (!canImport(support)) {
                 return false;
             }
-            
+
             Transferable transferable = support.getTransferable();
             String deviceType;
             try {
@@ -464,7 +464,7 @@ public class DiagramPanel extends JPanel implements Observer {
             return true;
         }
     }
-    
+
     private class VisualModelChangeListener implements PropertyChangeListener {
 
         @Override

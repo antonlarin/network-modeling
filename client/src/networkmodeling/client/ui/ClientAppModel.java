@@ -17,6 +17,7 @@ import networkmodeling.core.NetworkVisualModel;
 import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
+import networkmodeling.exceptions.NoFreePortsException;
 
 public class ClientAppModel {
 
@@ -85,6 +86,10 @@ public class ClientAppModel {
         pcs.removePropertyChangeListener(propertyName, listener);
     }
 
+    public void setVisualModelChanged() {
+        pcs.firePropertyChange("visualModel", null, visualModel);
+    }
+
     public void addNICWithProperties(String ip, String gateway,
         Point2D.Double location) {
         NIC nic = new NIC(MacAddress.getRandomAddress(), new IpAddress(ip),
@@ -118,7 +123,8 @@ public class ClientAppModel {
         pcs.firePropertyChange("visualModel", null, visualModel);
     }
 
-    public void connectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2) {
+    public void connectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
+        throws NoFreePortsException {
         clientDaemon.SendConnectDevicesRequest(dev1, dev2);
         visualModel.ConnectDevices(dev1, dev2);
     }

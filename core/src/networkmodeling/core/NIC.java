@@ -18,7 +18,7 @@ public class NIC extends IpBasedNetworkDevice {
             new IpAddress((short)0, (short)0, (short)0, (short)0),
             new IpAddress((short)0, (short)0, (short)0, (short)0));
     }
-    
+
     public IpAddress getGateway() {
         return gatewayIp;
     }
@@ -29,11 +29,11 @@ public class NIC extends IpBasedNetworkDevice {
         switch (frameData.getType()) {
         case PACKET:
             Packet incomingPacket = (Packet) frameData;
-            
+
             if(incomingPacket.getTargetIp() == this.getIpAddress())
                 frame.getRoute().add(this);
             lastIncomingDataRoute = frame.getRoute();
-            
+
             incomingData.add(incomingPacket.getData());
             break;
         case ARP_REQUEST:
@@ -51,6 +51,12 @@ public class NIC extends IpBasedNetworkDevice {
         if (!sendInsideSubnetWasSuccessful) {
             sendDataThroughGateway(data, target);
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return String.format("NIC @ %s (%s)", getIpAddress().toString(),
+            getMacAddress().toString());
     }
 
 
@@ -108,24 +114,24 @@ public class NIC extends IpBasedNetworkDevice {
             System.err.println("Attempt send through unbound NIC port");
         }
     }
-    
+
     public Object GetIncomingData()
     {
         if(incomingData.isEmpty())
             return new String();
         return incomingData.pop();
     }
-    
+
     public boolean isData()
     {
         return incomingData.isEmpty();
     }
-    
+
     public LinkedList<NetworkDevice> getLastIncomingDataRoute()
     {
         return lastIncomingDataRoute;
     }
-            
+
     private LinkedList<NetworkDevice> lastIncomingDataRoute;
     private final IpAddress gatewayIp;
     private final LinkedList<Object> incomingData;

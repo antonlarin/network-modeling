@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observer;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,34 +23,32 @@ import networkmodeling.core.ServerCommandType;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 import networkmodeling.exceptions.ConnectionClosedException;
 import networkmodeling.exceptions.NMException;
+import networkmodeling.exceptions.NoFreePortsException;
 
 public class ClientDaemon extends SwingWorker<Void, Void> {
 
-    
+
     public ClientDaemon(ClientAppModel model)
     {
         clientAppModel = model;
         isConnectedToServer = false;
         serverSocket = null;
-        observers = new LinkedList<>();
         exceptionQueue = new LinkedList<>();
     }
-    
+
 
     @Override
     protected Void doInBackground() {
         runServer();
         return null;
     }
-    
+
     @Override
     protected void process(List<Void> chunks) {
-        for (Observer o : observers) {
-            o.update(null, null);
-        }
+        clientAppModel.setVisualModelChanged();
     }
-    
-    
+
+
     public void runServer()
     {
         try {
@@ -65,7 +62,7 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
                 clientID = (UUID)inputStream.readObject();
                 System.out.println("Connected\n");
                 SendUpdateModelRequest();
-                while(!isCancelled()) 
+                while(!isCancelled())
                 {
                     ClientCommand command = (ClientCommand) inputStream.readObject();
                     if(command.getCommandType() != CliendCommandType.DropConnection)
@@ -78,7 +75,7 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
                         return;
                     }
                 }
-                
+
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -88,7 +85,7 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
             Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void executeCommand(ClientCommand command)
     {
         boolean isCommandExecuted = false;
@@ -103,9 +100,13 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
                         (NetworkGraphNode)command.getArguments()[0]);
                 break;
             case ConnectDevices:
-                isCommandExecuted = clientAppModel.getVisualModel().ConnectDevices(
+                try {
+                    isCommandExecuted = clientAppModel.getVisualModel().ConnectDevices(
                         (NetworkGraphNode)command.getArguments()[0],
                         (NetworkGraphNode)command.getArguments()[1]);
+                } catch (NoFreePortsException ex) {
+                    isCommandExecuted = false;
+                }
                 break;
             case DisconnectDevices:
                 isCommandExecuted = clientAppModel.getVisualModel().DisconnectDevices(
@@ -129,23 +130,23 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
                 isCommandExecuted = true;
                 break;
         }
-        
+
         if(isCommandExecuted)
             publish();
         else
             SendUpdateModelRequest();
     }
-    
+
     public boolean isConnectedToServer()
     {
         return isConnectedToServer;
     }
-    
+
     public void connectToServer()
     {
         this.execute();
     }
-    
+
     public void disconnect()
     {
         if(isConnectedToServer)
@@ -162,11 +163,11 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
             } catch (IOException ex) {
                 Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             System.out.println("Disconnected\n");
         }
     }
-    
+
     public void SendConnectDevicesRequest(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
         if(isConnectedToServer)
@@ -201,7 +202,7 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
             }
         }
     }
-    
+
     public void SendDisconnectDevicesRequest(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
         if(isConnectedToServer)
@@ -251,7 +252,7 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
             }
         }
     }
-    
+
     public void SendСhangeNodeCoordinatesRequest(NetworkGraphNode dev, double x, double y)
     {
         if(isConnectedToServer)
@@ -270,16 +271,12 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
             }
         }
     }
-    
+
     public void LoadModelFromServer()
     {
         SendUpdateModelRequest();
     }
-    
-    public void addObserver(Observer o) {
-        observers.add(o);
-    }
-    
+
     private void SendUpdateModelRequest()
     {
         if(isConnectedToServer)
@@ -289,13 +286,12 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
             Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private final ClientAppModel clientAppModel;
     private boolean isConnectedToServer;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private Socket serverSocket;
     private UUID clientID;
-    private LinkedList<Observer> observers;
     private LinkedList<NMException> exceptionQueue;
 }

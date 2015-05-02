@@ -1,22 +1,25 @@
 package networkmodeling.core;
 
-import networkmodeling.core.modelgraph.*;
 import java.io.Serializable;
+import networkmodeling.core.modelgraph.NetworkGraphNode;
+import networkmodeling.core.modelgraph.NetworkModelGraph;
+import networkmodeling.exceptions.NoFreePortsException;
 
 public class NetworkVisualModel implements Serializable {
-    
+
     public NetworkVisualModel()
     {
         model = new NetworkModel();
         graph = new NetworkModelGraph();
     }
-    
+
     public boolean AddDevice(NetworkGraphNode dev)
     {
         return model.AddDevice(dev.getNodeDevice()) &&
                 graph.AddDevice(dev);
     }
     public boolean ConnectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
+        throws NoFreePortsException
     {
         return model.ConnectDevices(dev1.getNodeDevice(), dev2.getNodeDevice()) &&
                 graph.ConnectDevices(dev1, dev2);
@@ -25,7 +28,7 @@ public class NetworkVisualModel implements Serializable {
     {
         return  model.DisconnectDevices(dev1.getNodeDevice(), dev2.getNodeDevice()) &&
                 graph.DisconnectDevices(dev1, dev2);
-        
+
     }
     public boolean DeleteDevice(NetworkGraphNode dev)
     {
@@ -37,8 +40,8 @@ public class NetworkVisualModel implements Serializable {
         return  model.ChangeDeviceIP((IpBasedNetworkDevice)dev.getNodeDevice(), newIP) &&
                 graph.ChangeDeviceIP(dev, newIP);
     }
-   
-    
+
+
     public NetworkModel GetModel() {
         return model;
     }
@@ -46,7 +49,7 @@ public class NetworkVisualModel implements Serializable {
     public NetworkModelGraph GetGraph() {
         return graph;
     }
-    
+
     private final NetworkModel model;
     private final NetworkModelGraph graph;
 }

@@ -14,6 +14,10 @@ public class WindowManager {
         return clientAppModel;
     }
 
+    public MainWindow getMainWindow() {
+        return mainWindow;
+    }
+
     public void showMainWindow() {
         mainWindow.pack();
         mainWindow.setLocationRelativeTo(null);

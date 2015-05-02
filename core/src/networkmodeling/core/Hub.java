@@ -25,4 +25,9 @@ public class Hub extends NetworkDevice {
             }
         }
     }
+
+    @Override
+    public String getDescription() {
+        return String.format("Hub (%s)", getMacAddress().toString());
+    }
 }
