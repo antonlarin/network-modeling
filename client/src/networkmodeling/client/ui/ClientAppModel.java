@@ -14,7 +14,7 @@ import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class ClientAppModel {
-    
+
     public ClientAppModel() {
         visualModel = new NetworkVisualModel();
         clientDaemon = new ClientDaemon(this);
@@ -22,19 +22,19 @@ public class ClientAppModel {
         selectedNode = null;
         selectedEdge = null;
     }
-    
+
     public ClientDaemon getClientDaemon() {
         return clientDaemon;
     }
-    
+
     public void resetClientDaemon() {
         clientDaemon = new ClientDaemon(this);
     }
-    
+
     public NetworkVisualModel getVisualModel() {
         return visualModel;
     }
-    
+
     public void setVisualModel(NetworkVisualModel visualModel) {
         this.visualModel = visualModel;
     }
@@ -48,11 +48,11 @@ public class ClientAppModel {
         selectedNode = device;
         pcs.firePropertyChange("selectedNode", oldSelectedDevice, device);
     }
-    
+
     public NetworkGraphEdge getSelectedEdge() {
         return selectedEdge;
     }
-    
+
     public void setSelectedEdge(NetworkGraphEdge connection) {
         NetworkGraphEdge oldSelectedEdge = selectedEdge;
         selectedEdge = connection;
@@ -68,7 +68,7 @@ public class ClientAppModel {
         PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(propertyName, listener);
     }
-    
+
     public void addNICWithProperties(String ip, String gateway,
         Point2D.Double location) {
         NIC nic = new NIC(MacAddress.getRandomAddress(), new IpAddress(ip),
@@ -79,7 +79,7 @@ public class ClientAppModel {
         visualModel.AddDevice(deviceNode);
         pcs.firePropertyChange("visualModel", null, visualModel);
     }
-    
+
     public void addHubWithProperties(String portsCount,
         Point2D.Double location) {
         Hub hub = new Hub(MacAddress.getRandomAddress(),
@@ -90,7 +90,7 @@ public class ClientAppModel {
         visualModel.AddDevice(deviceNode);
         pcs.firePropertyChange("visualModel", null, visualModel);
     }
-    
+
     public void addSwitchWithProperties(String portsCount,
         Point2D.Double location) {
         Switch networkSwitch = new Switch(MacAddress.getRandomAddress(),
@@ -101,26 +101,42 @@ public class ClientAppModel {
         visualModel.AddDevice(deviceNode);
         pcs.firePropertyChange("visualModel", null, visualModel);
     }
-    
+
     public void connectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2) {
         clientDaemon.SendConnectDevicesRequest(dev1, dev2);
         visualModel.ConnectDevices(dev1, dev2);
     }
-    
+
+    public void removeSelectedEdge() {
+        NetworkGraphNode end1 = selectedEdge.getFirstNode();
+        NetworkGraphNode end2 = selectedEdge.getSecondNode();
+        clientDaemon.SendDisconnectDevicesRequest(end1, end2);
+        visualModel.DisconnectDevices(end1, end2);
+        setSelectedEdge(null);
+        pcs.firePropertyChange("visualModel", null, visualModel);
+    }
+
+    public void removeSelectedNode() {
+        clientDaemon.SendDeleteDeviceRequest(selectedNode);
+        visualModel.DeleteDevice(selectedNode);
+        setSelectedNode(null);
+        pcs.firePropertyChange("visualModel", null, visualModel);
+    }
+
     public void setIpForSelectedDevice(String ipString) {
         IpAddress newAddress = new IpAddress(ipString);
         clientDaemon.SendChangeDeviceIPRequest(selectedNode, newAddress);
         visualModel.ChangeDeviceIP(selectedNode, newAddress);
     }
-    
+
     public void changeSelectedNodeLocation(Point2D.Double newLocation) {
         clientDaemon.SendСhangeNodeCoordinatesRequest(selectedNode,
             newLocation.x, newLocation.y);
         selectedNode.setX(newLocation.getX());
         selectedNode.setY(newLocation.getY());
     }
-    
-    
+
+
     private final PropertyChangeSupport pcs;
     private ClientDaemon clientDaemon;
     private NetworkVisualModel visualModel;
