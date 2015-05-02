@@ -5,7 +5,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import networkmodeling.client.Client;
 import networkmodeling.core.Hub;
 import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkDevice;
@@ -14,10 +13,10 @@ import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class PropertiesPanel extends JPanel {
     
-    public PropertiesPanel(Client client) {
-        this.client = client;
+    public PropertiesPanel(ClientAppModel clientAppModel) {
+        this.clientAppModel = clientAppModel;
         emptyProps = new EmptyPropertiesPage();
-        nicProps = new NICPropertiesPage();
+        nicProps = new NICPropertiesPage(clientAppModel);
         hubProps = new HubPropertiesPage();
         switchProps = new SwitchPropertiesPage();
         
@@ -33,7 +32,7 @@ public class PropertiesPanel extends JPanel {
 
 
 
-    private final Client client;
+    private final ClientAppModel clientAppModel;
     private final EmptyPropertiesPage emptyProps;
     private final NICPropertiesPage nicProps;
     private final HubPropertiesPage hubProps;
@@ -46,15 +45,15 @@ public class PropertiesPanel extends JPanel {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            DiagramPanel diagramPanel = (DiagramPanel) evt.getSource();
+            ClientAppModel clientAppModel = (ClientAppModel) evt.getSource();
             CardLayout layout = (CardLayout) getLayout();
 
-            NetworkGraphNode selectedNode = diagramPanel.getSelectedNode();
+            NetworkGraphNode selectedNode = clientAppModel.getSelectedNode();
             if (selectedNode == null) {
                 layout.show(PropertiesPanel.this, "EmptyProps");
             } else {
                 NetworkDevice selectedDevice =
-                    diagramPanel.getSelectedNode().getNodeDevice();
+                    clientAppModel.getSelectedNode().getNodeDevice();
                 if (selectedDevice instanceof NIC) {
                     layout.show(PropertiesPanel.this, "NicProps");
                     nicProps.associateNode(selectedNode);

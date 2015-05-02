@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
+import networkmodeling.client.ui.ClientAppModel;
 import networkmodeling.core.CliendCommandType;
 import networkmodeling.core.ClientCommand;
 import networkmodeling.core.GlobalConstants;
@@ -24,12 +25,12 @@ import networkmodeling.core.modelgraph.NetworkGraphNode;
 import networkmodeling.exceptions.ConnectionClosedException;
 import networkmodeling.exceptions.NMException;
 
-public class Client extends SwingWorker<Void, Void> {
+public class ClientDaemon extends SwingWorker<Void, Void> {
 
     
-    public Client()
+    public ClientDaemon(ClientAppModel model)
     {
-        networkModel = new NetworkVisualModel();
+        clientAppModel = model;
         isConnectedToServer = false;
         serverSocket = null;
         observers = new LinkedList<>();
@@ -79,12 +80,12 @@ public class Client extends SwingWorker<Void, Void> {
                 }
                 
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (SocketException ex) {
             exceptionQueue.push(new ConnectionClosedException());
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -94,36 +95,37 @@ public class Client extends SwingWorker<Void, Void> {
         switch(command.getCommandType())
         {
             case AddDevice:
-                isCommandExecuted = networkModel.AddDevice(
+                isCommandExecuted = clientAppModel.getVisualModel().AddDevice(
                         (NetworkGraphNode)command.getArguments()[0]);
                 break;
             case DeleteDevice:
-                isCommandExecuted = networkModel.DeleteDevice(
+                isCommandExecuted = clientAppModel.getVisualModel().DeleteDevice(
                         (NetworkGraphNode)command.getArguments()[0]);
                 break;
             case ConnectDevices:
-                isCommandExecuted = networkModel.ConnectDevices(
+                isCommandExecuted = clientAppModel.getVisualModel().ConnectDevices(
                         (NetworkGraphNode)command.getArguments()[0],
                         (NetworkGraphNode)command.getArguments()[1]);
                 break;
             case DisconnectDevices:
-                isCommandExecuted = networkModel.DisconnectDevices(
+                isCommandExecuted = clientAppModel.getVisualModel().DisconnectDevices(
                         (NetworkGraphNode)command.getArguments()[0],
                         (NetworkGraphNode)command.getArguments()[1]);
                 break;
             case ChangeDeviceIP:
-                isCommandExecuted = networkModel.ChangeDeviceIP(
+                isCommandExecuted = clientAppModel.getVisualModel().ChangeDeviceIP(
                         (NetworkGraphNode)(command.getArguments()[0]),
                         (IpAddress)(command.getArguments()[1]));
                 break;
             case MoveGraphNode:
-                isCommandExecuted = networkModel.GetGraph().ChangeNodeCoordinates(
+                isCommandExecuted = clientAppModel.getVisualModel().GetGraph().ChangeNodeCoordinates(
                         (NetworkGraphNode)command.getArguments()[0],
                         (double)command.getArguments()[1],
                         (double)command.getArguments()[2]);
                 break;
             case UpdateFullModel:
-                networkModel = (NetworkVisualModel)command.getArguments()[0];
+                clientAppModel.setVisualModel(
+                    (NetworkVisualModel)command.getArguments()[0]);
                 isCommandExecuted = true;
                 break;
         }
@@ -151,14 +153,14 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 outputStream.writeObject(new ServerCommand(ServerCommandType.DropSenderConnection, null));
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
             this.cancel(true);
             try {
                 serverSocket.close();
                 isConnectedToServer = false;
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             System.out.println("Disconnected\n");
@@ -178,7 +180,7 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -186,21 +188,21 @@ public class Client extends SwingWorker<Void, Void> {
     {
         if(isConnectedToServer)
         {
-            Object args[] = new NetworkGraphNode[2];
+            Object args[] = new Object[2];
             args[0] = dev;
-            args[1] = (Object)newIP;
+            args[1] = newIP;
 
             ServerCommand command = new ServerCommand(
                     ServerCommandType.ChangeDeviceIP, args);
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
-    public void SendDisonnectDevicesRequest(NetworkGraphNode dev1, NetworkGraphNode dev2)
+    public void SendDisconnectDevicesRequest(NetworkGraphNode dev1, NetworkGraphNode dev2)
     {
         if(isConnectedToServer)
         {
@@ -213,7 +215,7 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -229,7 +231,7 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -245,7 +247,7 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -264,7 +266,7 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -272,11 +274,6 @@ public class Client extends SwingWorker<Void, Void> {
     public void LoadModelFromServer()
     {
         SendUpdateModelRequest();
-    }
-    
-    public NetworkVisualModel GetVisualModel()
-    {
-        return networkModel;
     }
     
     public void addObserver(Observer o) {
@@ -289,11 +286,11 @@ public class Client extends SwingWorker<Void, Void> {
             try {
                 outputStream.writeObject(new ServerCommand(ServerCommandType.GetFullNetworkModel, null));
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private NetworkVisualModel networkModel;
+    private final ClientAppModel clientAppModel;
     private boolean isConnectedToServer;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;

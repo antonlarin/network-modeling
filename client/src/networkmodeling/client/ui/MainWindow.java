@@ -13,17 +13,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import networkmodeling.client.Client;
 
 public class MainWindow extends JFrame {
     
-    public MainWindow(Client client) {
-        this.client = client;
-        toolbarPanel = new ButtonToolbar(client);
+    public MainWindow(ClientAppModel clientAppModel) {
+        this.clientAppModel = clientAppModel;
+        toolbarPanel = new ButtonToolbar(clientAppModel);
         JScrollPane palettePane = arrangeDevicePalette();
-        propertiesPanel = new PropertiesPanel(client);
-        diagramPanel = new DiagramPanel(client);
-        
+        propertiesPanel = new PropertiesPanel(clientAppModel);
+        diagramPanel = new DiagramPanel(clientAppModel);
+
+        setTitle("Networkmodeling Client");
         setPreferredSize(new Dimension(800, 600));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new MainWindowListener(this));
@@ -39,12 +39,12 @@ public class MainWindow extends JFrame {
         add(leftMenu, BorderLayout.WEST);
         add(diagramPanel, BorderLayout.CENTER);
         
-        diagramPanel.addPropertyChangeListener("selectedNode",
+        clientAppModel.addPropertyChangeListener("selectedNode",
             propertiesPanel.new SelectedNodeChangeListener());
     }
     
     public void cleanup() {
-        client.disconnect();
+        clientAppModel.getClientDaemon().disconnect();
     }
 
     
@@ -72,15 +72,15 @@ public class MainWindow extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Client client = new Client();
-                MainWindow mainWindow = new MainWindow(client);
+                ClientAppModel clientAppModel = new ClientAppModel();
+                MainWindow mainWindow = new MainWindow(clientAppModel);
                 mainWindow.pack();
                 mainWindow.setVisible(true);
             }
         });
     }
 
-    private final Client client;
+    private final ClientAppModel clientAppModel;
     private final ButtonToolbar toolbarPanel;
     private final PropertiesPanel propertiesPanel;
     private final DiagramPanel diagramPanel;

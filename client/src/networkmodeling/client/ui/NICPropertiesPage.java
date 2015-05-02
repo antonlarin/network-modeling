@@ -1,6 +1,8 @@
 package networkmodeling.client.ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -8,12 +10,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import networkmodeling.core.IpAddress;
 import networkmodeling.core.NIC;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class NICPropertiesPage extends JPanel {
     
-    public NICPropertiesPage() {
+    public NICPropertiesPage(ClientAppModel clientAppModel) {
+        this.clientAppModel = clientAppModel;
         macLabel = new JLabel("");
         ipTextField = new JTextField("<nic-ip>");
         gatewayIpTextField = new JTextField("<gateway-ip>");
@@ -35,7 +39,9 @@ public class NICPropertiesPage extends JPanel {
         JLabel macTitleLabel = new JLabel("MAC address:");
         JLabel ipTitleLabel = new JLabel("IP address:");
         JLabel gatewayIpTitleLabel = new JLabel("Gateway IP:");
+        ipTextField.getDocument().addDocumentListener(new IpChangeListener());
         applyButton.setEnabled(false);
+        applyButton.addActionListener(new IpAssignmentListener());
         
         JPanel controlsContainer = new JPanel();
         GroupLayout layout = new GroupLayout(controlsContainer);
@@ -74,8 +80,6 @@ public class NICPropertiesPage extends JPanel {
         controlsContainer.setLayout(layout);
         setLayout(new BorderLayout());
         add(controlsContainer, BorderLayout.NORTH);
-        
-        ipTextField.getDocument().addDocumentListener(new IpChangeListener());
     }
 
     private final JLabel macLabel;
@@ -83,6 +87,7 @@ public class NICPropertiesPage extends JPanel {
     private final JTextField gatewayIpTextField;
     private final JButton applyButton;
     private NIC associatedDevice;
+    private final ClientAppModel clientAppModel;
 
 
 
@@ -105,11 +110,21 @@ public class NICPropertiesPage extends JPanel {
         
         private void handleUpdate() {
             String newIp = ipTextField.getText();
-            if (!newIp.equals(associatedDevice.getIpAddress().toString())) {
+            if (!newIp.equals(associatedDevice.getIpAddress().toString()) &&
+                IpAddress.isValid(newIp)) {
                 applyButton.setEnabled(true);
             } else {
                 applyButton.setEnabled(false);
             }
+        }
+    }
+    
+    private class IpAssignmentListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            clientAppModel.setIpForSelectedDevice(ipTextField.getText());
+            applyButton.setEnabled(false);
         }
     }
 }

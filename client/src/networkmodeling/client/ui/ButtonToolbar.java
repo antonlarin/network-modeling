@@ -5,12 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import networkmodeling.client.Client;
 
 public class ButtonToolbar extends JPanel {
     
-    public ButtonToolbar(Client client) {
-        this.client = client;
+    public ButtonToolbar(ClientAppModel clientAppModel) {
+        this.clientAppModel = clientAppModel;
         connectButton = new JButton("Connect");
         connectButton.addActionListener(new ConnectActionListener());
         disconnectButton = new JButton("Disconnect");
@@ -27,7 +26,7 @@ public class ButtonToolbar extends JPanel {
     private class ConnectActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            client.connectToServer();
+            clientAppModel.getClientDaemon().connectToServer();
             connectButton.setEnabled(false);
             disconnectButton.setEnabled(true);
         }
@@ -36,8 +35,8 @@ public class ButtonToolbar extends JPanel {
     private class DisconnectActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            client.disconnect();
-            client = new Client();
+            clientAppModel.getClientDaemon().disconnect();
+            clientAppModel.resetClientDaemon();
             connectButton.setEnabled(true);
             disconnectButton.setEnabled(false);
         }
@@ -46,11 +45,11 @@ public class ButtonToolbar extends JPanel {
     private class TestNetworkActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            client.GetVisualModel().GetModel().TestNetwork();
+            clientAppModel.getVisualModel().GetModel().TestNetwork();
         }
     }
     
-    private Client client;
+    private ClientAppModel clientAppModel;
     private final JButton connectButton;
     private final JButton disconnectButton;
     private final JButton testNetwork;
