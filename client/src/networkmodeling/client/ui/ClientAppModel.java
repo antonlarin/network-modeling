@@ -9,6 +9,7 @@ import networkmodeling.core.IpAddress;
 import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkVisualModel;
+import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class ClientAppModel {
@@ -73,6 +74,17 @@ public class ClientAppModel {
         Hub hub = new Hub(MacAddress.getRandomAddress(),
             Integer.valueOf(portsCount));
         NetworkGraphNode deviceNode = new NetworkGraphNode(hub,
+            location.x, location.y);
+        clientDaemon.SendAddDevicesRequest(deviceNode);
+        visualModel.AddDevice(deviceNode);
+        pcs.firePropertyChange("visualModel", null, visualModel);
+    }
+    
+    public void addSwitchWithProperties(String portsCount,
+        Point2D.Double location) {
+        Switch networkSwitch = new Switch(MacAddress.getRandomAddress(),
+            Integer.valueOf(portsCount));
+        NetworkGraphNode deviceNode = new NetworkGraphNode(networkSwitch,
             location.x, location.y);
         clientDaemon.SendAddDevicesRequest(deviceNode);
         visualModel.AddDevice(deviceNode);

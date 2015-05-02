@@ -153,7 +153,7 @@ public class DiagramPanel extends JPanel implements Observer {
             windowManager.showHubAdditionDialog(diagramSpaceLocation);
             break;
         case "Switch":
-//            windowManager.showSwitchAdditionDialog(diagramSpaceLocation);
+            windowManager.showSwitchAdditionDialog(diagramSpaceLocation);
             break;
 //        case "Router":
 //            windowManager.showRouterAdditionDialog(diagramSpaceLocation);

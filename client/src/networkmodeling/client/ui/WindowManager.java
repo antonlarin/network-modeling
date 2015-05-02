@@ -34,11 +34,12 @@ public class WindowManager {
         addHubDialog.setVisible(true);
     }
     
-//    public void showSwitchAdditionDialog(Point2D.Double newNodeLocation) {
-//        AddSwitchDialog addSwitchDialog =
-//            new AddSwitchDialog(clientAppModel, mainWindow, newNodeLocation);
-//        addSwitchDialog.setVisible(true);
-//    }
+    public void showSwitchAdditionDialog(Point2D.Double newNodeLocation) {
+        AddSwitchDialog addSwitchDialog =
+            new AddSwitchDialog(clientAppModel, mainWindow, newNodeLocation);
+        addSwitchDialog.setLocationRelativeTo(mainWindow);
+        addSwitchDialog.setVisible(true);
+    }
     
     
     
