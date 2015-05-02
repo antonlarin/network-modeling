@@ -87,7 +87,7 @@ public class NetworkModel implements Serializable {
             }
         }
         
-        return false;
+        return true;
     }
 
     public boolean SendData(IpAddress sourceIP, Object data, IpAddress target)

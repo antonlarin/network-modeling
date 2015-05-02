@@ -44,11 +44,18 @@ public class NetworkModelTest extends TestCase {
         String data = "test";
         boolean result = instance.SendData(sourceIP, data, destIP);
         
+        while(!dest.getLastIncomingDataRoute().isEmpty())
+        {
+            NetworkDevice nextDev = dest.getLastIncomingDataRoute().pop();
+            System.out.println(nextDev.getMacAddress().toString());
+        }
+        
         boolean expResult = true;
         
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+
+        if(! instance.TestNetwork())
+            fail("testNetwork Failed!");
     }
 /*
     public void testAddDevice() {
