@@ -30,8 +30,8 @@ public class NIC extends IpBasedNetworkDevice {
         case PACKET:
             Packet incomingPacket = (Packet) frameData;
             
-//            if(incomingPacket.getTargetIp() == this.getIpAddress())
-//                frame.getRoute().add(this);
+            if(incomingPacket.getTargetIp() == this.getIpAddress())
+                frame.getRoute().add(this);
             lastIncomingDataRoute = frame.getRoute();
             
             incomingData.add(incomingPacket.getData());

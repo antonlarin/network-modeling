@@ -97,7 +97,7 @@ public class NetworkModel implements Serializable {
         if(sourceDev != null && targetDev != null)
         {
             sourceDev.sendData(data, target);
-            if (targetDev.GetIncomingData().equals(data))
+            if (data.equals(targetDev.GetIncomingData()))
                 return true;
         }
         return false;
