@@ -66,7 +66,7 @@ public class DiagramPanel extends JPanel implements Observer {
         RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHints(rh);
-        
+
         fillBackgroundWithWhite(g);
         drawConnections(g);
         drawDevices(g);
@@ -98,6 +98,19 @@ public class DiagramPanel extends JPanel implements Observer {
                 new Point2D.Double(end1.getX(), end1.getY()));
             Point end2Location = convertToPanelSpace(
                 new Point2D.Double(end2.getX(), end2.getY()));
+
+            if (connection ==
+                windowManager.getClientAppModel().getSelectedEdge()) {
+                BasicStroke selectedConnectionStroke = new BasicStroke(3.6f);
+                Color defaultColor = g2.getColor();
+                g2.setColor(new Color(0, 204, 0));
+                g2.setStroke(selectedConnectionStroke);
+                g2.drawLine(end1Location.x, end1Location.y,
+                    end2Location.x, end2Location.y);
+                g2.setColor(defaultColor);
+                g2.setStroke(connectionStroke);
+            }
+
             g2.drawLine(end1Location.x, end1Location.y,
                 end2Location.x, end2Location.y);
         }
@@ -220,6 +233,44 @@ public class DiagramPanel extends JPanel implements Observer {
         return getDeviceNodeRectangle(deviceNode).contains(point);
     }
 
+    private boolean pointOverEdge(NetworkGraphEdge connectionEdge,
+        Point point) {
+        NetworkGraphNode edgeEnd1Node = connectionEdge.getFirstNode();
+        NetworkGraphNode edgeEnd2Node = connectionEdge.getSecondNode();
+        Point edgeEnd1 = convertToPanelSpace(
+            new Point2D.Double(edgeEnd1Node.getX(), edgeEnd1Node.getY()));
+        Point edgeEnd2 = convertToPanelSpace(
+            new Point2D.Double(edgeEnd2Node.getX(), edgeEnd2Node.getY()));
+        double left = Math.min(edgeEnd1.x, edgeEnd2.x);
+        double right = Math.max(edgeEnd1.x, edgeEnd2.x);
+        double top = Math.min(edgeEnd1.y, edgeEnd2.y);
+        double bottom = Math.max(edgeEnd1.y, edgeEnd2.y);
+        double width = right - left;
+        double height = bottom - top;
+        double offset = 3.5;
+        if (width > height) {
+            double alpha = (point.x - left) / width;
+            if (alpha < 0 || 1 < alpha) {
+                return false;
+            } else {
+                double tangent = height / width;
+                double offsetMultiplier = Math.sqrt(1 + tangent * tangent);
+                return Math.abs(point.y - top - alpha * height) <=
+                    offset * offsetMultiplier;
+            }
+        } else {
+            double alpha = (point.y - top) / height;
+            if (alpha < 0 || 1 < alpha) {
+                return false;
+            } else {
+                double tangent = width / height;
+                double offsetMultiplier = Math.sqrt(1 + tangent * tangent);
+                return Math.abs(point.x - left - alpha * width) <=
+                    offset * offsetMultiplier;
+            }
+        }
+    }
+
 
 
     private static final String imageRoot = "img/";
@@ -269,12 +320,31 @@ public class DiagramPanel extends JPanel implements Observer {
                         windowManager.getClientAppModel().setSelectedNode(
                             deviceNode);
                     }
+                    windowManager.getClientAppModel().setSelectedEdge(null);
                     break;
                 }
             }
             
             if (!pressedOnDevice) {
                 windowManager.getClientAppModel().setSelectedNode(null);
+
+                boolean pressedOnConnection = false;
+                LinkedList<NetworkGraphEdge> connectionEdges =
+                    windowManager.getClientAppModel().getVisualModel().
+                    GetGraph().getEdges();
+                for (NetworkGraphEdge connectionEdge : connectionEdges) {
+                    if (pointOverEdge(connectionEdge, e.getPoint()) &&
+                        e.getButton() == BUTTON1) {
+                        windowManager.getClientAppModel().setSelectedEdge(
+                            connectionEdge);
+                        pressedOnConnection = true;
+                        break;
+                    }
+                }
+
+                if (!pressedOnConnection) {
+                    windowManager.getClientAppModel().setSelectedEdge(null);
+                }
             }
             repaint();
         }
