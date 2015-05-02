@@ -112,7 +112,7 @@ public class NICPropertiesPage extends JPanel {
         private void handleUpdate() {
             String newIp = ipTextField.getText();
             if (!newIp.equals(associatedDevice.getIpAddress().toString()) &&
-                IpAddress.isValid(newIp)) {
+                IpAddress.isValid(newIp) ) {
                 applyButton.setEnabled(true);
             } else {
                 applyButton.setEnabled(false);

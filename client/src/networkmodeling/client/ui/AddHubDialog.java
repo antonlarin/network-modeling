@@ -10,20 +10,18 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import networkmodeling.core.IpAddress;
 
-public class AddNICDialog extends JDialog {
-
-    public AddNICDialog(ClientAppModel clientAppModel, JFrame parent,
+public class AddHubDialog extends JDialog {
+    public AddHubDialog(ClientAppModel clientAppModel, JFrame parent,
         Point2D.Double newNodeLocation) {
-        super(parent, "Add NIC", false);
+        super(parent, "Add hub", false);
         this.clientAppModel = clientAppModel;
         this.newNodeLocation = newNodeLocation;
-        ipTextField = new JTextField("192.168.0.100");
-        gatewayTextField = new JTextField("192.168.0.1");
-        addButton = new JButton("Add NIC");
+        portsCountTextField = new JTextField("8");
+        addButton = new JButton("Add hub");
         cancelButton = new JButton("Cancel");
         
         setupDialog();
@@ -37,7 +35,7 @@ public class AddNICDialog extends JDialog {
 
             @Override
             public void run() {
-                AddNICDialog dialog = new AddNICDialog(null, null, null);
+                AddHubDialog dialog = new AddHubDialog(null, null, null);
                 dialog.setVisible(true);
             }
         });
@@ -46,13 +44,11 @@ public class AddNICDialog extends JDialog {
 
 
     private void setupDialog() {
-        JLabel ipTitleLabel = new JLabel("IP address:");
-        JLabel gatewayTitleLabel = new JLabel("Gateway IP:");
-        IpGatewayChangeListener listener = new IpGatewayChangeListener();
-        ipTextField.getDocument().addDocumentListener(listener);
-        gatewayTextField.getDocument().addDocumentListener(listener);
-        addButton.addActionListener(new AddNICListener());
-        cancelButton.addActionListener(new CancelNICAdditionListener());
+        JLabel portsCountTitleLabel = new JLabel("Ports count:");
+        PortsCountChangeListener listener = new PortsCountChangeListener();
+        portsCountTextField.getDocument().addDocumentListener(listener);
+        addButton.addActionListener(new AddHubListener());
+        cancelButton.addActionListener(new CancelHubAdditionListener());
 
         GroupLayout layout = new GroupLayout(this.getContentPane());
         layout.setAutoCreateGaps(true);
@@ -62,25 +58,19 @@ public class AddNICDialog extends JDialog {
             layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(
                     GroupLayout.Alignment.LEADING)
-                    .addComponent(ipTitleLabel)
-                    .addComponent(gatewayTitleLabel)
+                    .addComponent(portsCountTitleLabel)
                     .addComponent(addButton))
                 .addGroup(layout.createParallelGroup(
                     GroupLayout.Alignment.TRAILING)
-                    .addComponent(ipTextField)
-                    .addComponent(gatewayTextField)
+                    .addComponent(portsCountTextField)
                     .addComponent(cancelButton))
         );
         layout.setVerticalGroup(
             layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(
                     GroupLayout.Alignment.BASELINE)
-                    .addComponent(ipTitleLabel)
-                    .addComponent(ipTextField))
-                .addGroup(layout.createParallelGroup(
-                    GroupLayout.Alignment.BASELINE)
-                    .addComponent(gatewayTitleLabel)
-                    .addComponent(gatewayTextField))
+                    .addComponent(portsCountTitleLabel)
+                    .addComponent(portsCountTextField))
                 .addGroup(layout.createParallelGroup()
                     .addComponent(addButton)
                     .addComponent(cancelButton))
@@ -96,14 +86,13 @@ public class AddNICDialog extends JDialog {
 
     private final ClientAppModel clientAppModel;
     private final Point2D.Double newNodeLocation;
-    private final JTextField ipTextField;
-    private final JTextField gatewayTextField;
+    private final JTextField portsCountTextField;
     private final JButton addButton;
     private final JButton cancelButton;
 
 
 
-    private class IpGatewayChangeListener implements DocumentListener {
+    private class PortsCountChangeListener implements DocumentListener {
 
         @Override
         public void insertUpdate(DocumentEvent e) {
@@ -121,31 +110,33 @@ public class AddNICDialog extends JDialog {
         }
         
         private void handleUpdate() {
-            String ip = ipTextField.getText();
-            String gateway = gatewayTextField.getText();
-            if (IpAddress.isValid(ip) && IpAddress.isValid(gateway)) {
-                addButton.setEnabled(true);
-            } else {
-                addButton.setEnabled(false);
-            }
+            String portsCount = portsCountTextField.getText();
+            try {
+                int portsCountAsNumber = Integer.valueOf(portsCount);
+                if (portsCountAsNumber > 0) {
+                    addButton.setEnabled(true);
+                    return;
+                }
+            } catch (NumberFormatException ex) {}
+            addButton.setEnabled(false);
         }
     }
     
-    private class AddNICListener implements ActionListener {
+    private class AddHubListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            clientAppModel.addNICWithProperties(ipTextField.getText(),
-                gatewayTextField.getText(), newNodeLocation);
-            AddNICDialog.this.dispose();
+            clientAppModel.addHubWithProperties(portsCountTextField.getText(),
+                newNodeLocation);
+            AddHubDialog.this.dispose();
         }
     }
     
-    private class CancelNICAdditionListener implements ActionListener {
+    private class CancelHubAdditionListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            AddNICDialog.this.dispose();
+            AddHubDialog.this.dispose();
         }
     }
 }

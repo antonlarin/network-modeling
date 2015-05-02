@@ -27,12 +27,13 @@ public class WindowManager {
         addNicDialog.setVisible(true);
     }
     
-//    public void showHubAdditionDialog(Point2D.Double newNodeLocation) {
-//        AddHubDialog addHubDialog =
-//            new AddHubDialog(clientAppModel, mainWindow, newNodeLocation);
-//        addHubDialog.setVisible(true);
-//    }
-//    
+    public void showHubAdditionDialog(Point2D.Double newNodeLocation) {
+        AddHubDialog addHubDialog =
+            new AddHubDialog(clientAppModel, mainWindow, newNodeLocation);
+        addHubDialog.setLocationRelativeTo(mainWindow);
+        addHubDialog.setVisible(true);
+    }
+    
 //    public void showSwitchAdditionDialog(Point2D.Double newNodeLocation) {
 //        AddSwitchDialog addSwitchDialog =
 //            new AddSwitchDialog(clientAppModel, mainWindow, newNodeLocation);

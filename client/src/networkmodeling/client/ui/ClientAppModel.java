@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import networkmodeling.client.ClientDaemon;
+import networkmodeling.core.Hub;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
@@ -61,6 +62,17 @@ public class ClientAppModel {
         NIC nic = new NIC(MacAddress.getRandomAddress(), new IpAddress(ip),
             new IpAddress(gateway));
         NetworkGraphNode deviceNode = new NetworkGraphNode(nic,
+            location.x, location.y);
+        clientDaemon.SendAddDevicesRequest(deviceNode);
+        visualModel.AddDevice(deviceNode);
+        pcs.firePropertyChange("visualModel", null, visualModel);
+    }
+    
+    public void addHubWithProperties(String portsCount,
+        Point2D.Double location) {
+        Hub hub = new Hub(MacAddress.getRandomAddress(),
+            Integer.valueOf(portsCount));
+        NetworkGraphNode deviceNode = new NetworkGraphNode(hub,
             location.x, location.y);
         clientDaemon.SendAddDevicesRequest(deviceNode);
         visualModel.AddDevice(deviceNode);

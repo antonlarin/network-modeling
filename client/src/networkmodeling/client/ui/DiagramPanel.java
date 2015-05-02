@@ -150,7 +150,7 @@ public class DiagramPanel extends JPanel implements Observer {
         Point2D.Double diagramSpaceLocation = convertToDiagramSpace(location);
         switch (deviceTypeName) {
         case "Hub":
-//            windowManager.showHubAdditionDialog(diagramSpaceLocation);
+            windowManager.showHubAdditionDialog(diagramSpaceLocation);
             break;
         case "Switch":
 //            windowManager.showSwitchAdditionDialog(diagramSpaceLocation);
