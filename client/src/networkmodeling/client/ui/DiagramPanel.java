@@ -25,9 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
-import networkmodeling.core.Hub;
-import networkmodeling.core.NIC;
-import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 import networkmodeling.exceptions.NoFreePortsException;
@@ -164,9 +161,9 @@ public class DiagramPanel extends JPanel {
         case "Switch":
             windowManager.showSwitchAdditionDialog(diagramSpaceLocation);
             break;
-//        case "Router":
-//            windowManager.showRouterAdditionDialog(diagramSpaceLocation);
-//            break;
+        case "Router":
+            windowManager.showRouterAdditionDialog(diagramSpaceLocation);
+            break;
         default:
             windowManager.showNICAdditionDialog(diagramSpaceLocation);
             break;
@@ -190,13 +187,14 @@ public class DiagramPanel extends JPanel {
     }
 
     private BufferedImage getDeviceIcon(NetworkGraphNode deviceNode) {
-        if (deviceNode.getNodeDevice() instanceof NIC) {
+        switch (deviceNode.getNodeDevice().getType()) {
+        case NIC:
             return nicImage;
-        } else if (deviceNode.getNodeDevice() instanceof Hub) {
+        case Hub:
             return hubImage;
-        } else if (deviceNode.getNodeDevice() instanceof Switch) {
+        case Switch:
             return switchImage;
-        } else { // if (deviceNode.getNodeDevice() instanceof Router)
+        default: // case Router:
             return routerImage;
         }
     }
@@ -205,13 +203,14 @@ public class DiagramPanel extends JPanel {
         Point location = convertToPanelSpace(
             new Point2D.Double(deviceNode.getX(), deviceNode.getY()));
         BufferedImage deviceIcon;
-        if (deviceNode.getNodeDevice() instanceof NIC) {
+        switch (deviceNode.getNodeDevice().getType()) {
+        case NIC:
             deviceIcon = nicImage;
-        } else if (deviceNode.getNodeDevice() instanceof Hub) {
+        case Hub:
             deviceIcon = hubImage;
-        } else if (deviceNode.getNodeDevice() instanceof Switch) {
+        case Switch:
             deviceIcon = switchImage;
-        } else { // if (deviceNode.getNodeDevice() instanceof Router)
+        default: // case Router:
             deviceIcon = routerImage;
         }
         int fullWidth = deviceIcon.getWidth();

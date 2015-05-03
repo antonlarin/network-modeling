@@ -45,6 +45,13 @@ public class WindowManager {
         addSwitchDialog.setVisible(true);
     }
 
+    public void showRouterAdditionDialog(Point2D.Double newNodeLocation) {
+        AddRouterDialog addRouterDialog =
+            new AddRouterDialog(clientAppModel, mainWindow, newNodeLocation);
+        addRouterDialog.setLocationRelativeTo(mainWindow);
+        addRouterDialog.setVisible(true);
+    }
+
     public void showNetworkTestDialog() {
         NetworkTestDialog networkTestDialog =
             new NetworkTestDialog(clientAppModel, mainWindow);

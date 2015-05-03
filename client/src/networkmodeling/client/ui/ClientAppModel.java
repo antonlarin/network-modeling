@@ -12,8 +12,10 @@ import networkmodeling.core.Hub;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.MacAddress;
 import networkmodeling.core.NIC;
+import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.NetworkModelTestResult;
 import networkmodeling.core.NetworkVisualModel;
+import networkmodeling.core.Router;
 import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
@@ -94,33 +96,28 @@ public class ClientAppModel {
         Point2D.Double location) {
         NIC nic = new NIC(MacAddress.getRandomAddress(), new IpAddress(ip),
             new IpAddress(gateway));
-        NetworkGraphNode deviceNode = new NetworkGraphNode(nic,
-            location.x, location.y);
-        clientDaemon.SendAddDevicesRequest(deviceNode);
-        visualModel.AddDevice(deviceNode);
-        pcs.firePropertyChange("visualModel", null, visualModel);
+        addDevice(nic, location);
     }
 
     public void addHubWithProperties(String portsCount,
         Point2D.Double location) {
         Hub hub = new Hub(MacAddress.getRandomAddress(),
             Integer.valueOf(portsCount));
-        NetworkGraphNode deviceNode = new NetworkGraphNode(hub,
-            location.x, location.y);
-        clientDaemon.SendAddDevicesRequest(deviceNode);
-        visualModel.AddDevice(deviceNode);
-        pcs.firePropertyChange("visualModel", null, visualModel);
+        addDevice(hub, location);
     }
 
     public void addSwitchWithProperties(String portsCount,
         Point2D.Double location) {
         Switch networkSwitch = new Switch(MacAddress.getRandomAddress(),
             Integer.valueOf(portsCount));
-        NetworkGraphNode deviceNode = new NetworkGraphNode(networkSwitch,
-            location.x, location.y);
-        clientDaemon.SendAddDevicesRequest(deviceNode);
-        visualModel.AddDevice(deviceNode);
-        pcs.firePropertyChange("visualModel", null, visualModel);
+        addDevice(networkSwitch, location);
+    }
+
+    public void addRouterWithProperties(String ip, String portsCount,
+        Point2D.Double location) {
+        Router router = new Router(MacAddress.getRandomAddress(),
+            new IpAddress(ip), Integer.valueOf(portsCount));
+        addDevice(router, location);
     }
 
     public void connectDevices(NetworkGraphNode dev1, NetworkGraphNode dev2)
@@ -163,6 +160,17 @@ public class ClientAppModel {
         networkTestRunner = new NetworkTestRunner();
         networkTestRunner.execute();
     }
+
+
+
+    private void addDevice(NetworkDevice device, Point2D.Double location) {
+        NetworkGraphNode deviceNode = new NetworkGraphNode(device,
+            location.x, location.y);
+        clientDaemon.SendAddDevicesRequest(deviceNode);
+        visualModel.AddDevice(deviceNode);
+        pcs.firePropertyChange("visualModel", null, visualModel);
+    }
+
 
 
     private final PropertyChangeSupport pcs;

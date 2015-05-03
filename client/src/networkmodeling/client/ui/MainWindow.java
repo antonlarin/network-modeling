@@ -59,6 +59,7 @@ public class MainWindow extends JFrame {
         devices.addElement("NIC");
         devices.addElement("Hub");
         devices.addElement("Switch");
+        devices.addElement("Router");
         devicePalette.setModel(devices);
 
         devicePalette.setDragEnabled(true);
