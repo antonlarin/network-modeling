@@ -3,6 +3,7 @@ package networkmodeling.client.ui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,7 +14,10 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -25,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
+import networkmodeling.core.NetworkDeviceType;
 import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 import networkmodeling.exceptions.NoFreePortsException;
@@ -106,6 +111,7 @@ public class DiagramPanel extends JPanel {
 
             g2.drawLine(end1Location.x, end1Location.y,
                 end2Location.x, end2Location.y);
+            drawPortsIndices(g, end1, end2, end1Location, end2Location);
         }
 
         if (creatingConnection) {
@@ -117,6 +123,71 @@ public class DiagramPanel extends JPanel {
         }
 
         g2.setStroke(defaultStroke);
+    }
+
+    private void drawPortsIndices(Graphics g,
+        NetworkGraphNode end1, NetworkGraphNode end2,
+        Point end1Location, Point end2Location) {
+        int edgeWidth = Math.abs(end1Location.x - end2Location.x);
+        int edgeHeight = Math.abs(end1Location.y - end2Location.y);
+        double edgeLength = Math.sqrt(edgeWidth * edgeWidth +
+            edgeHeight * edgeHeight);
+
+        Graphics2D g2 = (Graphics2D) g;
+        Color defaultColor = g2.getColor();
+        if (end1.getNodeDevice().getType() == NetworkDeviceType.Router) {
+            String portIndex = String.format("%d",
+                end1.getNodeDevice().getIndexOfPortConnectedTo(
+                    end2.getNodeDevice()));
+            Point iconCenter = new Point(
+                end1Location.x +
+                    (int) (50 * (end2Location.x - end1Location.x) / edgeLength),
+                end1Location.y +
+                    (int) (50 * (end2Location.y - end1Location.y) / edgeLength)
+            );
+
+            g2.setColor(Color.lightGray);
+            g2.fillRoundRect(iconCenter.x - 12, iconCenter.y - 12,
+                24, 24, 3, 3);
+            g2.setColor(defaultColor);
+            g2.drawRoundRect(iconCenter.x - 12, iconCenter.y - 12,
+                24, 24, 3, 3);
+            Font font = g2.getFont();
+            FontRenderContext fontRenderContext = g2.getFontRenderContext();
+            TextLayout textLayout =
+                new TextLayout(portIndex, font, fontRenderContext);
+            Rectangle2D textBounds = textLayout.getBounds();
+            g2.drawString(portIndex,
+                (int) (iconCenter.x - textBounds.getWidth() / 2),
+                (int) (iconCenter.y + textBounds.getHeight() / 2));
+        }
+
+        if (end2.getNodeDevice().getType() == NetworkDeviceType.Router) {
+            String portIndex = String.format("%d",
+                end2.getNodeDevice().getIndexOfPortConnectedTo(
+                    end1.getNodeDevice()));
+            Point iconCenter = new Point(
+                end2Location.x +
+                    (int) (50 * (end1Location.x - end2Location.x) / edgeLength),
+                end2Location.y +
+                    (int) (50 * (end1Location.y - end2Location.y) / edgeLength)
+            );
+
+            g2.setColor(Color.lightGray);
+            g2.fillRoundRect(iconCenter.x - 12, iconCenter.y - 12,
+                24, 24, 3, 3);
+            g2.setColor(defaultColor);
+            g2.drawRoundRect(iconCenter.x - 12, iconCenter.y - 12,
+                24, 24, 3, 3);
+            Font font = g2.getFont();
+            FontRenderContext fontRenderContext = g2.getFontRenderContext();
+            TextLayout textLayout =
+                new TextLayout(portIndex, font, fontRenderContext);
+            Rectangle2D textBounds = textLayout.getBounds();
+            g2.drawString(portIndex,
+                (int) (iconCenter.x - textBounds.getWidth() / 2),
+                (int) (iconCenter.y + textBounds.getHeight() / 2));
+        }
     }
 
     private void drawDevices(Graphics g) {

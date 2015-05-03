@@ -98,6 +98,17 @@ public abstract class NetworkDevice implements Serializable {
 
     public abstract String getDescription();
 
+    public int getIndexOfPortConnectedTo(NetworkDevice device) {
+        for (int i = 0; i < ports.length; ++i) {
+            if (ports[i].isBound() &&
+                ports[i].GetConnectedPort().getDevice().equals(device)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
 
 
     protected Port getFreePort() {
