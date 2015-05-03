@@ -31,6 +31,10 @@ public class NetworkTestDialog extends JDialog {
             public void run() {
                 NetworkTestDialog testDialog =
                     new NetworkTestDialog(null, null);
+                for (int i = 0; i < 1000; ++i) {
+                    testDialog.appendString(
+                        "Quick brown fox jumps over the lazy dog.\n");
+                }
                 testDialog.setLocationRelativeTo(null);
                 testDialog.setVisible(true);
             }
@@ -41,16 +45,22 @@ public class NetworkTestDialog extends JDialog {
 
     private void setupDialog() {
         JScrollPane logPane = new JScrollPane(testLogTextArea);
+        logPane.setPreferredSize(new Dimension(350, 300));
         logPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(4, 4, 4, 4),
             BorderFactory.createLineBorder(Color.lightGray)));
         testLogTextArea.setEditable(false);
-        testLogTextArea.setPreferredSize(new Dimension(350, 300));
-        clientAppModel.addPropertyChangeListener("networkTestResult",
-            new NetworkTestResultListener());
+        if (clientAppModel != null) {
+            clientAppModel.addPropertyChangeListener("networkTestResult",
+                new NetworkTestResultListener());
+        }
         add(logPane, BorderLayout.CENTER);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         pack();
+    }
+
+    private void appendString(String line) {
+        testLogTextArea.append(line);
     }
 
 
