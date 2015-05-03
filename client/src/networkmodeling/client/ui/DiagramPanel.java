@@ -206,10 +206,13 @@ public class DiagramPanel extends JPanel {
         switch (deviceNode.getNodeDevice().getType()) {
         case NIC:
             deviceIcon = nicImage;
+            break;
         case Hub:
             deviceIcon = hubImage;
+            break;
         case Switch:
             deviceIcon = switchImage;
+            break;
         default: // case Router:
             deviceIcon = routerImage;
         }

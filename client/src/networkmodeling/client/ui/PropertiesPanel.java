@@ -5,28 +5,27 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import networkmodeling.core.Hub;
-import networkmodeling.core.NIC;
 import networkmodeling.core.NetworkDevice;
-import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class PropertiesPanel extends JPanel {
-    
+
     public PropertiesPanel(ClientAppModel clientAppModel) {
         this.clientAppModel = clientAppModel;
         emptyProps = new EmptyPropertiesPage();
         nicProps = new NICPropertiesPage(clientAppModel);
         hubProps = new HubPropertiesPage();
         switchProps = new SwitchPropertiesPage();
-        
+        routerProps = new RouterPropertiesPage(clientAppModel);
+
         setLayout(new CardLayout());
-        
+
         add(emptyProps, "EmptyProps");
         add(switchProps, "SwitchProps");
         add(nicProps, "NicProps");
         add(hubProps, "HubProps");
-        
+        add(routerProps, "RouterProps");
+
         setBorder(BorderFactory.createTitledBorder("Device properties:"));
     }
 
@@ -37,9 +36,10 @@ public class PropertiesPanel extends JPanel {
     private final NICPropertiesPage nicProps;
     private final HubPropertiesPage hubProps;
     private final SwitchPropertiesPage switchProps;
-    
-    
-    
+    private final RouterPropertiesPage routerProps;
+
+
+
     public class SelectedNodeChangeListener
         implements PropertyChangeListener {
 
@@ -54,18 +54,22 @@ public class PropertiesPanel extends JPanel {
             } else {
                 NetworkDevice selectedDevice =
                     clientAppModel.getSelectedNode().getNodeDevice();
-                if (selectedDevice instanceof NIC) {
+                switch (selectedDevice.getType()) {
+                case NIC:
                     layout.show(PropertiesPanel.this, "NicProps");
                     nicProps.associateNode(selectedNode);
-                } else if (selectedDevice instanceof Hub) {
+                    break;
+                case  Hub:
                     layout.show(PropertiesPanel.this, "HubProps");
                     hubProps.associateNode(selectedNode);
-                } else if (selectedDevice instanceof Switch) {
+                    break;
+                case Switch:
                     layout.show(PropertiesPanel.this, "SwitchProps");
                     switchProps.associateNode(selectedNode);
-//                } else { // if (selectedDevice instanceof Router)
-//                    layout.show(PropertiesPanel.this, "RouterProps");
-//                    routerProps.associateNode(selectedNode);
+                    break;
+                default: // if (selectedDevice instanceof Router)
+                    layout.show(PropertiesPanel.this, "RouterProps");
+                    routerProps.associateNode(selectedNode);
                 }
             }
         }

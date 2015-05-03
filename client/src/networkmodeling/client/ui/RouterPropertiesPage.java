@@ -6,35 +6,36 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import networkmodeling.core.NIC;
+import networkmodeling.core.Router;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
-public class NICPropertiesPage extends JPanel {
+public class RouterPropertiesPage extends JPanel {
 
-    public NICPropertiesPage(ClientAppModel clientAppModel) {
+    public RouterPropertiesPage(ClientAppModel clientAppModel) {
         this.clientAppModel = clientAppModel;
         macLabel = new JLabel("");
         ipTextField = new JTextField("");
-        gatewayTextField = new JTextField("");
+        portsCountLabel = new JLabel("");
         applyButton = new JButton("Apply changes");
 
         setupPage();
     }
 
     public void associateNode(NetworkGraphNode node) {
-        associatedDevice = (NIC) node.getNodeDevice();
+        associatedDevice = (Router) node.getNodeDevice();
         macLabel.setText(associatedDevice.getMacAddress().toString());
         ipTextField.setText(associatedDevice.getIpAddress().toString());
-        gatewayTextField.setText(associatedDevice.getGateway().toString());
+        portsCountLabel.setText(
+            String.format("%d",associatedDevice.getPortsCount()));
     }
 
 
 
     private void setupPage() {
-        JLabel deviceTypeLabel = new JLabel("Device type: NIC");
+        JLabel deviceTypeLabel = new JLabel("Device type: Router");
         JLabel macTitleLabel = new JLabel("MAC address:");
         JLabel ipTitleLabel = new JLabel("IP address:");
-        JLabel gatewayTitleLabel = new JLabel("Gateway IP:");
+        JLabel portsCountTitleLabel = new JLabel("Ports count:");
         ipTextField.getDocument().addDocumentListener(
             new IpChangeListener(ipTextField, applyButton));
         applyButton.setEnabled(false);
@@ -52,12 +53,12 @@ public class NICPropertiesPage extends JPanel {
                 .addGroup(layout.createSequentialGroup()
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macTitleLabel)
-                        .addComponent(ipTitleLabel)
-                        .addComponent(gatewayTitleLabel))
+                        .addComponent(portsCountTitleLabel)
+                        .addComponent(ipTitleLabel))
                     .addGroup(layout.createParallelGroup()
                         .addComponent(macLabel)
-                        .addComponent(ipTextField)
-                        .addComponent(gatewayTextField)))
+                        .addComponent(portsCountLabel)
+                        .addComponent(ipTextField)))
                 .addComponent(applyButton)
         );
         layout.setVerticalGroup(
@@ -67,11 +68,11 @@ public class NICPropertiesPage extends JPanel {
                     .addComponent(macTitleLabel)
                     .addComponent(macLabel))
                 .addGroup(layout.createParallelGroup()
+                    .addComponent(portsCountTitleLabel)
+                    .addComponent(portsCountLabel))
+                .addGroup(layout.createParallelGroup()
                     .addComponent(ipTitleLabel)
                     .addComponent(ipTextField))
-                .addGroup(layout.createParallelGroup()
-                    .addComponent(gatewayTitleLabel)
-                    .addComponent(gatewayTextField))
                 .addComponent(applyButton)
         );
 
@@ -82,8 +83,8 @@ public class NICPropertiesPage extends JPanel {
 
     private final JLabel macLabel;
     private final JTextField ipTextField;
-    private final JTextField gatewayTextField;
+    private final JLabel portsCountLabel;
     private final JButton applyButton;
-    private NIC associatedDevice;
+    private Router associatedDevice;
     private final ClientAppModel clientAppModel;
 }
