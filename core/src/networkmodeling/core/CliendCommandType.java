@@ -9,6 +9,9 @@ public enum CliendCommandType
     ChangeDeviceIP,
     ChangeNICGateway,
     
+    AddRoutingTableRecord,
+    RemoveRoutingTableRecord,
+    
     MoveGraphNode,
     
     UpdateFullModel,

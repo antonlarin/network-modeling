@@ -114,6 +114,16 @@ public class ClientThread extends Thread{
                         (IpAddress)command.getCommandArgs()[1]);
                 System.out.println(" change NIC gateway commsnd\n");
                 break;
+            case AddRoutingTableRecord:
+                isCommandExecuted = parentServer.GetModel().AddRoutingTableRecord(
+                        (NetworkGraphNode)command.getCommandArgs()[0],
+                        (RoutingTableRecord)command.getCommandArgs()[1]);
+                break;
+            case RemoveRoutingTableRecord:
+                isCommandExecuted = parentServer.GetModel().DeleteRoutingTableRecord(
+                        (NetworkGraphNode)command.getCommandArgs()[0],
+                        (RoutingTableRecord)command.getCommandArgs()[1]);
+                break;
             case GetFullNetworkModel:
                 UpdateClientModel();
                 isCommandExecuted = true;

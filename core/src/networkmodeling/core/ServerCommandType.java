@@ -8,6 +8,9 @@ public enum ServerCommandType {
     ChangeDeviceIP,
     ChangeNICGateway,
     
+    AddRoutingTableRecord,
+    RemoveRoutingTableRecord,
+    
     MoveGraphNode,
     
     GetFullNetworkModel,

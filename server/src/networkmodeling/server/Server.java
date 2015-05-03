@@ -121,6 +121,16 @@ public class Server extends Thread{
                                 CliendCommandType.DisconnectDevices,
                                 command.getCommandArgs());
                         break;
+                    case AddRoutingTableRecord:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.AddRoutingTableRecord,
+                                command.getCommandArgs());
+                        break;
+                    case RemoveRoutingTableRecord:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.RemoveRoutingTableRecord,
+                                command.getCommandArgs());
+                        break;
                     case MoveGraphNode:
                         updateCommand = new ClientCommand(
                                 CliendCommandType.MoveGraphNode,

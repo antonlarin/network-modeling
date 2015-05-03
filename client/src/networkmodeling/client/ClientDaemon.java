@@ -18,6 +18,7 @@ import networkmodeling.core.ClientCommand;
 import networkmodeling.core.GlobalConstants;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.NetworkVisualModel;
+import networkmodeling.core.RoutingTableRecord;
 import networkmodeling.core.ServerCommand;
 import networkmodeling.core.ServerCommandType;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
@@ -122,6 +123,16 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
                 isCommandExecuted = clientAppModel.getVisualModel().ChangeNICGateway(
                         (NetworkGraphNode)(command.getArguments()[0]),
                         (IpAddress)(command.getArguments()[1]));
+                break;
+            case AddRoutingTableRecord:
+                isCommandExecuted = clientAppModel.getVisualModel().AddRoutingTableRecord(
+                        (NetworkGraphNode)(command.getArguments()[0]),
+                        (RoutingTableRecord)(command.getArguments()[1]));
+                break;
+            case RemoveRoutingTableRecord:
+                isCommandExecuted = clientAppModel.getVisualModel().DeleteRoutingTableRecord(
+                        (NetworkGraphNode)(command.getArguments()[0]),
+                        (RoutingTableRecord)(command.getArguments()[1]));
                 break;
             case MoveGraphNode:
                 isCommandExecuted = clientAppModel.getVisualModel().GetGraph().ChangeNodeCoordinates(
@@ -295,6 +306,44 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
         }
     }
 
+    public void SendRemoveRoutingTableRecorgRequest(NetworkGraphNode dev,
+            RoutingTableRecord record)
+    {
+        if(isConnectedToServer)
+        {
+            Object args[] = new Object[2];
+            args[0] = dev;
+            args[1] = record;
+
+            ServerCommand command = new ServerCommand(
+                ServerCommandType.RemoveRoutingTableRecord, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void SendAddRoutingTableRecorgRequest(NetworkGraphNode dev,
+            RoutingTableRecord record)
+    {
+        if(isConnectedToServer)
+        {
+            Object args[] = new Object[2];
+            args[0] = dev;
+            args[1] = record;
+
+            ServerCommand command = new ServerCommand(
+                ServerCommandType.AddRoutingTableRecord, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     public void LoadModelFromServer()
     {
         SendUpdateModelRequest();

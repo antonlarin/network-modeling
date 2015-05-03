@@ -40,7 +40,14 @@ public class NetworkVisualModel implements Serializable {
         return  model.ChangeDeviceIP((IpBasedNetworkDevice)dev.getNodeDevice(), newIP) &&
                 graph.ChangeDeviceIP(dev, newIP);
     }
-
+    public boolean AddRoutingTableRecord(NetworkGraphNode dev, RoutingTableRecord record)
+    {
+        return model.AddRoutingTableRecord((Router)dev.getNodeDevice(), record);
+    }
+    public boolean DeleteRoutingTableRecord(NetworkGraphNode dev, RoutingTableRecord record)
+    {
+        return model.DeleteRoutingTableRecord((Router)dev.getNodeDevice(), record);
+    }
     public boolean ChangeNICGateway(NetworkGraphNode dev, IpAddress newGatewayIP)
     {
         return model.ChangeNICGateway((NIC)dev.getNodeDevice(), newGatewayIP);

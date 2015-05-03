@@ -71,6 +71,10 @@ public class Router extends IpBasedNetworkDevice {
             getMacAddress().toString());
     }
 
+    public RoutingTable getRoutingTable()
+    {
+        return routingTable;
+    }
 
 
     private final RoutingTable routingTable;

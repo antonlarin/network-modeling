@@ -131,6 +131,31 @@ public class NetworkModel implements Serializable {
         return false;
     }
 
+    public boolean AddRoutingTableRecord(Router dev,
+            RoutingTableRecord newRecord)
+    {
+        if(networkDevices.containsKey(dev.getMacAddress()))
+        {
+            ((Router)networkDevices.get(dev.getMacAddress())).
+                    getRoutingTable().addRecord(newRecord);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean DeleteRoutingTableRecord(Router dev,
+            RoutingTableRecord recForDel)
+    {
+        if(networkDevices.containsKey(dev.getMacAddress()))
+        {
+            return ((Router)networkDevices.get(dev.getMacAddress())).
+                    getRoutingTable().removeRecord(recForDel);
+        }
+        
+        return false;
+    }
+    
     public boolean AreConnected(NetworkDevice dev1, NetworkDevice dev2)
     {
         return dev1.isConnectedTo(dev2);
