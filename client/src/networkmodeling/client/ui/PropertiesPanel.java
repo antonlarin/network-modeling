@@ -10,13 +10,13 @@ import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class PropertiesPanel extends JPanel {
 
-    public PropertiesPanel(ClientAppModel clientAppModel) {
-        this.clientAppModel = clientAppModel;
+    public PropertiesPanel(WindowManager windowManager) {
+        this.windowManager = windowManager;
         emptyProps = new EmptyPropertiesPage();
-        nicProps = new NICPropertiesPage(clientAppModel);
+        nicProps = new NICPropertiesPage(windowManager.getClientAppModel());
         hubProps = new HubPropertiesPage();
         switchProps = new SwitchPropertiesPage();
-        routerProps = new RouterPropertiesPage(clientAppModel);
+        routerProps = new RouterPropertiesPage(windowManager);
 
         setLayout(new CardLayout());
 
@@ -31,7 +31,7 @@ public class PropertiesPanel extends JPanel {
 
 
 
-    private final ClientAppModel clientAppModel;
+    private final WindowManager windowManager;
     private final EmptyPropertiesPage emptyProps;
     private final NICPropertiesPage nicProps;
     private final HubPropertiesPage hubProps;

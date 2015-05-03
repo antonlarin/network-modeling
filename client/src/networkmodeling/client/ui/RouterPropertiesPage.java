@@ -16,12 +16,13 @@ import networkmodeling.core.modelgraph.NetworkGraphNode;
 
 public class RouterPropertiesPage extends JPanel {
 
-    public RouterPropertiesPage(ClientAppModel clientAppModel) {
-        this.clientAppModel = clientAppModel;
+    public RouterPropertiesPage(WindowManager windowManager) {
+        this.windowManager = windowManager;
         macLabel = new JLabel("");
         ipTextField = new JTextField("");
         portsCountLabel = new JLabel("");
         applyButton = new JButton("Apply changes");
+        editRoutingTableButton = new JButton("Edit routing table");
 
         setupPage();
     }
@@ -45,6 +46,13 @@ public class RouterPropertiesPage extends JPanel {
             new IpChangeListener());
         applyButton.setEnabled(false);
         applyButton.addActionListener(new IpAssignmentListener());
+        editRoutingTableButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                windowManager.showRoutingTableEditDialog();
+            }
+        });
 
         JPanel controlsContainer = new JPanel();
         GroupLayout layout = new GroupLayout(controlsContainer);
@@ -64,6 +72,7 @@ public class RouterPropertiesPage extends JPanel {
                         .addComponent(portsCountLabel)
                         .addComponent(ipTextField)))
                 .addComponent(applyButton)
+                .addComponent(editRoutingTableButton)
         );
         layout.setVerticalGroup(
             layout.createSequentialGroup()
@@ -78,6 +87,7 @@ public class RouterPropertiesPage extends JPanel {
                     .addComponent(ipTitleLabel)
                     .addComponent(ipTextField))
                 .addComponent(applyButton)
+                .addComponent(editRoutingTableButton)
         );
 
         controlsContainer.setLayout(layout);
@@ -89,8 +99,9 @@ public class RouterPropertiesPage extends JPanel {
     private final JTextField ipTextField;
     private final JLabel portsCountLabel;
     private final JButton applyButton;
+    private final JButton editRoutingTableButton;
     private Router associatedDevice;
-    private final ClientAppModel clientAppModel;
+    private final WindowManager windowManager;
 
 
 
@@ -128,7 +139,8 @@ public class RouterPropertiesPage extends JPanel {
         public void actionPerformed(ActionEvent e) {
             String newIp = ipTextField.getText();
             if (!newIp.equals(associatedDevice.getIpAddress().toString())) {
-                clientAppModel.setIpForSelectedDevice(ipTextField.getText());
+                windowManager.getClientAppModel().setIpForSelectedDevice(
+                    ipTextField.getText());
             }
             applyButton.setEnabled(false);
         }

@@ -47,7 +47,7 @@ public class WindowManager {
 
     public void showRouterAdditionDialog(Point2D.Double newNodeLocation) {
         AddRouterDialog addRouterDialog =
-            new AddRouterDialog(clientAppModel, mainWindow, newNodeLocation);
+            new AddRouterDialog(this, mainWindow, newNodeLocation);
         addRouterDialog.setLocationRelativeTo(mainWindow);
         addRouterDialog.setVisible(true);
     }
@@ -57,6 +57,13 @@ public class WindowManager {
             new NetworkTestDialog(clientAppModel, mainWindow);
         networkTestDialog.setLocationRelativeTo(mainWindow);
         networkTestDialog.setVisible(true);
+    }
+
+    public void showRoutingTableEditDialog() {
+        RoutingTableDialog routingTableDialog =
+            new RoutingTableDialog(clientAppModel, mainWindow);
+        routingTableDialog.setLocationRelativeTo(mainWindow);
+        routingTableDialog.setVisible(true);
     }
 
 

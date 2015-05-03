@@ -20,8 +20,7 @@ public class MainWindow extends JFrame {
         this.windowManager = windowManager;
         toolbarPanel = new ButtonToolbar(windowManager);
         JScrollPane palettePane = arrangeDevicePalette();
-        propertiesPanel =
-            new PropertiesPanel(windowManager.getClientAppModel());
+        propertiesPanel = new PropertiesPanel(windowManager);
         diagramPanel = new DiagramPanel(windowManager);
 
         setTitle("Networkmodeling Client");

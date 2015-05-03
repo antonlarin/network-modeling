@@ -13,13 +13,14 @@ import javax.swing.SwingUtilities;
 
 public class AddRouterDialog extends JDialog {
 
-    public AddRouterDialog(ClientAppModel clientAppModel, JFrame parent,
+    public AddRouterDialog(WindowManager windowManager, JFrame parent,
         Point2D.Double newNodeLocation) {
         super(parent, "Add router", false);
-        this.clientAppModel = clientAppModel;
+        this.windowManager = windowManager;
         this.newNodeLocation = newNodeLocation;
         this.ipTextField = new JTextField("192.168.0.1");
         this.portsCountTextField = new JTextField("8");
+        editRoutingTableButton = new JButton("Edit routing table");
         addButton = new JButton("Add router");
         cancelButton = new JButton("Cancel");
 
@@ -48,6 +49,13 @@ public class AddRouterDialog extends JDialog {
         PortsCountChangeListener listener = new PortsCountChangeListener(
             portsCountTextField, addButton);
         portsCountTextField.getDocument().addDocumentListener(listener);
+        editRoutingTableButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                windowManager.showRoutingTableEditDialog();
+            }
+        });
         addButton.addActionListener(new AddRouterListener());
         cancelButton.addActionListener(new CancelDeviceAdditionListener(this));
 
@@ -56,16 +64,20 @@ public class AddRouterDialog extends JDialog {
         layout.setAutoCreateContainerGaps(true);
 
         layout.setHorizontalGroup(
-            layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(
-                    GroupLayout.Alignment.LEADING)
-                    .addComponent(ipTitleLabel)
-                    .addComponent(portsCountTitleLabel)
-                    .addComponent(addButton))
-                .addGroup(layout.createParallelGroup(
-                    GroupLayout.Alignment.TRAILING)
-                    .addComponent(ipTextField)
-                    .addComponent(portsCountTextField)
+            layout.createParallelGroup()
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(
+                        GroupLayout.Alignment.LEADING)
+                        .addComponent(ipTitleLabel)
+                        .addComponent(portsCountTitleLabel))
+                    .addGroup(layout.createParallelGroup(
+                        GroupLayout.Alignment.TRAILING)
+                        .addComponent(ipTextField)
+                        .addComponent(portsCountTextField)))
+                .addComponent(editRoutingTableButton,
+                    GroupLayout.Alignment.CENTER)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(addButton)
                     .addComponent(cancelButton))
         );
         layout.setVerticalGroup(
@@ -78,6 +90,7 @@ public class AddRouterDialog extends JDialog {
                     GroupLayout.Alignment.BASELINE)
                     .addComponent(portsCountTitleLabel)
                     .addComponent(portsCountTextField))
+                .addComponent(editRoutingTableButton)
                 .addGroup(layout.createParallelGroup()
                     .addComponent(addButton)
                     .addComponent(cancelButton))
@@ -91,10 +104,11 @@ public class AddRouterDialog extends JDialog {
 
 
 
-    private final ClientAppModel clientAppModel;
+    private final WindowManager windowManager;
     private final Point2D.Double newNodeLocation;
     private final JTextField ipTextField;
     private final JTextField portsCountTextField;
+    private final JButton editRoutingTableButton;
     private final JButton addButton;
     private final JButton cancelButton;
 
@@ -104,8 +118,9 @@ public class AddRouterDialog extends JDialog {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            clientAppModel.addRouterWithProperties(ipTextField.getText(),
-                portsCountTextField.getText(), newNodeLocation);
+            windowManager.getClientAppModel().addRouterWithProperties(
+                ipTextField.getText(), portsCountTextField.getText(),
+                newNodeLocation);
             AddRouterDialog.this.dispose();
         }
     }
