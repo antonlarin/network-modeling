@@ -18,7 +18,9 @@ public class AddNICDialog extends JDialog {
         super(parent, "Add NIC", false);
         this.clientAppModel = clientAppModel;
         this.newNodeLocation = newNodeLocation;
-        ipTextField = new JTextField("192.168.0.100");
+        ipTextField = new JTextField(
+            clientAppModel.getVisualModel().GetModel().
+                getNextInputInSubnet().toString());
         gatewayTextField = new JTextField("192.168.0.1");
         addButton = new JButton("Add NIC");
         cancelButton = new JButton("Cancel");
