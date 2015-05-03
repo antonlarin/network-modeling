@@ -18,6 +18,7 @@ import networkmodeling.core.ClientCommand;
 import networkmodeling.core.GlobalConstants;
 import networkmodeling.core.IpAddress;
 import networkmodeling.core.NetworkVisualModel;
+import networkmodeling.core.RoutingTable;
 import networkmodeling.core.RoutingTableRecord;
 import networkmodeling.core.ServerCommand;
 import networkmodeling.core.ServerCommandType;
@@ -133,6 +134,11 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
                 isCommandExecuted = clientAppModel.getVisualModel().DeleteRoutingTableRecord(
                         (NetworkGraphNode)(command.getArguments()[0]),
                         (RoutingTableRecord)(command.getArguments()[1]));
+                break;
+            case SetRoutingTable:
+                isCommandExecuted = clientAppModel.getVisualModel().setRoutingTable(
+                        (NetworkGraphNode)(command.getArguments()[0]),
+                        (RoutingTable)(command.getArguments()[1]));
                 break;
             case MoveGraphNode:
                 isCommandExecuted = clientAppModel.getVisualModel().GetGraph().ChangeNodeCoordinates(
@@ -336,6 +342,25 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
 
             ServerCommand command = new ServerCommand(
                 ServerCommandType.AddRoutingTableRecord, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void SendSetRoutingTableRequest(NetworkGraphNode dev,
+            RoutingTable table)
+    {
+        if(isConnectedToServer)
+        {
+            Object args[] = new Object[2];
+            args[0] = dev;
+            args[1] = table;
+
+            ServerCommand command = new ServerCommand(
+                ServerCommandType.SetRoutingTable, args);
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {

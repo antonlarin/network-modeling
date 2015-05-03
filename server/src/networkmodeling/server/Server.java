@@ -131,6 +131,11 @@ public class Server extends Thread{
                                 CliendCommandType.RemoveRoutingTableRecord,
                                 command.getCommandArgs());
                         break;
+                    case SetRoutingTable:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.SetRoutingTable,
+                                command.getCommandArgs());
+                        break;
                     case MoveGraphNode:
                         updateCommand = new ClientCommand(
                                 CliendCommandType.MoveGraphNode,

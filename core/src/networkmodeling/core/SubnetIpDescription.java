@@ -1,6 +1,8 @@
 package networkmodeling.core;
 
-public class SubnetIpDescription {
+import java.io.Serializable;
+
+public class SubnetIpDescription implements Serializable {
 
     public SubnetIpDescription(IpAddress subnetIp, byte subnetAddressLength) {
         this.subnetIp = subnetIp;

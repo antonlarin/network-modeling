@@ -124,6 +124,11 @@ public class ClientThread extends Thread{
                         (NetworkGraphNode)command.getCommandArgs()[0],
                         (RoutingTableRecord)command.getCommandArgs()[1]);
                 break;
+            case SetRoutingTable:
+                isCommandExecuted = parentServer.GetModel().setRoutingTable(
+                        (NetworkGraphNode)command.getCommandArgs()[0],
+                        (RoutingTable)command.getCommandArgs()[1]);
+                break;
             case GetFullNetworkModel:
                 UpdateClientModel();
                 isCommandExecuted = true;

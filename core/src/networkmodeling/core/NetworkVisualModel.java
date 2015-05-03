@@ -48,6 +48,10 @@ public class NetworkVisualModel implements Serializable {
     {
         return model.DeleteRoutingTableRecord((Router)dev.getNodeDevice(), record);
     }
+    public boolean setRoutingTable(NetworkGraphNode dev, RoutingTable table)
+    {
+        return model.SetRoutingTable((Router)dev.getNodeDevice(), table);
+    }
     public boolean ChangeNICGateway(NetworkGraphNode dev, IpAddress newGatewayIP)
     {
         return model.ChangeNICGateway((NIC)dev.getNodeDevice(), newGatewayIP);

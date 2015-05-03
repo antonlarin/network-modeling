@@ -156,6 +156,18 @@ public class NetworkModel implements Serializable {
         return false;
     }
     
+    public boolean SetRoutingTable(Router dev, RoutingTable table)
+    {
+        if(networkDevices.containsKey(dev.getMacAddress()))
+        {
+            ((Router)networkDevices.get(dev.getMacAddress())).
+                    setRoutingTable(table);
+            return true;
+        }
+        
+        return false;
+    }
+    
     public boolean AreConnected(NetworkDevice dev1, NetworkDevice dev2)
     {
         return dev1.isConnectedTo(dev2);

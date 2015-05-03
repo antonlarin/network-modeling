@@ -1,6 +1,8 @@
 package networkmodeling.core;
 
-public class RoutingTableRecord {
+import java.io.Serializable;
+
+public class RoutingTableRecord implements Serializable {
 
     public RoutingTableRecord(SubnetIpDescription subnetAddress,
         IpAddress hopIp, int portIndex) {

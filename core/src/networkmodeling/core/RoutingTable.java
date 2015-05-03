@@ -1,8 +1,9 @@
 package networkmodeling.core;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class RoutingTable {
+public class RoutingTable implements Serializable {
 
     public RoutingTable() {
         routingTable = new LinkedList<>();
