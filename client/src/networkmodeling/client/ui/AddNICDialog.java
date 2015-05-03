@@ -10,6 +10,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import networkmodeling.core.IpAddress;
 
 public class AddNICDialog extends JDialog {
 
@@ -47,12 +50,9 @@ public class AddNICDialog extends JDialog {
     private void setupDialog() {
         JLabel ipTitleLabel = new JLabel("IP address:");
         JLabel gatewayTitleLabel = new JLabel("Gateway IP:");
-        IpChangeListener ipListener = new IpChangeListener(ipTextField,
-            addButton);
-        IpChangeListener gatewayListener = new IpChangeListener(
-            gatewayTextField, addButton);
-        ipTextField.getDocument().addDocumentListener(ipListener);
-        gatewayTextField.getDocument().addDocumentListener(gatewayListener);
+        IpGatewayChangeListener listener = new IpGatewayChangeListener();
+        ipTextField.getDocument().addDocumentListener(listener);
+        gatewayTextField.getDocument().addDocumentListener(listener);
         addButton.addActionListener(new AddNICListener());
         cancelButton.addActionListener(new CancelDeviceAdditionListener(this));
 
@@ -112,6 +112,34 @@ public class AddNICDialog extends JDialog {
             clientAppModel.addNICWithProperties(ipTextField.getText(),
                 gatewayTextField.getText(), newNodeLocation);
             AddNICDialog.this.dispose();
+        }
+    }
+
+    public class IpGatewayChangeListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        private void handleUpdate() {
+            String ip = ipTextField.getText();
+            String gateway = gatewayTextField.getText();
+            if (!IpAddress.isValid(ip) || !IpAddress.isValid(gateway)) {
+                addButton.setEnabled(false);
+            } else {
+                addButton.setEnabled(true);
+            }
         }
     }
 }

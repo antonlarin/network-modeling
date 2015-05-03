@@ -12,6 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import networkmodeling.core.IpAddress;
 import networkmodeling.core.RoutingTable;
 
 public class AddRouterDialog extends JDialog {
@@ -51,8 +52,7 @@ public class AddRouterDialog extends JDialog {
         JLabel portsCountTitleLabel = new JLabel("Ports count:");
         portsCountTextField.getDocument().addDocumentListener(
             new PortsCountChangeListener());
-        ipTextField.getDocument().addDocumentListener(
-            new IpChangeListener(ipTextField, addButton));
+        ipTextField.getDocument().addDocumentListener(new IpChangeListener());
         editRoutingTableButton.addActionListener(new ActionListener() {
 
             @Override
@@ -179,6 +179,33 @@ public class AddRouterDialog extends JDialog {
             } catch (NumberFormatException ex) {
                 addButton.setEnabled(false);
                 editRoutingTableButton.setEnabled(false);
+            }
+        }
+    }
+
+    private class IpChangeListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        private void handleUpdate() {
+            String ip = ipTextField.getText();
+            if (!IpAddress.isValid(ip)) {
+                addButton.setEnabled(false);
+            } else {
+                addButton.setEnabled(true);
             }
         }
     }
