@@ -52,6 +52,12 @@ public class NIC extends IpBasedNetworkDevice {
             sendDataThroughGateway(data, target);
         }
     }
+    
+    public void setGateway(IpAddress newGatewayIp)
+    {
+        if(newGatewayIp != null)
+            this.gatewayIp = newGatewayIp;
+    }
 
     @Override
     public String getDescription() {
@@ -122,7 +128,7 @@ public class NIC extends IpBasedNetworkDevice {
         return incomingData.pop();
     }
 
-    public boolean isData()
+    public boolean isStoresData()
     {
         return incomingData.isEmpty();
     }
@@ -133,6 +139,6 @@ public class NIC extends IpBasedNetworkDevice {
     }
 
     private LinkedList<NetworkDevice> lastIncomingDataRoute;
-    private final IpAddress gatewayIp;
+    private IpAddress gatewayIp;
     private final LinkedList<Object> incomingData;
 }

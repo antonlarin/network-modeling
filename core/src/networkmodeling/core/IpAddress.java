@@ -88,14 +88,14 @@ public class IpAddress implements Serializable {
         short octet3 = value.octet3;
         short octet4 = value.octet4;
 
-        if (octet1 < 255)
-            octet1++;
-        else if(octet2 < 255)
-            octet2++;
+        if (octet4 < 255)
+            octet4++;
         else if(octet3 < 255)
             octet3++;
-        else if(octet4 < 255)
-            octet4++;
+        else if(octet2 < 255)
+            octet2++;
+        else if(octet1 < 255)
+            octet1++;
         else
             return null;
 

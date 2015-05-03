@@ -6,6 +6,8 @@ public enum ServerCommandType {
     ConnectDevices,
     DisconnectDevices,
     ChangeDeviceIP,
+    ChangeNICGateway,
+    
     MoveGraphNode,
     
     GetFullNetworkModel,

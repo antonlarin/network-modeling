@@ -61,7 +61,7 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
             try {
                 clientID = (UUID)inputStream.readObject();
                 System.out.println("Connected\n");
-                SendUpdateModelRequest();
+                
                 while(!isCancelled())
                 {
                     ClientCommand command = (ClientCommand) inputStream.readObject();
@@ -115,6 +115,11 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
                 break;
             case ChangeDeviceIP:
                 isCommandExecuted = clientAppModel.getVisualModel().ChangeDeviceIP(
+                        (NetworkGraphNode)(command.getArguments()[0]),
+                        (IpAddress)(command.getArguments()[1]));
+                break;
+            case ChangeNICGateway:
+                isCommandExecuted = clientAppModel.getVisualModel().ChangeNICGateway(
                         (NetworkGraphNode)(command.getArguments()[0]),
                         (IpAddress)(command.getArguments()[1]));
                 break;
@@ -195,6 +200,24 @@ public class ClientDaemon extends SwingWorker<Void, Void> {
 
             ServerCommand command = new ServerCommand(
                     ServerCommandType.ChangeDeviceIP, args);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientDaemon.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void SendChangeNICGatewayRequest(NetworkGraphNode dev, IpAddress newGatewayIP)
+    {
+        if(isConnectedToServer)
+        {
+            Object args[] = new Object[2];
+            args[0] = dev;
+            args[1] = newGatewayIP;
+
+            ServerCommand command = new ServerCommand(
+                    ServerCommandType.ChangeNICGateway, args);
             try {
                 outputStream.writeObject(command);
             } catch (IOException ex) {

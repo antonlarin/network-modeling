@@ -101,6 +101,11 @@ public class Server extends Thread{
                                 CliendCommandType.ChangeDeviceIP,
                                 command.getCommandArgs());
                         break;
+                    case ChangeNICGateway:
+                        updateCommand = new ClientCommand(
+                                CliendCommandType.ChangeNICGateway,
+                                command.getCommandArgs());
+                        break;
                     case ConnectDevices:
                         updateCommand = new ClientCommand(
                                 CliendCommandType.ConnectDevices,
@@ -124,7 +129,6 @@ public class Server extends Thread{
                 }
                 
                 value.SendCommand(updateCommand);
-                //value.UpdateClientModel();
             }
         }
     }

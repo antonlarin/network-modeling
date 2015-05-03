@@ -108,6 +108,12 @@ public class ClientThread extends Thread{
                         (IpAddress)command.getCommandArgs()[1]);
                 System.out.println(" change device Ip command\n");
                 break;
+            case ChangeNICGateway:
+                isCommandExecuted = parentServer.GetModel().ChangeNICGateway(
+                        (NetworkGraphNode)command.getCommandArgs()[0],
+                        (IpAddress)command.getCommandArgs()[1]);
+                System.out.println(" change NIC gateway commsnd\n");
+                break;
             case GetFullNetworkModel:
                 UpdateClientModel();
                 isCommandExecuted = true;

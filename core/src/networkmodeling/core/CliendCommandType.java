@@ -7,6 +7,7 @@ public enum CliendCommandType
     ConnectDevices,
     DisconnectDevices,
     ChangeDeviceIP,
+    ChangeNICGateway,
     
     MoveGraphNode,
     

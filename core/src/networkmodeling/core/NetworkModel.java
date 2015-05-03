@@ -156,6 +156,17 @@ public class NetworkModel implements Serializable {
 
         return false;
     }
+    
+    public boolean ChangeNICGateway(NIC dev, IpAddress newGatewayIP)
+    {
+        if(networkDevices.containsKey(dev.getMacAddress()))
+        {
+            ((NIC)networkDevices.get(dev.getMacAddress())).setGateway(newGatewayIP);
+            return true;
+        }
+        
+        return false;
+    }
 
     public NetworkDevice FindByMac(MacAddress address)
     {
@@ -164,7 +175,7 @@ public class NetworkModel implements Serializable {
     
     public IpAddress getNextInputInSubnet()
     {
-        return IpAddress.GetNextAddress(lastAddedAddress);
+        return IpAddress.getNextAddress(lastAddedAddress);
     }
 
     private NIC FindNICByIP(IpAddress adress)

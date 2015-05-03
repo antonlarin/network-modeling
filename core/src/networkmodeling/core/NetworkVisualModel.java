@@ -41,6 +41,10 @@ public class NetworkVisualModel implements Serializable {
                 graph.ChangeDeviceIP(dev, newIP);
     }
 
+    public boolean ChangeNICGateway(NetworkGraphNode dev, IpAddress newGatewayIP)
+    {
+        return model.ChangeNICGateway((NIC)dev.getNodeDevice(), newGatewayIP);
+    }
 
     public NetworkModel GetModel() {
         return model;
