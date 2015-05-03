@@ -148,6 +148,12 @@ public class ClientAppModel {
         visualModel.ChangeDeviceIP(selectedNode, newAddress);
     }
 
+    public void setGatewayForSelectedDevice(String gatewayString) {
+        IpAddress newGateway = new IpAddress(gatewayString);
+        clientDaemon.SendChangeNICGatewayRequest(selectedNode, newGateway);
+        visualModel.ChangeNICGateway(selectedNode, newGateway);
+    }
+
     public void changeSelectedNodeLocation(Point2D.Double newLocation) {
         clientDaemon.SendСhangeNodeCoordinatesRequest(selectedNode,
             newLocation.x, newLocation.y);

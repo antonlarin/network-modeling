@@ -137,8 +137,8 @@ public class NICPropertiesPage extends JPanel {
                 clientAppModel.setIpForSelectedDevice(ipTextField.getText());
             }
             if (!newGateway.equals(associatedDevice.getGateway().toString())) {
-//                clientAppModel.setGatewayForSelectedDevice(
-//                    gatewayTextField.getText());
+                clientAppModel.setGatewayForSelectedDevice(
+                    gatewayTextField.getText());
             }
             applyButton.setEnabled(false);
         }
