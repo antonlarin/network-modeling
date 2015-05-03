@@ -30,7 +30,7 @@ public class NIC extends IpBasedNetworkDevice {
         case PACKET:
             Packet incomingPacket = (Packet) frameData;
 
-            if(incomingPacket.getTargetIp() == this.getIpAddress())
+            if(incomingPacket.getTargetIp().equals(this.getIpAddress()))
                 frame.getRoute().add(this);
             lastIncomingDataRoute = frame.getRoute();
 
@@ -52,7 +52,7 @@ public class NIC extends IpBasedNetworkDevice {
             sendDataThroughGateway(data, target);
         }
     }
-    
+
     public void setGateway(IpAddress newGatewayIp)
     {
         if(newGatewayIp != null)

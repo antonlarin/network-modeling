@@ -20,7 +20,7 @@ public class SubnetIpDescription {
     public boolean containsAddress(IpAddress ip) {
         long ipBits = ip.getBitRepresentation();
         long subnetIpBits = subnetIp.getBitRepresentation();
-        return subnetIpBits == (ipBits & (~0 << subnetAddressLength));
+        return subnetIpBits == (ipBits & getSubnetMask());
     }
 
     @Override
@@ -60,6 +60,12 @@ public class SubnetIpDescription {
         }
 
         return true;
+    }
+
+
+
+    private long getSubnetMask() {
+        return ~0 << (32 - subnetAddressLength);
     }
 
 
