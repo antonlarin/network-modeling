@@ -160,7 +160,11 @@ public class ClientAppModel {
     }
 
     public void setStashedRoutingTableForSelectedRouter() {
-
+        if (selectedNode != null) {
+            clientDaemon.SendSetRoutingTableRequest(selectedNode,
+                stashedRoutingTable);
+            visualModel.setRoutingTable(selectedNode, stashedRoutingTable);
+        }
     }
 
     public void changeSelectedNodeLocation(Point2D.Double newLocation) {

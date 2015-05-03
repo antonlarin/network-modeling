@@ -57,6 +57,9 @@ public class RouterPropertiesPage extends JPanel {
             }
         });
 
+        windowManager.getClientAppModel().addPropertyChangeListener(
+            "stashedRoutingTable", new RoutingTableListener());
+
         JPanel controlsContainer = new JPanel();
         GroupLayout layout = new GroupLayout(controlsContainer);
         layout.setAutoCreateGaps(true);
