@@ -42,7 +42,7 @@ public class NetworkModelTestResult {
                 while(!currentRoute.isEmpty())
                 {
                     NetworkDevice dev = currentRoute.pollFirst();
-                    log[i] += " " + dev.getDescription();
+                    log[i] += "\n - " + dev.getDescription();
                 }
                 log[i] += "\n";
             }
