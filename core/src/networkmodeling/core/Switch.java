@@ -25,7 +25,7 @@ public class Switch extends NetworkDevice {
         Port outputPort = camTable.get(frame.getTargetMac());
         if (outputPort == null) {
             broadcastFrame(frame, receivingPort);
-        } else {
+        } else if( !outputPort.equals(receivingPort)) {
             try {
                 outputPort.sendFrame(frame);
             } catch (Exception ex) {
@@ -43,7 +43,6 @@ public class Switch extends NetworkDevice {
         for (Port port : getPorts()) {
             if (port != receivingPort) {
                 try {
-                    //port.sendFrame(frame);
                     port.sendFrame(new Frame(frame));
                 } catch (Exception ex) {
                     System.err.println(

@@ -75,6 +75,26 @@ public class IpAddress implements Serializable {
         return true;
     }
 
+    public static IpAddress GetNextAddress(IpAddress value)
+    {
+        short octet1 = value.octet1;
+        short octet2 = value.octet2;
+        short octet3 = value.octet3;
+        short octet4 = value.octet4;
+
+        if (octet1 < 255)
+            octet1++;
+        else if(octet2 < 255)
+            octet2++;
+        else if(octet3 < 255)
+            octet3++;
+        else if(octet4 < 255)
+            octet4++;
+        else
+            return null;
+        
+        return new IpAddress(octet1, octet2, octet3, octet4);
+    }
 
 
     private final short octet1;
