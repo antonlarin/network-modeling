@@ -59,10 +59,11 @@ public class WindowManager {
         networkTestDialog.setVisible(true);
     }
 
-    public void showRoutingTableEditDialog(boolean forExistingRouter) {
+    public void showRoutingTableEditDialog(boolean forExistingRouter,
+        int portCount) {
         RoutingTableDialog routingTableDialog =
             new RoutingTableDialog(clientAppModel, mainWindow,
-                forExistingRouter);
+                forExistingRouter, portCount);
         routingTableDialog.setLocationRelativeTo(mainWindow);
         routingTableDialog.setVisible(true);
     }

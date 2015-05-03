@@ -184,9 +184,7 @@ public class ClientAppModel {
     }
 
     public RoutingTable getStashedRoutingTable() {
-        RoutingTable result = stashedRoutingTable;
-        stashedRoutingTable = null;
-        return result;
+        return stashedRoutingTable;
     }
 
 

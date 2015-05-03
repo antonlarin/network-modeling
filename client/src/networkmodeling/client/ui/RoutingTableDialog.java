@@ -19,7 +19,7 @@ import networkmodeling.core.Router;
 public class RoutingTableDialog extends JDialog {
 
     public RoutingTableDialog(ClientAppModel clientAppModel, JFrame parent,
-        boolean forExistingRouter) {
+        boolean forExistingRouter, int portCount) {
         super(parent, "Edit routing table", false);
         this.clientAppModel = clientAppModel;
         routingTableView = new JTable();
@@ -28,16 +28,14 @@ public class RoutingTableDialog extends JDialog {
                 (Router) clientAppModel.getSelectedNode().getNodeDevice();
             routingTableModel = new RoutingTableModel(
                 selectedRouter.getRoutingTable());
-            routerPortsCount = selectedRouter.getPortsCount();
         } else {
-            routingTableModel = new RoutingTableModel(null);
-            // TODO change 8 here
-            routerPortsCount = 8;
+            routingTableModel = new RoutingTableModel(
+                clientAppModel.getStashedRoutingTable());
         }
         applyButton = new JButton("Apply changes");
         addRecordButton = new JButton("Add record");
 
-        setupDialog();
+        setupDialog(portCount);
     }
 
 
@@ -48,7 +46,7 @@ public class RoutingTableDialog extends JDialog {
             @Override
             public void run() {
                 RoutingTableDialog dialog =
-                    new RoutingTableDialog(null, null, false);
+                    new RoutingTableDialog(null, null, false, 8);
                 dialog.setVisible(true);
             }
         });
@@ -56,7 +54,7 @@ public class RoutingTableDialog extends JDialog {
 
 
 
-    private void setupDialog() {
+    private void setupDialog(int routerPortsCount) {
         JScrollPane tablePane = new JScrollPane(routingTableView);
         tablePane.setPreferredSize(new Dimension(400, 300));
         routingTableView.setFillsViewportHeight(true);
@@ -104,7 +102,6 @@ public class RoutingTableDialog extends JDialog {
 
     private final ClientAppModel clientAppModel;
     private final RoutingTableModel routingTableModel;
-    private int routerPortsCount;
     private final JTable routingTableView;
     private final JButton applyButton;
     private final JButton addRecordButton;

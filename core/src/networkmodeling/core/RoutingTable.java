@@ -39,6 +39,17 @@ public class RoutingTable implements Serializable {
         return null;
     }
 
+    public int getMaxUsedPortIndex() {
+        int maxPortIndex = 0;
+        for (RoutingTableRecord record : routingTable) {
+            if (record.getPortIndex() > maxPortIndex) {
+                maxPortIndex = record.getPortIndex();
+            }
+        }
+
+        return maxPortIndex;
+    }
+
 
 
     private final LinkedList<RoutingTableRecord> routingTable;

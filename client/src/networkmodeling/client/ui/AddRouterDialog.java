@@ -10,6 +10,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import networkmodeling.core.RoutingTable;
 
 public class AddRouterDialog extends JDialog {
 
@@ -46,14 +49,16 @@ public class AddRouterDialog extends JDialog {
     private void setupPage() {
         JLabel ipTitleLabel = new JLabel("IP address:");
         JLabel portsCountTitleLabel = new JLabel("Ports count:");
-        PortsCountChangeListener listener = new PortsCountChangeListener(
-            portsCountTextField, addButton);
-        portsCountTextField.getDocument().addDocumentListener(listener);
+        portsCountTextField.getDocument().addDocumentListener(
+            new PortsCountChangeListener());
+        ipTextField.getDocument().addDocumentListener(
+            new IpChangeListener(ipTextField, addButton));
         editRoutingTableButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                windowManager.showRoutingTableEditDialog(false);
+                windowManager.showRoutingTableEditDialog(false,
+                    Integer.valueOf(portsCountTextField.getText()));
             }
         });
         addButton.addActionListener(new AddRouterListener());
@@ -122,6 +127,59 @@ public class AddRouterDialog extends JDialog {
                 ipTextField.getText(), portsCountTextField.getText(),
                 newNodeLocation);
             AddRouterDialog.this.dispose();
+        }
+    }
+
+    private class PortsCountChangeListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        private void handleUpdate() {
+            int currentPortsCount = -1;
+            try {
+                currentPortsCount =
+                    Integer.valueOf(portsCountTextField.getText());
+
+                RoutingTable stashedRoutingTable =
+                    windowManager.getClientAppModel().getStashedRoutingTable();
+                if (stashedRoutingTable != null) {
+                    if (currentPortsCount < 0) {
+                        addButton.setEnabled(false);
+                        editRoutingTableButton.setEnabled(false);
+                    } else if (currentPortsCount <=
+                        stashedRoutingTable.getMaxUsedPortIndex()) {
+                        addButton.setEnabled(false);
+                        editRoutingTableButton.setEnabled(true);
+                    } else {
+                        addButton.setEnabled(true);
+                        editRoutingTableButton.setEnabled(true);
+                    }
+                } else {
+                    if (currentPortsCount < 0) {
+                        addButton.setEnabled(false);
+                        editRoutingTableButton.setEnabled(false);
+                    } else {
+                        addButton.setEnabled(true);
+                        editRoutingTableButton.setEnabled(true);
+                    }
+                }
+            } catch (NumberFormatException ex) {
+                addButton.setEnabled(false);
+                editRoutingTableButton.setEnabled(false);
+            }
         }
     }
 }

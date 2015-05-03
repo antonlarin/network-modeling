@@ -52,7 +52,8 @@ public class RouterPropertiesPage extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                windowManager.showRoutingTableEditDialog(true);
+                windowManager.showRoutingTableEditDialog(true,
+                    associatedDevice.getPortsCount());
             }
         });
 
