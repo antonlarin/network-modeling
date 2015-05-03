@@ -53,7 +53,7 @@ public class AddRouterDialog extends JDialog {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                windowManager.showRoutingTableEditDialog();
+                windowManager.showRoutingTableEditDialog(false);
             }
         });
         addButton.addActionListener(new AddRouterListener());

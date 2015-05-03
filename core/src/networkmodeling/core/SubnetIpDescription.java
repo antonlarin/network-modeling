@@ -32,6 +32,9 @@ public class SubnetIpDescription {
 
     public static boolean isValid(String subnetDescription) {
         String[] subnetDescriptionParts = subnetDescription.split("/");
+        if (subnetDescriptionParts.length != 2) {
+            return false;
+        }
 
         byte subnetMaskLength = 0;
         try {

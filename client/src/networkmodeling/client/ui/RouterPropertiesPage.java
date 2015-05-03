@@ -50,7 +50,7 @@ public class RouterPropertiesPage extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                windowManager.showRoutingTableEditDialog();
+                windowManager.showRoutingTableEditDialog(true);
             }
         });
 

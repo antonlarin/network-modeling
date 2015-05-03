@@ -2,11 +2,15 @@ package networkmodeling.core;
 
 public class RoutingTableRecord {
 
-    public RoutingTableRecord(SubnetIpDescription subnetIpDescription,
+    public RoutingTableRecord(SubnetIpDescription subnetAddress,
         IpAddress hopIp, int portIndex) {
-        this.subnetIpDescription = subnetIpDescription;
+        this.subnetAddress = subnetAddress;
         this.hopIp = hopIp;
         this.portIndex = portIndex;
+    }
+
+    public SubnetIpDescription getSubnetAddress() {
+        return subnetAddress;
     }
 
     public IpAddress getHopIp() {
@@ -18,12 +22,12 @@ public class RoutingTableRecord {
     }
 
     public boolean correspondsToAddress(IpAddress ipAddress) {
-        return subnetIpDescription.containsAddress(ipAddress);
+        return subnetAddress.containsAddress(ipAddress);
     }
 
 
 
-    private final SubnetIpDescription subnetIpDescription;
+    private final SubnetIpDescription subnetAddress;
     private final IpAddress hopIp;
     private final int portIndex;
 }
