@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class AddHubDialog extends JDialog {
     public AddHubDialog(ClientAppModel clientAppModel, JFrame parent,
@@ -23,7 +21,7 @@ public class AddHubDialog extends JDialog {
         portsCountTextField = new JTextField("8");
         addButton = new JButton("Add hub");
         cancelButton = new JButton("Cancel");
-        
+
         setupDialog();
     }
 
@@ -45,10 +43,11 @@ public class AddHubDialog extends JDialog {
 
     private void setupDialog() {
         JLabel portsCountTitleLabel = new JLabel("Ports count:");
-        PortsCountChangeListener listener = new PortsCountChangeListener();
+        PortsCountChangeListener listener = new PortsCountChangeListener(
+            portsCountTextField, addButton);
         portsCountTextField.getDocument().addDocumentListener(listener);
         addButton.addActionListener(new AddHubListener());
-        cancelButton.addActionListener(new CancelHubAdditionListener());
+        cancelButton.addActionListener(new CancelDeviceAdditionListener(this));
 
         GroupLayout layout = new GroupLayout(this.getContentPane());
         layout.setAutoCreateGaps(true);
@@ -92,50 +91,12 @@ public class AddHubDialog extends JDialog {
 
 
 
-    private class PortsCountChangeListener implements DocumentListener {
-
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-            handleUpdate();
-        }
-
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-            handleUpdate();
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent e) {
-            handleUpdate();
-        }
-        
-        private void handleUpdate() {
-            String portsCount = portsCountTextField.getText();
-            try {
-                int portsCountAsNumber = Integer.valueOf(portsCount);
-                if (portsCountAsNumber > 0) {
-                    addButton.setEnabled(true);
-                    return;
-                }
-            } catch (NumberFormatException ex) {}
-            addButton.setEnabled(false);
-        }
-    }
-    
     private class AddHubListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             clientAppModel.addHubWithProperties(portsCountTextField.getText(),
                 newNodeLocation);
-            AddHubDialog.this.dispose();
-        }
-    }
-    
-    private class CancelHubAdditionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
             AddHubDialog.this.dispose();
         }
     }

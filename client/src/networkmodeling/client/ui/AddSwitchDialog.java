@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class AddSwitchDialog extends JDialog {
     public AddSwitchDialog(ClientAppModel clientAppModel, JFrame parent,
@@ -23,7 +21,7 @@ public class AddSwitchDialog extends JDialog {
         portsCountTextField = new JTextField("8");
         addButton = new JButton("Add switch");
         cancelButton = new JButton("Cancel");
-        
+
         setupDialog();
     }
 
@@ -45,10 +43,11 @@ public class AddSwitchDialog extends JDialog {
 
     private void setupDialog() {
         JLabel portsCountTitleLabel = new JLabel("Ports count:");
-        PortsCountChangeListener listener = new PortsCountChangeListener();
+        PortsCountChangeListener listener = new PortsCountChangeListener(
+            portsCountTextField, addButton);
         portsCountTextField.getDocument().addDocumentListener(listener);
         addButton.addActionListener(new AddSwitchListener());
-        cancelButton.addActionListener(new CancelSwitchAdditionListener());
+        cancelButton.addActionListener(new CancelDeviceAdditionListener(this));
 
         GroupLayout layout = new GroupLayout(this.getContentPane());
         layout.setAutoCreateGaps(true);
@@ -92,50 +91,12 @@ public class AddSwitchDialog extends JDialog {
 
 
 
-    private class PortsCountChangeListener implements DocumentListener {
-
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-            handleUpdate();
-        }
-
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-            handleUpdate();
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent e) {
-            handleUpdate();
-        }
-        
-        private void handleUpdate() {
-            String portsCount = portsCountTextField.getText();
-            try {
-                int portsCountAsNumber = Integer.valueOf(portsCount);
-                if (portsCountAsNumber > 0) {
-                    addButton.setEnabled(true);
-                    return;
-                }
-            } catch (NumberFormatException ex) {}
-            addButton.setEnabled(false);
-        }
-    }
-    
     private class AddSwitchListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             clientAppModel.addSwitchWithProperties(
                 portsCountTextField.getText(), newNodeLocation);
-            AddSwitchDialog.this.dispose();
-        }
-    }
-    
-    private class CancelSwitchAdditionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
             AddSwitchDialog.this.dispose();
         }
     }
