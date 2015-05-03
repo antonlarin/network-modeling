@@ -1,11 +1,16 @@
 package networkmodeling.client.ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import networkmodeling.core.IpAddress;
 import networkmodeling.core.Router;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
 
@@ -37,10 +42,9 @@ public class RouterPropertiesPage extends JPanel {
         JLabel ipTitleLabel = new JLabel("IP address:");
         JLabel portsCountTitleLabel = new JLabel("Ports count:");
         ipTextField.getDocument().addDocumentListener(
-            new IpChangeListener(ipTextField, applyButton));
+            new IpChangeListener());
         applyButton.setEnabled(false);
-        applyButton.addActionListener(
-            new IpAssignmentListener(clientAppModel, ipTextField, applyButton));
+        applyButton.addActionListener(new IpAssignmentListener());
 
         JPanel controlsContainer = new JPanel();
         GroupLayout layout = new GroupLayout(controlsContainer);
@@ -87,4 +91,46 @@ public class RouterPropertiesPage extends JPanel {
     private final JButton applyButton;
     private Router associatedDevice;
     private final ClientAppModel clientAppModel;
+
+
+
+    private class IpChangeListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            handleUpdate();
+        }
+
+        private void handleUpdate() {
+            String newIp = ipTextField.getText();
+            if ((!newIp.equals(associatedDevice.getIpAddress().toString()) &&
+                IpAddress.isValid(newIp))) {
+                applyButton.setEnabled(true);
+            } else {
+                applyButton.setEnabled(false);
+            }
+        }
+    }
+
+    private class IpAssignmentListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String newIp = ipTextField.getText();
+            if (!newIp.equals(associatedDevice.getIpAddress().toString())) {
+                clientAppModel.setIpForSelectedDevice(ipTextField.getText());
+            }
+            applyButton.setEnabled(false);
+        }
+    }
 }
