@@ -52,9 +52,9 @@ public class IpAddress implements Serializable {
 
     public long getBitRepresentation() {
         long result = octet1;
-        result = (result << 3) + octet2;
-        result = (result << 3) + octet3;
-        return (result << 3) + octet4;
+        result = (result << 8) + octet2;
+        result = (result << 8) + octet3;
+        return (result << 8) + octet4;
     }
 
 
