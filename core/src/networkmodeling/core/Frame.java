@@ -3,18 +3,22 @@ package networkmodeling.core;
 import java.util.LinkedList;
 
 public class Frame {
-    public Frame(MacAddress sender, MacAddress target, FrameData data) {
+
+    public Frame(MacAddress sender, MacAddress target, FrameData data,
+        LinkedList<NetworkDevice> route) {
         this.sender = sender;
         this.target = target;
         this.data = data;
-        this.route = new LinkedList<>();
+        this.route = new LinkedList<>(route);
     }
+
+    public Frame(MacAddress sender, MacAddress target, FrameData data) {
+        this(sender, target, data, new LinkedList<>());
+    }
+
     public Frame(Frame source)
     {
-        this.sender = source.sender;
-        this.target = source.target;
-        this.data = source.data;
-        this.route = new LinkedList<>(source.getRoute());
+        this(source.sender, source.target, source.data, source.getRoute());
     }
 
     public MacAddress getSenderMac() {
@@ -28,7 +32,7 @@ public class Frame {
     public FrameData getData() {
         return data;
     }
-    
+
     public LinkedList<NetworkDevice> getRoute()
     {
         return route;

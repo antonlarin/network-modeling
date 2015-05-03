@@ -9,12 +9,12 @@ public class IpAddress implements Serializable {
         this.octet3 = octet3;
         this.octet4 = octet4;
     }
-    
+
     public IpAddress(String ipstr) {
         if (!isValid(ipstr)) {
             throw new IllegalArgumentException();
         }
-        
+
         String[] stringOctets = ipstr.split("\\.");
         octet1 = Short.valueOf(stringOctets[0]);
         octet2 = Short.valueOf(stringOctets[1]);
@@ -44,10 +44,17 @@ public class IpAddress implements Serializable {
         hash = 89 * hash + this.octet4;
         return hash;
     }
-    
+
     @Override
     public String toString() {
         return String.format("%d.%d.%d.%d", octet1, octet2, octet3, octet4);
+    }
+
+    public long getBitRepresentation() {
+        long result = octet1;
+        result = result << 3 + octet2;
+        result = result << 3 + octet3;
+        return result << 3 + octet4;
     }
 
 
@@ -66,17 +73,16 @@ public class IpAddress implements Serializable {
             } catch (NumberFormatException ex) {
                 return false;
             }
-            
+
             if (octet < 0 || octet > 255) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
-    public static IpAddress GetNextAddress(IpAddress value)
-    {
+    public static IpAddress getNextAddress(IpAddress value) {
         short octet1 = value.octet1;
         short octet2 = value.octet2;
         short octet3 = value.octet3;
@@ -92,8 +98,12 @@ public class IpAddress implements Serializable {
             octet4++;
         else
             return null;
-        
+
         return new IpAddress(octet1, octet2, octet3, octet4);
+    }
+
+    public static IpAddress getZeroIp() {
+        return new IpAddress((short) 0, (short) 0, (short) 0, (short) 0);
     }
 
 
