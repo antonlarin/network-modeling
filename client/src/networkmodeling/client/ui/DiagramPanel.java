@@ -135,6 +135,8 @@ public class DiagramPanel extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g;
         Color defaultColor = g2.getColor();
+        Font font = g2.getFont();
+        FontRenderContext fontRenderContext = g2.getFontRenderContext();
         if (end1.getNodeDevice().getType() == NetworkDeviceType.Router) {
             String portIndex = String.format("%d",
                 end1.getNodeDevice().getIndexOfPortConnectedTo(
@@ -152,8 +154,6 @@ public class DiagramPanel extends JPanel {
             g2.setColor(defaultColor);
             g2.drawRoundRect(iconCenter.x - 12, iconCenter.y - 12,
                 24, 24, 3, 3);
-            Font font = g2.getFont();
-            FontRenderContext fontRenderContext = g2.getFontRenderContext();
             TextLayout textLayout =
                 new TextLayout(portIndex, font, fontRenderContext);
             Rectangle2D textBounds = textLayout.getBounds();
@@ -179,8 +179,6 @@ public class DiagramPanel extends JPanel {
             g2.setColor(defaultColor);
             g2.drawRoundRect(iconCenter.x - 12, iconCenter.y - 12,
                 24, 24, 3, 3);
-            Font font = g2.getFont();
-            FontRenderContext fontRenderContext = g2.getFontRenderContext();
             TextLayout textLayout =
                 new TextLayout(portIndex, font, fontRenderContext);
             Rectangle2D textBounds = textLayout.getBounds();

@@ -53,6 +53,7 @@ public class MainWindow extends JFrame {
         JList<String> devicePalette = new JList<>();
         devicePalette.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         devicePalette.setLayoutOrientation(JList.VERTICAL);
+        devicePalette.setCellRenderer(new DevicePaletteRenderer());
 
         DefaultListModel<String> devices = new DefaultListModel<>();
         devices.addElement("NIC");
@@ -64,6 +65,7 @@ public class MainWindow extends JFrame {
         devicePalette.setDragEnabled(true);
 
         JScrollPane palettePane = new JScrollPane(devicePalette);
+        palettePane.setPreferredSize(new Dimension(250, 275));
         palettePane.setBorder(
             BorderFactory.createTitledBorder("Device palette"));
 
