@@ -5,15 +5,13 @@ import java.util.HashMap;
 public class Switch extends NetworkDevice {
 
     public Switch(MacAddress macAddress, int portCount) {
-        super(macAddress, portCount);
+        super(NetworkDeviceType.Switch, macAddress, portCount);
 
         camTable = new HashMap<>();
-        deviceType = NetworkDeviceType.Switch;
     }
 
     public Switch() {
         this(MacAddress.getRandomAddress(), 8);
-        deviceType = NetworkDeviceType.Switch;
     }
 
     @Override

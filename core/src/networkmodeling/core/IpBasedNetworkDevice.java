@@ -5,9 +5,10 @@ import networkmodeling.exceptions.UnboundPortException;
 
 public abstract class IpBasedNetworkDevice extends NetworkDevice {
 
-    public IpBasedNetworkDevice(MacAddress macAddress, IpAddress ipAddress,
+    public IpBasedNetworkDevice(NetworkDeviceType deviceType,
+        MacAddress macAddress, IpAddress ipAddress,
         int portCount) {
-        super(macAddress, portCount);
+        super(deviceType, macAddress, portCount);
 
         this.ipAddress = ipAddress;
         this.ipMacTable = new HashMap<>();
@@ -51,7 +52,7 @@ public abstract class IpBasedNetworkDevice extends NetworkDevice {
         if(newIp != null)
             ipAddress = newIp;
     }
-    
+
     public IpAddress getIpAddress() {
         return ipAddress;
     }

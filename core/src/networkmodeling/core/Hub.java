@@ -4,13 +4,11 @@ import networkmodeling.exceptions.UnboundPortException;
 
 public class Hub extends NetworkDevice {
     public Hub(MacAddress macAddress, int portCount) {
-        super(macAddress, portCount);
-        deviceType = NetworkDeviceType.Hub;
+        super(NetworkDeviceType.Hub, macAddress, portCount);
     }
 
     public Hub() {
         this(MacAddress.getRandomAddress(), 8);
-        deviceType = NetworkDeviceType.Hub;
     }
 
     @Override
@@ -21,7 +19,7 @@ public class Hub extends NetworkDevice {
                 try {
                     port.sendFrame(new Frame(frame));
                 } catch (UnboundPortException ex) {
-                    System.err.println("Hub's port unbound.");
+                    // ignore empty ports
                 }
             }
         }

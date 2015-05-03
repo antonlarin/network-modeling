@@ -7,18 +7,16 @@ public class NIC extends IpBasedNetworkDevice {
 
     public NIC(MacAddress macAddress, IpAddress ipAddress,
         IpAddress gatewayIp) {
-        super(macAddress, ipAddress, 1);
+        super(NetworkDeviceType.NIC, macAddress, ipAddress, 1);
         this.incomingData = new LinkedList<>();
         this.gatewayIp = gatewayIp;
         this.lastIncomingDataRoute = new LinkedList<>();
-        deviceType = NetworkDeviceType.NIC;
     }
 
     public NIC() {
         this(MacAddress.getRandomAddress(),
             new IpAddress((short)0, (short)0, (short)0, (short)0),
             new IpAddress((short)0, (short)0, (short)0, (short)0));
-        deviceType = NetworkDeviceType.NIC;
     }
 
     public IpAddress getGateway() {

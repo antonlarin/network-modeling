@@ -6,13 +6,13 @@ import networkmodeling.exceptions.NoFreePortsException;
 
 public abstract class NetworkDevice implements Serializable {
 
-    public NetworkDevice(MacAddress macAddress, int portCount) {
+    public NetworkDevice(NetworkDeviceType deviceType, MacAddress macAddress, int portCount) {
         this.macAddress = macAddress;
         this.ports = new Port[portCount];
         for (int i = 0; i < portCount; ++i) {
             this.ports[i] = new Port(this);
         }
-        deviceType = null;
+        this.deviceType = deviceType;
     }
 
     public abstract void handleIncomingFrame(Frame frame, Port receivingPort);
@@ -90,7 +90,7 @@ public abstract class NetworkDevice implements Serializable {
     public int getPortsCount() {
         return ports.length;
     }
-    
+
     public NetworkDeviceType getType()
     {
         return deviceType;
@@ -116,5 +116,5 @@ public abstract class NetworkDevice implements Serializable {
 
     private final MacAddress macAddress;
     private final Port[] ports;
-    protected NetworkDeviceType deviceType;
+    private final NetworkDeviceType deviceType;
 }
