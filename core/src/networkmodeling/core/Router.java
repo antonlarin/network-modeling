@@ -76,6 +76,10 @@ public class Router extends IpBasedNetworkDevice {
         return routingTable;
     }
 
+    public void setRoutingTable(RoutingTable routingTable) {
+        this.routingTable = routingTable;
+    }
 
-    private final RoutingTable routingTable;
+
+    private RoutingTable routingTable;
 }

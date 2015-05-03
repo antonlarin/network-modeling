@@ -74,9 +74,9 @@ public class RoutingTableModel extends AbstractTableModel {
     }
 
     public void insertRow() {
-        subnetAddresses.push("");
-        nextHopIps.push("");
-        portIndices.push(1);
+        subnetAddresses.addLast("");
+        nextHopIps.addLast("");
+        portIndices.addLast(0);
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
 
@@ -94,6 +94,18 @@ public class RoutingTableModel extends AbstractTableModel {
         }
 
         return true;
+    }
+
+    public RoutingTable constructRoutingTable() {
+        RoutingTable routingTable = new RoutingTable();
+        for (int i = 0; i < getRowCount(); ++i) {
+            RoutingTableRecord record = new RoutingTableRecord(
+                new SubnetIpDescription(subnetAddresses.get(i)),
+                new IpAddress(nextHopIps.get(i)), portIndices.get(i));
+            routingTable.addRecord(record);
+        }
+
+        return routingTable;
     }
 
 

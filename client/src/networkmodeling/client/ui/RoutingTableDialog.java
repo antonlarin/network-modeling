@@ -21,6 +21,7 @@ public class RoutingTableDialog extends JDialog {
     public RoutingTableDialog(ClientAppModel clientAppModel, JFrame parent,
         boolean forExistingRouter) {
         super(parent, "Edit routing table", false);
+        this.clientAppModel = clientAppModel;
         routingTableView = new JTable();
         if (forExistingRouter) {
             Router selectedRouter =
@@ -75,6 +76,7 @@ public class RoutingTableDialog extends JDialog {
                 routingTableModel.insertRow();
             }
         });
+        applyButton.addActionListener(new AcceptRoutingTableListener());
 
         GroupLayout layout = new GroupLayout(getContentPane());
         layout.setAutoCreateGaps(true);
@@ -100,6 +102,7 @@ public class RoutingTableDialog extends JDialog {
 
 
 
+    private final ClientAppModel clientAppModel;
     private final RoutingTableModel routingTableModel;
     private int routerPortsCount;
     private final JTable routingTableView;
@@ -117,6 +120,16 @@ public class RoutingTableDialog extends JDialog {
             } else {
                 applyButton.setEnabled(false);
             }
+        }
+    }
+
+    private class AcceptRoutingTableListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            clientAppModel.setStashedRoutingTable(
+                routingTableModel.constructRoutingTable());
+            dispose();
         }
     }
 }

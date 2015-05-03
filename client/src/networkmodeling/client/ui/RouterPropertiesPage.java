@@ -3,6 +3,8 @@ package networkmodeling.client.ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -143,6 +145,15 @@ public class RouterPropertiesPage extends JPanel {
                     ipTextField.getText());
             }
             applyButton.setEnabled(false);
+        }
+    }
+
+    private class RoutingTableListener implements PropertyChangeListener {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            windowManager.getClientAppModel().
+                setStashedRoutingTableForSelectedRouter();
         }
     }
 }

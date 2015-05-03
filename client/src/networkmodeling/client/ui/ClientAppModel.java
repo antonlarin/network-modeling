@@ -16,6 +16,7 @@ import networkmodeling.core.NetworkDevice;
 import networkmodeling.core.NetworkModelTestResult;
 import networkmodeling.core.NetworkVisualModel;
 import networkmodeling.core.Router;
+import networkmodeling.core.RoutingTable;
 import networkmodeling.core.Switch;
 import networkmodeling.core.modelgraph.NetworkGraphEdge;
 import networkmodeling.core.modelgraph.NetworkGraphNode;
@@ -31,6 +32,7 @@ public class ClientAppModel {
         selectedEdge = null;
         networkTestRunner = null;
         networkTestResult = null;
+        stashedRoutingTable = null;
     }
 
     public ClientDaemon getClientDaemon() {
@@ -117,6 +119,9 @@ public class ClientAppModel {
         Point2D.Double location) {
         Router router = new Router(MacAddress.getRandomAddress(),
             new IpAddress(ip), Integer.valueOf(portsCount));
+        if (stashedRoutingTable != null) {
+            router.setRoutingTable(stashedRoutingTable);
+        }
         addDevice(router, location);
     }
 
@@ -154,6 +159,10 @@ public class ClientAppModel {
         visualModel.ChangeNICGateway(selectedNode, newGateway);
     }
 
+    public void setStashedRoutingTableForSelectedRouter() {
+
+    }
+
     public void changeSelectedNodeLocation(Point2D.Double newLocation) {
         clientDaemon.SendСhangeNodeCoordinatesRequest(selectedNode,
             newLocation.x, newLocation.y);
@@ -165,6 +174,19 @@ public class ClientAppModel {
         networkTestResult = null;
         networkTestRunner = new NetworkTestRunner();
         networkTestRunner.execute();
+    }
+
+    public void setStashedRoutingTable(RoutingTable routingTable) {
+        RoutingTable oldStashedRoutingTable = stashedRoutingTable;
+        stashedRoutingTable = routingTable;
+        pcs.firePropertyChange("stashedRoutingTable", oldStashedRoutingTable,
+            stashedRoutingTable);
+    }
+
+    public RoutingTable getStashedRoutingTable() {
+        RoutingTable result = stashedRoutingTable;
+        stashedRoutingTable = null;
+        return result;
     }
 
 
@@ -186,6 +208,7 @@ public class ClientAppModel {
     private NetworkGraphEdge selectedEdge;
     private NetworkTestRunner networkTestRunner;
     private NetworkModelTestResult networkTestResult;
+    private RoutingTable stashedRoutingTable;
 
 
 
