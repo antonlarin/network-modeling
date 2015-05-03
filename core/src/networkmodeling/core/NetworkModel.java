@@ -11,7 +11,7 @@ public class NetworkModel implements Serializable {
     public NetworkModel()
     {
         networkDevices = new HashMap<>();
-        ipToMacTable = new HashMap<>();
+        lastAddedAddress = new IpAddress("192.168.0.99");
     }
 
     public boolean AddDevice(NetworkDevice dev)
@@ -20,8 +20,7 @@ public class NetworkModel implements Serializable {
         {
             networkDevices.put(dev.getMacAddress(), dev);
             if(dev.getType() == NetworkDeviceType.NIC)
-                ipToMacTable.put(((IpBasedNetworkDevice)dev).getIpAddress(),
-                dev.getMacAddress());
+                lastAddedAddress = ((IpBasedNetworkDevice)dev).getIpAddress();
             return true;
         }
 
@@ -125,9 +124,6 @@ public class NetworkModel implements Serializable {
             NetworkDevice devForDelete = networkDevices.get(dev.getMacAddress());
             devForDelete.DisconnectFromAll();
             networkDevices.remove(dev.getMacAddress());
-            
-            if(dev.getType() == NetworkDeviceType.NIC)
-                ipToMacTable.remove(((IpBasedNetworkDevice)dev).getIpAddress());
 
             return true;
         }
@@ -166,41 +162,23 @@ public class NetworkModel implements Serializable {
         return networkDevices.get(address);
     }
     
-    public IpAddress getFreeIp()
+    public IpAddress getNextInputInSubnet()
     {
-        if(ipToMacTable.keySet().isEmpty())
-            return new IpAddress((short)0,(short)0,(short)0,(short)0);
-        else
-        {
-            IpAddress freeIp = ipToMacTable.keySet().iterator().next();
-            
-            while(ipToMacTable.containsKey(freeIp))
-                freeIp = IpAddress.GetNextAddress(freeIp);
-            
-            return freeIp;
-        }
+        return IpAddress.GetNextAddress(lastAddedAddress);
     }
 
-    private NIC FindNICByIP(IpAddress address)
+    private NIC FindNICByIP(IpAddress adress)
     {
-        if(ipToMacTable.containsKey(address))
-        {
-            IpBasedNetworkDevice dev = 
-                    (IpBasedNetworkDevice)networkDevices.get(ipToMacTable.get(address));
-            if(dev.getType() == NetworkDeviceType.NIC)
-                return (NIC)dev;
-        }
-        /*
         for(NetworkDevice dev : networkDevices.values())
         {
             if(dev.getType() == NetworkDeviceType.NIC)
                 if(((NIC)dev).getIpAddress().equals(adress))
                     return (NIC)dev;
         }
-        */
+
         return null;
     }
 
-    private final HashMap<IpAddress, MacAddress> ipToMacTable;
+    private IpAddress lastAddedAddress;
     private final HashMap<MacAddress, NetworkDevice> networkDevices;
 }
