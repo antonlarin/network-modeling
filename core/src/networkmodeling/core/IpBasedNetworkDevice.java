@@ -18,9 +18,7 @@ public abstract class IpBasedNetworkDevice extends NetworkDevice {
         FrameData frameData = frame.getData();
         ARPRequest arpRequest = (ARPRequest) frameData;
         updateIpMacTable(frame.getSenderMac(), arpRequest);
-        if (arpRequest.isResponse()) {
-            ipMacTable.put(arpRequest.getSenderIp(), frame.getSenderMac());
-        } else {
+        if (!arpRequest.isResponse()) {
             if (arpRequest.getTargetIp().equals(ipAddress)) {
                 ARPRequest arpResponse = new ARPRequest(ipAddress,
                     arpRequest.getSenderIp(), true);

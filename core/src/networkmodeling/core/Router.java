@@ -23,9 +23,23 @@ public class Router extends IpBasedNetworkDevice {
                 packet.getTargetIp());
             if (routeRecord != null) {
                 if (routeRecord.getHopIp().equals(IpAddress.getZeroIp())) {
-                    frame.getRoute().add(this);
+                    LinkedList<NetworkDevice> route = frame.getRoute();
+                    route.add(this);
+                    Port port = getPorts()[routeRecord.getPortIndex()];
+                    MacAddress targetMac = resolveMacAddress(
+                            packet.getTargetIp());
+                    if (targetMac == null) {
+                        sendArpRequest(packet.getTargetIp(), port);
+                        
+                        targetMac = resolveMacAddress(packet.getTargetIp());
+                        if (targetMac == null) {
+                            return;
+                        }
+                    }
+                    Frame newFrame = new Frame(getMacAddress(),
+                        targetMac, frame.getData(), route);
                     try {
-                        getPorts()[routeRecord.getPortIndex()].sendFrame(frame);
+                        port.sendFrame(newFrame);
                     } catch (UnboundPortException ex) {
                         Logger.getLogger(Router.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -34,8 +48,8 @@ public class Router extends IpBasedNetworkDevice {
                         routeRecord.getHopIp());
 
                     if (hopMac == null) {
-                        ARPRequest arpRequest = new ARPRequest(getIpAddress(),
-                        routeRecord.getHopIp(), false);
+                        sendArpRequest(routeRecord.getHopIp(),
+                                getPorts()[routeRecord.getPortIndex()]);
 
                         hopMac = resolveMacAddress(routeRecord.getHopIp());
                         if (hopMac == null) {

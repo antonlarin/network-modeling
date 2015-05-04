@@ -94,8 +94,8 @@ public class NetworkModel implements Serializable {
                 {
                     LinkedList<NetworkDevice> failedRoute = 
                             new LinkedList<>();
-                    failedRoute.add(sender);
                     failedRoute.add(nicForTest);
+                    failedRoute.add(sender);
                     return new NetworkModelTestResult(false, routes, failedRoute);
                 }
             }
