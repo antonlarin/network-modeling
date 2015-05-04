@@ -57,11 +57,13 @@ public class NICPropertiesPage extends JPanel {
             layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                 .addComponent(deviceTypeLabel)
                 .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup()
+                    .addGroup(layout.createParallelGroup(
+                            GroupLayout.Alignment.LEADING)
                         .addComponent(macTitleLabel)
                         .addComponent(ipTitleLabel)
                         .addComponent(gatewayTitleLabel))
-                    .addGroup(layout.createParallelGroup()
+                    .addGroup(layout.createParallelGroup(
+                            GroupLayout.Alignment.TRAILING)
                         .addComponent(macLabel)
                         .addComponent(ipTextField)
                         .addComponent(gatewayTextField)))
@@ -70,13 +72,16 @@ public class NICPropertiesPage extends JPanel {
         layout.setVerticalGroup(
             layout.createSequentialGroup()
                 .addComponent(deviceTypeLabel)
-                .addGroup(layout.createParallelGroup()
+                .addGroup(layout.createParallelGroup(
+                        GroupLayout.Alignment.BASELINE)
                     .addComponent(macTitleLabel)
                     .addComponent(macLabel))
-                .addGroup(layout.createParallelGroup()
+                .addGroup(layout.createParallelGroup(
+                        GroupLayout.Alignment.BASELINE)
                     .addComponent(ipTitleLabel)
                     .addComponent(ipTextField))
-                .addGroup(layout.createParallelGroup()
+                .addGroup(layout.createParallelGroup(
+                        GroupLayout.Alignment.BASELINE)
                     .addComponent(gatewayTitleLabel)
                     .addComponent(gatewayTextField))
                 .addComponent(applyButton)

@@ -164,6 +164,7 @@ public class ClientAppModel {
             clientDaemon.SendSetRoutingTableRequest(selectedNode,
                 stashedRoutingTable);
             visualModel.setRoutingTable(selectedNode, stashedRoutingTable);
+            stashedRoutingTable = null;
         }
     }
 

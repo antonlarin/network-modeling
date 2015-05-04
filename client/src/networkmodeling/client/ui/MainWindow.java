@@ -32,7 +32,7 @@ public class MainWindow extends JFrame {
         leftMenu.setLayout(new BoxLayout(leftMenu, BoxLayout.PAGE_AXIS));
         leftMenu.add(palettePane);
         leftMenu.add(propertiesPanel);
-        leftMenu.setPreferredSize(new Dimension(220, 50));
+//        leftMenu.setPreferredSize(new Dimension(220, 50));
 
         setLayout(new BorderLayout());
         add(toolbarPanel, BorderLayout.NORTH);

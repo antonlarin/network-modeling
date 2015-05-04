@@ -69,11 +69,13 @@ public class RouterPropertiesPage extends JPanel {
             layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                 .addComponent(deviceTypeLabel)
                 .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup()
+                    .addGroup(layout.createParallelGroup(
+                        GroupLayout.Alignment.LEADING)
                         .addComponent(macTitleLabel)
                         .addComponent(portsCountTitleLabel)
                         .addComponent(ipTitleLabel))
-                    .addGroup(layout.createParallelGroup()
+                    .addGroup(layout.createParallelGroup(
+                        GroupLayout.Alignment.TRAILING)
                         .addComponent(macLabel)
                         .addComponent(portsCountLabel)
                         .addComponent(ipTextField)))
@@ -83,13 +85,16 @@ public class RouterPropertiesPage extends JPanel {
         layout.setVerticalGroup(
             layout.createSequentialGroup()
                 .addComponent(deviceTypeLabel)
-                .addGroup(layout.createParallelGroup()
+                .addGroup(layout.createParallelGroup(
+                    GroupLayout.Alignment.BASELINE)
                     .addComponent(macTitleLabel)
                     .addComponent(macLabel))
-                .addGroup(layout.createParallelGroup()
+                .addGroup(layout.createParallelGroup(
+                    GroupLayout.Alignment.BASELINE)
                     .addComponent(portsCountTitleLabel)
                     .addComponent(portsCountLabel))
-                .addGroup(layout.createParallelGroup()
+                .addGroup(layout.createParallelGroup(
+                    GroupLayout.Alignment.BASELINE)
                     .addComponent(ipTitleLabel)
                     .addComponent(ipTextField))
                 .addComponent(applyButton)
@@ -156,8 +161,10 @@ public class RouterPropertiesPage extends JPanel {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            windowManager.getClientAppModel().
-                setStashedRoutingTableForSelectedRouter();
+            if (RouterPropertiesPage.this.isVisible()) {
+                windowManager.getClientAppModel().
+                    setStashedRoutingTableForSelectedRouter();
+            }
         }
     }
 }
