@@ -74,83 +74,85 @@ public class ClientThread extends Thread{
         }
     }
     
-    private synchronized void executeClientCommand(ServerCommand command) throws Exception
+    private void executeClientCommand(ServerCommand command) throws Exception
     {
-        boolean isCommandExecuted = false;
-        System.out.print("Start execuntion of");
-        switch (command.getCommandType())
-        {
-            case AddDevice:
-                isCommandExecuted = parentServer.GetModel().AddDevice((NetworkGraphNode)
-                        command.getCommandArgs()[0]);
-                System.out.println(" add device command\n");
-                break;
-            case DeleteDevice:
-                isCommandExecuted = parentServer.GetModel().DeleteDevice(
-                        (NetworkGraphNode)command.getCommandArgs()[0]);
-                System.out.println(" delete device command\n");
-                break;
-            case ConnectDevices:
-                isCommandExecuted = parentServer.GetModel().ConnectDevices(
-                        (NetworkGraphNode)command.getCommandArgs()[0],
-                        (NetworkGraphNode)command.getCommandArgs()[1]);
-                System.out.println(" connect devices command\n");
-                break;
-            case DisconnectDevices:
-                isCommandExecuted = parentServer.GetModel().DisconnectDevices(
-                        (NetworkGraphNode)command.getCommandArgs()[0],
-                        (NetworkGraphNode)command.getCommandArgs()[1]);
-                System.out.println(" disconnect devices command\n");
-                break;
-            case ChangeDeviceIP:
-                isCommandExecuted = parentServer.GetModel().ChangeDeviceIP(
-                        (NetworkGraphNode)command.getCommandArgs()[0],
-                        (IpAddress)command.getCommandArgs()[1]);
-                System.out.println(" change device Ip command\n");
-                break;
-            case ChangeNICGateway:
-                isCommandExecuted = parentServer.GetModel().ChangeNICGateway(
-                        (NetworkGraphNode)command.getCommandArgs()[0],
-                        (IpAddress)command.getCommandArgs()[1]);
-                System.out.println(" change NIC gateway commsnd\n");
-                break;
-            case AddRoutingTableRecord:
-                isCommandExecuted = parentServer.GetModel().AddRoutingTableRecord(
-                        (NetworkGraphNode)command.getCommandArgs()[0],
-                        (RoutingTableRecord)command.getCommandArgs()[1]);
-                break;
-            case RemoveRoutingTableRecord:
-                isCommandExecuted = parentServer.GetModel().DeleteRoutingTableRecord(
-                        (NetworkGraphNode)command.getCommandArgs()[0],
-                        (RoutingTableRecord)command.getCommandArgs()[1]);
-                break;
-            case SetRoutingTable:
-                isCommandExecuted = parentServer.GetModel().setRoutingTable(
-                        (NetworkGraphNode)command.getCommandArgs()[0],
-                        (RoutingTable)command.getCommandArgs()[1]);
-                break;
-            case GetFullNetworkModel:
+        synchronized(parentServer)  {
+            boolean isCommandExecuted = false;
+            System.out.print("Start execuntion of");
+            switch (command.getCommandType())
+            {
+                case AddDevice:
+                    isCommandExecuted = parentServer.GetModel().AddDevice((NetworkGraphNode)
+                            command.getCommandArgs()[0]);
+                    System.out.println(" add device command\n");
+                    break;
+                case DeleteDevice:
+                    isCommandExecuted = parentServer.GetModel().DeleteDevice(
+                            (NetworkGraphNode)command.getCommandArgs()[0]);
+                    System.out.println(" delete device command\n");
+                    break;
+                case ConnectDevices:
+                    isCommandExecuted = parentServer.GetModel().ConnectDevices(
+                            (NetworkGraphNode)command.getCommandArgs()[0],
+                            (NetworkGraphNode)command.getCommandArgs()[1]);
+                    System.out.println(" connect devices command\n");
+                    break;
+                case DisconnectDevices:
+                    isCommandExecuted = parentServer.GetModel().DisconnectDevices(
+                            (NetworkGraphNode)command.getCommandArgs()[0],
+                            (NetworkGraphNode)command.getCommandArgs()[1]);
+                    System.out.println(" disconnect devices command\n");
+                    break;
+                case ChangeDeviceIP:
+                    isCommandExecuted = parentServer.GetModel().ChangeDeviceIP(
+                            (NetworkGraphNode)command.getCommandArgs()[0],
+                            (IpAddress)command.getCommandArgs()[1]);
+                    System.out.println(" change device Ip command\n");
+                    break;
+                case ChangeNICGateway:
+                    isCommandExecuted = parentServer.GetModel().ChangeNICGateway(
+                            (NetworkGraphNode)command.getCommandArgs()[0],
+                            (IpAddress)command.getCommandArgs()[1]);
+                    System.out.println(" change NIC gateway commsnd\n");
+                    break;
+                case AddRoutingTableRecord:
+                    isCommandExecuted = parentServer.GetModel().AddRoutingTableRecord(
+                            (NetworkGraphNode)command.getCommandArgs()[0],
+                            (RoutingTableRecord)command.getCommandArgs()[1]);
+                    break;
+                case RemoveRoutingTableRecord:
+                    isCommandExecuted = parentServer.GetModel().DeleteRoutingTableRecord(
+                            (NetworkGraphNode)command.getCommandArgs()[0],
+                            (RoutingTableRecord)command.getCommandArgs()[1]);
+                    break;
+                case SetRoutingTable:
+                    isCommandExecuted = parentServer.GetModel().setRoutingTable(
+                            (NetworkGraphNode)command.getCommandArgs()[0],
+                            (RoutingTable)command.getCommandArgs()[1]);
+                    break;
+                case GetFullNetworkModel:
+                    UpdateClientModel();
+                    isCommandExecuted = true;
+                    System.out.println(" get full model command\n");
+                    break;
+                case MoveGraphNode:
+                    isCommandExecuted = parentServer.GetModel().GetGraph().
+                            ChangeNodeCoordinates(
+                                    (NetworkGraphNode)command.getCommandArgs()[0],
+                                    (double)command.getCommandArgs()[1],
+                                    (double)command.getCommandArgs()[2]);
+                    System.out.println(" move node command\n");
+                    break;
+            }
+
+            if(command.getCommandType() != ServerCommandType.GetFullNetworkModel)
+                parentServer.BroadcastChanges(command, clientID);
+
+            if(!isCommandExecuted)
+            {
+                System.out.println("Execution failed, updating full model\n");
                 UpdateClientModel();
-                isCommandExecuted = true;
-                System.out.println(" get full model command\n");
-                break;
-            case MoveGraphNode:
-                isCommandExecuted = parentServer.GetModel().GetGraph().
-                        ChangeNodeCoordinates(
-                                (NetworkGraphNode)command.getCommandArgs()[0],
-                                (double)command.getCommandArgs()[1],
-                                (double)command.getCommandArgs()[2]);
-                System.out.println(" move node command\n");
-                break;
-        }
-        
-        if(command.getCommandType() != ServerCommandType.GetFullNetworkModel)
-            parentServer.BroadcastChanges(command, clientID);
-        
-        if(!isCommandExecuted)
-        {
-            System.out.println("Execution failed, updating full model\n");
-            UpdateClientModel();
+            }
         }
     }
     

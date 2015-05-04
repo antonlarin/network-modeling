@@ -82,7 +82,7 @@ public class Server extends Thread{
         return mainNetworkModel;
     }
     
-    public void BroadcastChanges(ServerCommand command, UUID sourceID)
+    public synchronized void BroadcastChanges(ServerCommand command, UUID sourceID)
     {
         for(ClientThread value : serverClients.values())
         {
